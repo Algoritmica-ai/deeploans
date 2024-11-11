@@ -44,10 +44,10 @@ Two levels of data profiling ensure data quality and integrity before advancing 
 
 Primary keys for various datasets are based on a combination of unique identifiers:
 
-- Assets: `dl_code` + `A..` column
-- Collateral: `dl_code` + `C..` column
-- Bond Information: `dl_code` + `B..` and `B..` columns
-- Amortization: `dl_code` + `A..` column
+- Assets: `dl_code` + `Loan ID` (e.g. AS3 for SME Loans)
+- Collateral: `dl_code` + `Collateral ID` (e.g. CS1 for SME loans)
+- Bond Information: `dl_code` + `Report Date` (BS1 for SME loans) + `Issuer` (BS2 for SME loans)
+- Amortization: `dl_code` + `AS3` (relevant for SME loans only)
 
 ## Running the ETL Pipeline
 
