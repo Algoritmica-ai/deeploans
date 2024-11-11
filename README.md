@@ -32,7 +32,8 @@ The data lakehouse schema is designed with three layers, each with specific proc
 ## Data Profiling Stages
 Two levels of data profiling ensure data quality and integrity before advancing data to subsequent layers:
 
-- *Bronze-Level Profiling*: Ensures basic data quality checks for raw ESMA Sec Rep data before storage in the Bronze layer. Key rules include:
+- *Bronze-Level Profiling*: Ensures basic data quality checks for raw ESMA Sec Rep data before storage in the Bronze layer.
+  Key rules include:
    - Ensuring primary key uniqueness and completeness
    - Verifying table and column integrity (e.g., no NULL values in required fields)
    - Confirming the presence of essential columns
@@ -43,10 +44,10 @@ Two levels of data profiling ensure data quality and integrity before advancing 
 
 Primary keys for various datasets are based on a combination of unique identifiers:
 
-- Assets: __dl code__ + __AS3__ column
-- Collateral: __dl code__ + __CS1__ column
-- Bond Information: __dl code__ + __BS1__ and __BS2__ columns
-- Amortization: __dl code__ + __AS3__ column
+- Assets: `dl_code` + `AS3` column
+- Collateral: `dl_code` + `CS1` column
+- Bond Information: `dl_code` + `BS1` and `BS2` columns
+- Amortization: `dl_code` + `AS3` column
 
 ## Running the ETL Pipeline
 
