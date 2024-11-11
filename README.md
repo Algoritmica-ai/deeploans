@@ -13,15 +13,15 @@ The raw data resides in a Google Cloud Storage (GCS) bucket, where it is securel
 
 The data lakehouse schema is designed with three layers, each with specific processing and transformation objectives:
 
-1. Bronze Layer:
+1. **Bronze Layer**:
     - Objective: Store a one-to-one copy of the raw data, minimally processed with essential data profiling checks.
     - Transformations: Basic profiling rules are applied, including adding columns to support Slow Changing Dimension (SCD) Type 2.
 
-2. Silver Layer:
+2. **Silver Layer**:
     - Objective: Cleaned and normalized data, where raw data is transformed to separate dimensions for efficient querying and ML preparation.
     - Transformations: Dimensional normalization and transformations for BI and ML features.
       
-3. Gold Layer:
+3. **Gold Layer**:
     - Objective: Prepare data for business metrics and machine learning models.
     - Transformations: The data is refined for business KPIs or machine learning features.
     - Tools:
@@ -32,11 +32,11 @@ The data lakehouse schema is designed with three layers, each with specific proc
 ## Data Profiling Stages
 Two levels of data profiling ensure data quality and integrity before advancing data to subsequent layers:
 
-- Bronze-Level Profiling: Ensures basic data quality checks for raw ESMA Sec Rep data before storage in the Bronze layer. Key rules include:
+- *Bronze-Level Profiling*: Ensures basic data quality checks for raw ESMA Sec Rep data before storage in the Bronze layer. Key rules include:
    - Ensuring primary key uniqueness and completeness
    - Verifying table and column integrity (e.g., no NULL values in required fields)
    - Confirming the presence of essential columns
-- Silver-Level Profiling: Applied to Silver layer data before allowing it to be processed in the Gold layer. These rules vary based on asset class and file type.
+- *Silver-Level Profiling*: Applied to Silver layer data before allowing it to be processed in the Gold layer. These rules vary based on asset class and file type.
 
 
 ## Data Assumptions
