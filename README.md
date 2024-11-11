@@ -1,6 +1,6 @@
 # Deeploans Data Lakehouse ETL Pipeline
 
-This repository hosts the ETL pipeline for creating the Deeploans data lakehouse, where raw data from external providers (such as ESMA Sec Rep and Quandl) is processed and stored.
+This repository hosts the ETL pipeline for creating the Deeploans data lakehouse, where raw data from external providers is processed and stored.
 
 The **Lakehouse Architecture** combines the flexibility of a data lake with the structured data management capabilities of a data warehouse.
 
