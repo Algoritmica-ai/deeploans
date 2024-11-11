@@ -1,60 +1,68 @@
-# ETL pipeline
+# Deeploans Data Lakehouse ETL Pipeline
 
-This repository hosts the ETL that creates Deeploans data lakehouse.
+This repository hosts the ETL pipeline for creating the Deeploans data lakehouse, where raw data from external providers (such as ESMA Sec Rep and Quandl) is processed and stored.
 
-The data is located on GCS inside a bucket where raw data from external providers (ex: ESMA Sec Rep, Quandl, etc) is safely stored for processing.
-
-The Lakehouse architecture has been chosen to leverage the advantages of the data lake and data warehouse architecture.
-
-## Schema
+The **Lakehouse Architecture** combines the flexibility of a data lake with the structured data management capabilities of a data warehouse.
 
 ![lakehouse schema](Lakehouse_v1.png "Algoritmica Lakehouse diagram")
 
-## Main design
+## Data Location and Infrastructure
+The raw data resides in a Google Cloud Storage (GCS) bucket, where it is securely stored before processing. The pipeline leverages **GCP Dataproc Serverless** and **Google Cloud Composer** to automate and manage data transformations across the different layers of the lakehouse.
 
-By leveraging GCP Dataproc Serverless, the original data from ESMA Sec Rep is processed as following:
+## Lakehouse Schema
 
-- **Bronze layer**: one-to-one copy of the raw file, profiled with a lower level of rules and enhanced with new columns to support Slow Changign Dimension Type 2.
-- **Silver layer**: normalized data from the previous layer where dimensions are separated and data is prepared for BI queries and/or ML feature preparation.
-- **Gold layer**: enhanced data for business index metrics or features ready to be feed into ML model factory.
+The data lakehouse schema is designed with three layers, each with specific processing and transformation objectives:
 
-The **Bronze** and **Silver** layers are manipulated via Dataproc Serverless for Apache Spark. The **Gold** one can be processed differently according to the usage:
+1. Bronze Layer:
+    - Objective: Store a one-to-one copy of the raw data, minimally processed with essential data profiling checks.
+    - Transformations: Basic profiling rules are applied, including adding columns to support Slow Changing Dimension (SCD) Type 2.
 
-- For BI metrics generation (a.k.a. indexes), _Looker Studio_ is used to prepare dashboards and plots.
-- For ML feature engineering, _Dataproc Serverless_ or _DataFlow_ is used to elaborate futher the data.
+2. Silver Layer:
+    - Objective: Cleaned and normalized data, where raw data is transformed to separate dimensions for efficient querying and ML preparation.
+    - Transformations: Dimensional normalization and transformations for BI and ML features.
+      
+3. Gold Layer:
+    - Objective: Prepare data for business metrics and machine learning models.
+    - Transformations: The data is refined for business KPIs or machine learning features.
+    - Tools:
+        - BI and Analytics: Processed with Looker Studio for dashboard and plot preparation.
+        - Machine Learning: Further processed using Dataproc Serverless or DataFlow for ML feature engineering.
+     
 
-Two stages of data profiling are applied to the ETL. These are divided into:
+## Data Profiling Stages
+Two levels of data profiling ensure data quality and integrity before advancing data to subsequent layers:
 
-- **bronze level profiling**: set of rules that check basic data quality for the ESMA Sec Rep raw data before storing the files in the _Bronze layer_. Some examples are: primary key columns are unique and complete, tables are not empty, columns that should not hold **NULL** values are correct and minimum set of compulsory columns are not missing.
-- **silver level profiling**: set of rules that check quality of _Silver layer_ tables before allowing them to be processed in the _Gold layer_. Depending on the asset class and file type, these rules can be very heterogenous.
+- Bronze-Level Profiling: Ensures basic data quality checks for raw ESMA Sec Rep data before storage in the Bronze layer. Key rules include:
+   - Ensuring primary key uniqueness and completeness
+   - Verifying table and column integrity (e.g., no NULL values in required fields)
+   - Confirming the presence of essential columns
+- Silver-Level Profiling: Applied to Silver layer data before allowing it to be processed in the Gold layer. These rules vary based on asset class and file type.
 
-## Data assumptions
 
-Most of the assumptions are explored via the notebooks hosted in `experiments`.
+## Data Assumptions
 
-For `assets` the primary key column is a combination of the _algo code_
-(extracted from the file name) and the column AS3.
+Primary keys for various datasets are based on a combination of unique identifiers:
 
-For `collateral` the primary colum is a combination of the _algo code_ and the column CS1.
+- Assets: __dl code__ + __AS3__ column
+- Collateral: __dl code__ + __CS1__ column
+- Bond Information: __dl code__ + __BS1__ and __BS2__ columns
+- Amortization: __dl code__ + __AS3__ column
 
-For `bond info` the primary colum is a combination of the _algo code_ and the column BS1 and BS2.
+## Running the ETL Pipeline
 
-For `amortisation` the primary colum is a combination of the _algo code_ and the column AS3.
+To run the project, follow these steps:
 
-## How to run the project
+1. Clone the Repository: Ensure that **gcloud CLI** is installed and set up to access the `your project_id` project on GCP.
 
-Clone the repository onto a local machine and make sure that `gcloud cli` is installed and prepared to be used. It is required to have credentials set up to access the `dataops-1234` project on GCP.
+2. Edit Configuration: Modify the `Makefile` if the data is located in a different GCS bucket or folder.
 
-The `Makefile` should be edited accordingly in case the data to process is allocated to another bucket/folder.
-
-Run the following command to prepare the code and uploa it onto GCP:
-
-```bash
-> make setup && make build
-```
-
-Upload the desired DAG file onto Google Cloud Composer and start the workflow manually.
-Each DAG file should be run in two ways:
-
-- First, to perform `profile` and `bronze data' generation while having a _max_active_tasks_ parameter greater than 1. This promotes paralellism in preparing bronze level data.
-- Second, edit the DAG to run only the `silver data` generation with _max_active_tasks_ parameter equal to 1. this is necessary to avoid concurrent writes on the parquet file.
+3. Build and Deploy:
+   - Run the following command to prepare the code and upload it to GCP:
+     ```bash
+     > make setup && make build
+     ```
+4. Start the workflow
+   - Upload the relevant Directed Acyclic Graph (DAG) file to Google Cloud Composer.
+   - Start the workflow in two stages to manage parallelism and avoid file write conflicts:
+     - **Stage 1**: Run the DAG to perform Bronze-level profiling and data generation. Set the `max_active_tasks` parameter to a value greater than 1 to enable parallel task execution.
+     - **Stage 2**: Modify the DAG to process only Silver-level data generation. Set `max_active_tasks` to 1 to prevent concurrent writes on the parquet files.
