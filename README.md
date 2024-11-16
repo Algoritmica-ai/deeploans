@@ -39,6 +39,16 @@ Two levels of data profiling ensure data quality and integrity before advancing 
    - Confirming the presence of essential columns
 - *Silver-Level Profiling*: Applied to Silver layer data before allowing it to be processed in the Gold layer. These rules vary based on asset class and file type.
 
+## Asset Classes
+
+The asset classes covered are: 
+
+-  SME loans
+-  Residential Mortgages
+-  Consumer Lending (Dec 24)
+-  Auto loans (Dec 24)
+-  Leasing (Dec 24)
+-  Credit card (Dec 24)
 
 ## Data Assumptions
 
