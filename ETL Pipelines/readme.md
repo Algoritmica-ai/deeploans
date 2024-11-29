@@ -1,6 +1,6 @@
 # Deeploans Data Lakehouse ETL Pipeline
 
-This repository hosts the ETL pipeline for creating the Deeploans data lakehouse, where raw data from external providers is processed and stored.
+This repository hosts the ETL pipelines for creating the Deeploans data lakehouse, where raw data from external providers is processed and stored.
 
 The **Lakehouse Architecture** combines the flexibility of a data lake with the structured data management capabilities of a data warehouse.
 
@@ -32,7 +32,7 @@ The data lakehouse schema is designed with three layers, each with specific proc
 ## Data Profiling Stages
 Two levels of data profiling ensure data quality and integrity before advancing data to subsequent layers:
 
-- *Bronze-Level Profiling*: Ensures basic data quality checks for raw ESMA Sec Rep data before storage in the Bronze layer.
+- *Bronze-Level Profiling*: Ensures basic data quality checks for raw data before storage in the Bronze layer.
   Key rules include:
    - Ensuring primary key uniqueness and completeness
    - Verifying table and column integrity (e.g., no NULL values in required fields)
@@ -45,8 +45,8 @@ The asset classes covered are:
 
 -  SME loans
 -  Residential Mortgages
--  Consumer Lending (Dec 24)
--  Auto loans (Dec 24)
+-  Consumer Lending 
+-  Auto loans 
 -  Leasing (Dec 24)
 -  Credit card (Dec 24)
 
