@@ -1,0 +1,930 @@
+{
+  "sme": {
+    "amortisation_profiles": {
+      "AS3": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "DATE_VALUE": {
+        "type": "DATE",
+        "is_filter": true
+      },
+      "DOUBLE_VALUE": {
+        "type": "FLOAT",
+        "is_filter": true
+      },
+      "part": {
+        "type": "STRING",
+        "is_filter": false
+      }
+    },
+    "bond_collaterals": {
+      "dl_code": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "BS1": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "BS2": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "BS11": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "BS12": {
+        "type": "BOOLEAN",
+        "is_filter": true
+      },
+      "BS13": {
+        "type": "FLOAT",
+        "is_filter": false
+      }
+    },
+    "bond_info": {
+      "dl_code": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "BS1": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "BS2": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "BS3": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "BS4": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "BS5": {
+        "type": "BOOLEAN",
+        "is_filter": true
+      },
+      "BS6": {
+        "type": "STRING",
+        "is_filter": false
+      }
+    },
+    "bond_tranches": {
+      "dl_code": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "BS1": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "BS2": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "BS25": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "BS26": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "BS27": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "BS28": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "BS29": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "BS30": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "BS31": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "BS32": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "BS33": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "BS34": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "BS35": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "BS36": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "BS37": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "BS38": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "BS39": {
+        "type": "DATE",
+        "is_filter": false
+      }
+    },
+    "deals": {
+      "AssetClassCode": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AssetClassName": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "CountryCode": {
+        "type": "STRING",
+        "is_filter": false
+      }
+    },
+    "financials": {
+      "dl_code": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS1": {
+        "type": "DATE",
+        "is_filter": true
+      },
+      "AS2": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS3": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS4": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS5": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS6": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS7": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS8": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS100": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS101": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS102": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS103": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS104": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS105": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS106": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS107": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS108": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS109": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS110": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS111": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS112": {
+        "type": "DATE",
+        "is_filter": false
+      }
+    },
+    "interests": {
+      "dl_code": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS1": {
+        "type": "DATE",
+        "is_filter": true
+      },
+      "AS2": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS3": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS4": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS5": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS6": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS7": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS8": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS80": {
+        "type": "FLOAT",
+        "is_filter": true
+      },
+      "AS81": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS82": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS83": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS84": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS85": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS86": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS87": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "AS88": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS89": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS90": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS91": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "AS92": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS93": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS94": {
+        "type": "STRING",
+        "is_filter": false
+      }
+    },
+    "loan_collaterals": {
+      "CS1": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "CS2": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "CS3": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "CS4": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "CS5": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "CS6": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "CS7": {
+        "type": "BOOLEAN",
+        "is_filter": false
+      },
+      "CS8": {
+        "type": "BOOLEAN",
+        "is_filter": false
+      },
+      "CS9": {
+        "type": "BOOLEAN",
+        "is_filter": false
+      },
+      "CS10": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "CS11": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "CS12": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "CS13": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "CS14": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "CS15": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "CS16": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "CS17": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "CS18": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "CS19": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "CS20": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "CS21": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "CS22": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "CS23": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "CS24": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "CS25": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "CS26": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "CS27": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "CS28": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "filename": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "pcd": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "dl_code": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "part": {
+        "type": "STRING",
+        "is_filter": false
+      }
+    },
+    "loans": {
+      "dl_code": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS1": {
+        "type": "DATE",
+        "is_filter": true
+      },
+      "AS2": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS3": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS4": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS5": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS6": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS7": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS8": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS50": {
+        "type": "DATE",
+        "is_filter": true
+      },
+      "AS51": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "AS52": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS53": {
+        "type": "BOOLEAN",
+        "is_filter": false
+      },
+      "AS54": {
+        "type": "FLOAT",
+        "is_filter": true
+      },
+      "AS55": {
+        "type": "FLOAT",
+        "is_filter": true
+      },
+      "AS56": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS57": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS58": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS59": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS60": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS61": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS62": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS63": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS64": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS65": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS66": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS67": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "AS68": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS69": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS70": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "AS71": {
+        "type": "DATE",
+        "is_filter": false
+      }
+    },
+    "nace_codes": {
+      "code": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "description": {
+        "type": "STRING",
+        "is_filter": false
+      }
+    },
+    "nuts3_codes": {
+      "id": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "name": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "name_latin": {
+        "type": "STRING",
+        "is_filter": false
+      }
+    },
+    "obligors": {
+      "dl_code": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS1": {
+        "type": "DATE",
+        "is_filter": true
+      },
+      "AS2": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS3": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS4": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS5": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS6": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS7": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS8": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS15": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS16": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS17": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS18": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS19": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "AS20": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "AS21": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS22": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS23": {
+        "type": "BOOLEAN",
+        "is_filter": false
+      },
+      "AS24": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS25": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS26": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS27": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS28": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS29": {
+        "type": "BOOLEAN",
+        "is_filter": false
+      },
+      "AS30": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS31": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "AS32": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS33": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS34": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS35": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS36": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS37": {
+        "type": "FLOAT",
+        "is_filter": true
+      },
+      "AS38": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS39": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS40": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS41": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS42": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS43": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS44": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS45": {
+        "type": "STRING",
+        "is_filter": false
+      }
+    },
+    "performances": {
+      "dl_code": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS1": {
+        "type": "DATE",
+        "is_filter": true
+      },
+      "AS2": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS3": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS4": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS5": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS6": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS7": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS8": {
+        "type": "STRING",
+        "is_filter": true
+      },
+      "AS115": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS116": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS117": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS118": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS119": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS120": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS121": {
+        "type": "BOOLEAN",
+        "is_filter": false
+      },
+      "AS122": {
+        "type": "BOOLEAN",
+        "is_filter": true
+      },
+      "AS123": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS124": {
+        "type": "DATE",
+        "is_filter": true
+      },
+      "AS125": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS126": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS127": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "AS128": {
+        "type": "FLOAT",
+        "is_filter": true
+      },
+      "AS129": {
+        "type": "STRING",
+        "is_filter": false
+      },
+      "AS130": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "AS131": {
+        "type": "BOOLEAN",
+        "is_filter": false
+      },
+      "AS132": {
+        "type": "FLOAT",
+        "is_filter": true
+      },
+      "AS133": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "AS134": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "AS135": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS136": {
+        "type": "FLOAT",
+        "is_filter": false
+      },
+      "AS137": {
+        "type": "DATE",
+        "is_filter": false
+      },
+      "AS138": {
+        "type": "FLOAT",
+        "is_filter": false
+      }
+    }
+  }
+}
