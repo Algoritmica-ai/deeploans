@@ -77,3 +77,20 @@ To run the project, follow these steps:
    - Start the workflow in two stages to manage parallelism and avoid file write conflicts:
      - **Stage 1**: Run the DAG to perform Bronze-level profiling and data generation. Set the `max_active_tasks` parameter to a value greater than 1 to enable parallel task execution.
      - **Stage 2**: Modify the DAG to process only Silver-level data generation. Set `max_active_tasks` to 1 to prevent concurrent writes on the parquet files.
+    
+
+## FAQ
+**What is the primary technology stack?**
+Python for scripting the ETL jobs and Cloud Platform (Storage, Dataproc,  BigQuery)
+
+**Basic specs on throughput capabilities:** Apache Spark on GCP Dataproc allows GBs to TBs per job. GKE allows dynamic scaling of nodes and parallelized jobs
+
+**Specs on CI/CD capabilities:** Google Cloud Composer,​​ no fully automated CI/CD pipeline in place
+
+**Main assumptions about the data injection layer:** Data ingested from external sources following ECB data templates and stored in GC Storage. From Bigquery into GKE pods and Angular UI for end-to-end automation
+
+**Field mappings maintenance:** Manually within the ETL code. Feature engineering and mappings are managed directly within the script (utils)
+
+**Data validation and business rules logic:** Custom script imports various validation schemas (with business logic), which define the rules for validating different types of loan data (e.g collaterals, amortization profile etc.
+
+**Multi-tenant support:** Achieved through data partitioning in BigQuery or storage isolation in Google Cloud Storage. Each tenant's data can be processed separately in isolated data environments (datasets, buckets) with access control managed via Google IAM roles. Each tenant can have their own set of resources (pods, services) managed in separate namespaces, ensuring isolation at the infrastructure level.
