@@ -68,7 +68,7 @@ Got a use case we haven’t covered? Open an issue or drop a comment in [Discuss
 
 To get in touch, drop an email at:
 - [luca.borella@algoritmica.ai](mailto:luca.borella@algoritmica.ai)
-- [dylan.p.thiam@gmail.com](mailto:dylan.p.thiam@algoritmica.ai
+- [dylan.thiam@algoritmica.ai](mailto:dylan.p.thiam@algoritmica.ai)
 
 # Deeploans Background
 
