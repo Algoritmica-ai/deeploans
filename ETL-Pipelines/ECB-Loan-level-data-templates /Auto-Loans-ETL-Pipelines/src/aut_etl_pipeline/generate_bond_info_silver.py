@@ -1,5 +1,7 @@
 import logging
 import sys
+import os
+import yaml
 import pyspark.sql.functions as F
 from pyspark.sql.types import DateType, StringType, DoubleType, BooleanType
 from google.cloud import storage
@@ -18,6 +20,27 @@ formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+def get_project_id(config_path="config.yaml"):
+    """
+    Retrieve GCP project id from config file or environment variable.
+    Priority: ENV var > config file > raise Exception
+    """
+    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT_ID")
+    if project_id:
+        return project_id
+    if os.path.exists(config_path):
+        with open(config_path, "r") as f:
+            config = yaml.safe_load(f)
+            project_id = config.get("gcp_project_id")
+            if project_id:
+                return project_id
+    raise Exception(
+        "GCP project id not found. Set GOOGLE_CLOUD_PROJECT_ID env variable or provide config.yaml with gcp_project_id."
+    )
+
+class NoBondInfoCleanDumpFoundException(Exception):
+    """Raised when no clean_dump CSV files are found for the current bond info silver step."""
+    pass
 
 def set_job_params():
     """
@@ -76,7 +99,6 @@ def set_job_params():
     }
     return config
 
-
 def get_columns_collection(df):
     """
     Get collection of dataframe columns divided by topic.
@@ -92,7 +114,6 @@ def get_columns_collection(df):
     }
     return cols_dict
 
-
 def process_bond_info(df, cols_dict):
     """
     Extract bond info dimension from bronze Spark dataframe.
@@ -103,7 +124,6 @@ def process_bond_info(df, cols_dict):
     """
     new_df = df.select(cols_dict["general"] + cols_dict["bond_info"]).dropDuplicates()
     return new_df
-
 
 def process_tranche_info(df, cols_dict):
     """
@@ -118,9 +138,8 @@ def process_tranche_info(df, cols_dict):
     ).dropDuplicates()
     return new_df
 
-
 def generate_bond_info_silver(
-    spark, bucket_name, source_prefix, target_prefix, dl_code, ingestion_date
+    spark, bucket_name, source_prefix, target_prefix, dl_code, ingestion_date, config_path="config.yaml"
 ):
     """
     Run main steps of the module.
@@ -131,11 +150,14 @@ def generate_bond_info_silver(
     :param target_prefix: specific bucket prefix from where to deposit silver data.
     :param dl_code: deal code to process.
     :param ingestion_date: date of the ETL ingestion.
-    :return status: 0 if successful.
+    :param config_path: path to config file for GCP project id.
+    :return status: 0 if successful, raises if required data is missing.
+    :raises NoBondInfoCleanDumpFoundException: if no clean_dump is found for bond info.
     """
     logger.info("Start BOND_INFO SILVER job.")
     run_props = set_job_params()
-    storage_client = storage.Client(project="your project_id")
+    project_id = get_project_id(config_path)
+    storage_client = storage.Client(project=project_id)
     all_clean_dumps = [
         b
         for b in storage_client.list_blobs(bucket_name, prefix="clean_dump/bond_info")
@@ -143,9 +165,11 @@ def generate_bond_info_silver(
     ]
     if all_clean_dumps == []:
         logger.info(
-            "Could not find clean CSV dump file from BOND_INFO BRONZE PROFILING BRONZE PROFILING job. Workflow stopped!"
+            "Could not find clean CSV dump file from BOND_INFO BRONZE PROFILING job. Workflow stopped!"
         )
-        sys.exit(1)
+        raise NoBondInfoCleanDumpFoundException(
+            f"No clean_dump files found for bond_info with dl_code={dl_code}, ingestion_date={ingestion_date}."
+        )
     else:
         for clean_dump_csv in all_clean_dumps:
             pcd = "_".join(clean_dump_csv.name.split("/")[-1].split("_")[2:4])
@@ -172,7 +196,6 @@ def generate_bond_info_silver(
             tranche_df = process_tranche_info(cleaned_df, bond_info_columns)
 
             logger.info("Write dataframe")
-
             (
                 info_df.write.format("parquet")
                 .partitionBy("pcd_year", "pcd_month")
