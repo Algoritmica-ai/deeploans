@@ -1,5 +1,7 @@
 import logging
 import sys
+import os
+import yaml
 from google.cloud import storage
 import pandas as pd
 from cerberus import Validator
@@ -19,23 +21,69 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
+def get_project_id(config_path="config.yaml"):
+    """
+    Retrieve GCP project id from config file or environment variable.
+    Priority: ENV var > config file > raise Exception
+    """
+    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT_ID")
+    if project_id:
+        return project_id
+
+    if os.path.exists(config_path):
+        with open(config_path, "r") as f:
+            config = yaml.safe_load(f)
+            project_id = config.get("gcp_project_id")
+            if project_id:
+                return project_id
+
+    raise Exception(
+        "GCP project id not found. Set GOOGLE_CLOUD_PROJECT_ID env variable or provide config.yaml with gcp_project_id."
+    )
+
+
+class NoNewFilesException(Exception):
+    """Raised when no new CSV files are found for profiling."""
+    pass
+
+
 def profile_bronze_data(
-    raw_bucketname, data_bucketname, source_prefix, file_key, data_type, ingestion_date
+    raw_bucketname, data_bucketname, source_prefix, file_key, data_type, ingestion_date, config_path="config.yaml"
 ):
     """
-    Run main steps of the module.
+    Execute profiling (validation and separation of clean/dirty records) for the specified bronze data type.
 
-    :param raw_bucketname: GS bucket where raw files are stored.
-    :param data_bucketname: GS bucket where transformed files are stored.
-    :param source_prefix: specific bucket prefix from where to collect source files.
-    :param file_key: label for file name that helps with the cherry picking with data_type.
-    :param data_type: type of data to handle, ex: amortisation, assets, collaterals.
-    :param ingestion_date: date of the ETL ingestion.
-    :return status: 0 if successful.
+    Args:
+        raw_bucketname (str): GS bucket where raw files are stored.
+        data_bucketname (str): GS bucket where transformed files are stored.
+        source_prefix (str): Specific bucket prefix from where to collect source files.
+        file_key (str): Label for file name that helps with cherry picking by data_type.
+        data_type (str): Type of data to handle (e.g., amortisation, assets, collaterals, bond_info).
+        ingestion_date (str): Date of the ETL ingestion.
+        config_path (str): Path to the configuration file (default: config.yaml).
+
+    Returns:
+        int: 0 if successful, 1 if no new files are found.
+
+    Raises:
+        NoNewFilesException: If no new CSV files are found to process.
+
+    Workflow:
+        - Selects validation schema based on data_type.
+        - Retrieves relevant CSV files from the raw bucket.
+        - For each file, skips processing if already profiled.
+        - Profiles the file (validation), separating "clean" and "dirty" records.
+        - Uploads clean and dirty records to separate locations in the target bucket.
+        - Logs all major steps and outcomes.
+
+    Side effects:
+        - Uploads profiled CSVs to Google Cloud Storage.
+        - Writes logs to stdout.
     """
     logger.info(f"Start {data_type.upper()} BRONZE PROFILING job.")
     dl_code = source_prefix.split("/")[-1]
-    storage_client = storage.Client(project="your project_id")
+    project_id = get_project_id(config_path)
+    storage_client = storage.Client(project=project_id)
     bucket = storage_client.get_bucket(data_bucketname)
     # Pick Cerberus validator
     if data_type == "assets":
@@ -47,7 +95,7 @@ def profile_bronze_data(
     all_new_files = get_csv_files(raw_bucketname, source_prefix, file_key, data_type)
     if len(all_new_files) == 0:
         logger.warning("No new CSV files to retrieve. Workflow stopped!")
-        sys.exit(1)
+        raise NoNewFilesException("No new CSV files to retrieve for profiling.")
     else:
         logger.info(f"Retrieved {len(all_new_files)} {data_type} data CSV files.")
         clean_content = []
