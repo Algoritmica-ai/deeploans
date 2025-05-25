@@ -2,16 +2,16 @@ from pyspark.sql import SparkSession
 from delta import *
 
 
-def start_spark():
+def start_spark(app_name="DeeploansApp"):
     """
-    Create Spark application using Delta Lake dependencies.
+    Create and configure a SparkSession with Delta Lake and Google Cloud Storage support.
 
-    :param app_name: Name of the Spark App
-    :return: SparkSession
+    :param app_name: Name of the Spark App.
+    :return: SparkSession configured for Delta Lake and GCS.
     """
-
     spark = (
-        SparkSession.builder.config(
+        SparkSession.builder.appName(app_name)
+        .config(
             "spark.sql.extensions", "io.delta.sql.DeltaSparkSessionExtension"
         )
         .config(
