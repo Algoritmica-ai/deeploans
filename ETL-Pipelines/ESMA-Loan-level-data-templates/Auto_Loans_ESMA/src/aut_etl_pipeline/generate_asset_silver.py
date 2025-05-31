@@ -8,6 +8,7 @@ from src.aut_etl_pipeline.utils.silver_funcs import (
     replace_bool_data,
     cast_to_datatype,
 )
+from src.aut_etl_pipeline.config import GCP_PROJECT_ID
 
 # Setup logger
 logger = logging.getLogger(__name__)
@@ -22,105 +23,109 @@ logger.addHandler(handler)
 def set_job_params():
     """
     Setup parameters used for this module.
-
-    :return config: dictionary with properties used in this job.
     """
+    # TODO: Aggiorna questi parametri con lo schema ESMA (AUTL*) e tipologie corrette
     config = {}
     config["DATE_COLUMNS"] = [
-        "AA1",
-        "AA22",
-        "AA23",
-        "AA25",
-        "AA32",
-        "AA47",
-        "AA53",
-        "AA58",
-        "AA67",
-        "AA72",
-    ]
-    config["ASSET_COLUMNS"] = {
-        "AA1": DateType(),
-        "AA2": StringType(),
-        "AA3": StringType(),
-        "AA4": StringType(),
-        "AA5": StringType(),
-        "AA6": StringType(),
-        "AA7": BooleanType(),
-        "AA8": StringType(),
-        "AA9": StringType(),
-        "AA10": StringType(),
-        "AA15": StringType(),
-        "AA16": StringType(),
-        "AA17": DoubleType(),
-        "AA18": StringType(),
-        "AA19": StringType(),
-        "AA20": StringType(),
-        "AA21": StringType(),
-        "AA22": DateType(),
-        "AA23": DateType(),
-        "AA24": DoubleType(),
-        "AA25": DateType(),
-        "AA26": DoubleType(),
-        "AA27": DoubleType(),
-        "AA28": DoubleType(),
-        "AA29": StringType(),
-        "AA30": DoubleType(),
-        "AA31": DoubleType(),
-        "AA32": DateType(),
-        "AA33": StringType(),
-        "AA34": DoubleType(),
-        "AA35": DoubleType(),
-        "AA36": StringType(),
-        "AA37": DoubleType(),
-        "AA39": DoubleType(),
-        "AA40": DoubleType(),
-        "AA41": StringType(),
-        "AA42": DoubleType(),
-        "AA43": DoubleType(),
-        "AA44": StringType(),
-        "AA45": StringType(),
-        "AA46": StringType(),
-        "AA47": DateType(),
-        "AA48": StringType(),
-        "AA49": DoubleType(),
-        "AA50": DoubleType(),
-        "AA51": DoubleType(),
-        "AA52": DoubleType(),
-        "AA53": DateType(),
-        "AA54": StringType(),
-        "AA55": StringType(),
-        "AA56": BooleanType(),
-        "AA57": StringType(),
-        "AA58": DateType(),
-        "AA59": DoubleType(),
-        "AA60": DoubleType(),
-        "AA61": DoubleType(),
-        "AA65": DoubleType(),
-        "AA66": DoubleType(),
-        "AA67": DateType(),
-        "AA68": DoubleType(),
-        "AA69": DoubleType(),
-        "AA70": DoubleType(),
-        "AA71": DoubleType(),
-        "AA72": DateType(),
-        "AA73": DoubleType(),
-        "AA74": StringType(),
-    }
+        "AUTL6", 
+        "AUTL7", 
+        "AUTL8", 
+        "AUTL9", 
+        "AUTL24", 
+        "AUTL25", 
+        "AUTL33", 
+        "AUTL50", 
+        "AUTL51", 
+        "AUTL65", 
+        "AUTL66", 
+        "AUTL67", 
+        "AUTL73"
+        ]
 
+    config["ASSET_COLUMNS"] = {
+    "AUTL1": StringType(),
+    "AUTL2": StringType(),
+    "AUTL3": StringType(),
+    "AUTL4": StringType(),
+    "AUTL5": StringType(),
+    "AUTL10": StringType(),
+    "AUTL11": StringType(),
+    "AUTL12": StringType(),
+    "AUTL13": StringType(),
+    "AUTL14": StringType(),
+    "AUTL15": StringType(),
+    "AUTL16": NumberType(),
+    "AUTL17": StringType(),
+    "AUTL18": StringType(),
+    "AUTL19": StringType(),
+    "AUTL20": NumberType(),
+    "AUTL21": StringType(),
+    "AUTL22": StringType(),
+    "AUTL23": StringType(),
+    "AUTL26": IntegerType(),
+    "AUTL27": StringType(),
+    "AUTL28": StringType(),
+    "AUTL29": NumberType(),
+    "AUTL30": NumberType(),
+    "AUTL31": NumberType(),
+    "AUTL32": StringType(),
+    "AUTL34": StringType(),
+    "AUTL35": StringType(),
+    "AUTL36": StringType(),
+    "AUTL37": NumberType(),
+    "AUTL38": NumberType(),
+    "AUTL39": NumberType(),
+    "AUTL40": NumberType(),
+    "AUTL41": StringType(),
+    "AUTL42": StringType(),
+    "AUTL43": NumberType(),
+    "AUTL44": IntegerType(),
+    "AUTL45": NumberType(),
+    "AUTL46": NumberType(),
+    "AUTL47": IntegerType(),
+    "AUTL48": NumberType(),
+    "AUTL49": NumberType(),
+    "AUTL52": NumberType(),
+    "AUTL53": StringType(),
+    "AUTL54": StringType(),
+    "AUTL55": StringType(),
+    "AUTL56": StringType(),
+    "AUTL57": StringType(),
+    "AUTL58": StringType(),
+    "AUTL59": NumberType(),
+    "AUTL60": NumberType(),
+    "AUTL61": NumberType(),
+    "AUTL62": NumberType(),
+    "AUTL63": NumberType(),
+    "AUTL64": NumberType(),
+    "AUTL68": NumberType(),
+    "AUTL69": IntegerType(),
+    "AUTL70": StringType(),
+    "AUTL71": StringType(),
+    "AUTL72": NumberType(),
+    "AUTL74": NumberType(),
+    "AUTL75": NumberType(),
+    "AUTL76": NumberType(),
+    "AUTL77": NumberType(),
+    "AUTL78": NumberType(),
+    "AUTL79": StringType(),
+    "AUTL80": StringType(),
+    "AUTL81": StringType(),
+    "AUTL82": StringType(),
+    "AUTL83": StringType(),
+    "AUTL84": StringType()
+}
     return config
 
 
 def get_columns_collection(df):
     """
     Get collection of dataframe columns divided by topic.
-
-    :param df: Asset bronze Spark dataframe.
-    :return cols_dict: collection of columns labelled by topic.
     """
+    # Aggiorna i range secondo schema ESMA
     cols_dict = {
-        "general": ["dl_code", "pcd_year", "pcd_month"]
-        + [f"AA{i}" for i in range(1, 5) if f"AA{i}" in df.columns],
-        "lease_info": [f"AA{i}" for i in range(5, 79) if f"AA{i}" in df.columns],
+        "general": ["dl_code", "pcd_year", "pcd_month"] + [c for c in df.columns if c.startswith("AUTL") and int(c[4:]) <= 5],
+        "lease_info": [c for c in df.columns if c.startswith("AUTL") and int(c[4:]) > 5],
     }
     return cols_dict
 
@@ -128,10 +133,6 @@ def get_columns_collection(df):
 def process_lease_info(df, cols_dict):
     """
     Extract lease info dimension from bronze Spark dataframe.
-
-    :param df: Spark bronze dataframe.
-    :param cols_dict: collection of columns labelled by their topic.
-    :return new_df: silver type Spark dataframe.
     """
     new_df = df.select(cols_dict["general"] + cols_dict["lease_info"]).dropDuplicates()
     return new_df
@@ -142,18 +143,10 @@ def generate_asset_silver(
 ):
     """
     Run main steps of the module.
-
-    :param spark: SparkSession object.
-    :param bucket_name: GS bucket where files are stored.
-    :param source_prefix: specific bucket prefix from where to collect bronze data.
-    :param target_prefix: specific bucket prefix from where to deposit silver data.
-    :param dl_code: deal code to process.
-    :param ingestion_date: date of the ETL ingestion.
-    :return status: 0 if successful.
     """
     logger.info("Start ASSET SILVER job.")
     run_props = set_job_params()
-    storage_client = storage.Client(project="your project_id")
+    storage_client = storage.Client(project=GCP_PROJECT_ID)
     all_clean_dumps = [
         b
         for b in storage_client.list_blobs(bucket_name, prefix="clean_dump/assets")
@@ -161,7 +154,7 @@ def generate_asset_silver(
     ]
     if all_clean_dumps == []:
         logger.info(
-            "Could not find clean CSV dump file from ASSETS BRONZE PROFILING BRONZE PROFILING job. Workflow stopped!"
+            "Could not find clean CSV dump file from ASSETS BRONZE PROFILING job. Workflow stopped!"
         )
         sys.exit(1)
     else:
@@ -187,7 +180,6 @@ def generate_asset_silver(
             lease_info_df = process_lease_info(cleaned_df, assets_columns)
 
             logger.info("Write dataframe")
-
             (
                 lease_info_df.write.format("parquet")
                 .partitionBy("pcd_year", "pcd_month")

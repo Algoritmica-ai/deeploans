@@ -7,6 +7,7 @@ from src.aut_etl_pipeline.utils.bronze_funcs import (
     perform_scd2,
 )
 from delta import *
+from src.aut_etl_pipeline.config import GCP_PROJECT_ID
 
 # Setup logger
 logger = logging.getLogger(__name__)
@@ -23,18 +24,10 @@ def generate_bronze_tables(
 ):
     """
     Run main steps of the module.
-
-    :param spark: SparkSession object.
-    :param data_bucketname: GS bucket where transformed files are stored.
-    :param source_prefix: specific bucket prefix from where to collect bronze new data.
-    :param target_prefix: specific bucket prefix from where to collect bronze old data.
-    :param data_type: type of data to handle, ex: amortisation, assets, collaterals.
-    :param ingestion_date: date of the ETL ingestion.
-    :return status: 0 if successful.
     """
     logger.info(f"Start {data_type.upper()} BRONZE job.")
     dl_code = source_prefix.split("/")[-1]
-    storage_client = storage.Client(project="your project_id")
+    storage_client = storage.Client(project=GCP_PROJECT_ID)
     all_clean_dumps = [
         b
         for b in storage_client.list_blobs(

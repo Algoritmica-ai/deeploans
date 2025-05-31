@@ -10,16 +10,15 @@ from airflow.utils.task_group import TaskGroup
 from airflow.utils.db import provide_session
 from airflow.models import XCom
 from airflow.decorators import task
+from airflow.models import Variable
+import logging
+import sys
 
-# Prod Var definitions
-PROJECT_ID = "your project id"
-REGION = "your region"
-CODE_BUCKET = "your code bucket name"
-RAW_BUCKET = "your raw bucket name"
-DATA_BUCKET = "your data bucket name"
-PHS_CLUSTER = "your cluster name"
-METASTORE_CLUSTER = "your metastore cluster name"
-
+# Import config
+from src.aut_etl_pipeline.config import (
+    PROJECT_ID, REGION, CODE_BUCKET, RAW_BUCKET, DATA_BUCKET,
+    PHS_CLUSTER, METASTORE_CLUSTER,
+)
 
 SUBNETWORK_URI = f"projects/{PROJECT_ID}/regions/{REGION}/subnetworks/default"
 PYTHON_FILE_LOCATION = f"gs://{CODE_BUCKET}/dist/aut_main.py"
@@ -32,7 +31,7 @@ METASTORE_SERVICE_LOCATION = (
 )
 
 ENVIRONMENT_CONFIG = {
-    "execution_config": {"subnetwork_uri": "default"},
+    "execution_config": {"subnetwork_uri": SUBNETWORK_URI},
     "peripherals_config": {
         "metastore_service": METASTORE_SERVICE_LOCATION,
         "spark_history_server_config": {
@@ -52,20 +51,14 @@ RUNTIME_CONFIG = {
     "version": "2.0",
 }
 
-
 @task.python(trigger_rule="all_done")
 @provide_session
 def cleanup_xcom(session=None, **kwargs):
     dag = kwargs["dag"]
     dag_id = dag.dag_id
-    # It will delete all xcom of the dag_id
     session.query(XCom).filter(XCom.dag_id == dag_id).delete()
 
-
 def get_raw_prefixes():
-    """
-    Retrive refixes from raw bucket to start a DAG in it.
-    """
     storage_client = storage.Client(project=PROJECT_ID)
     bucket = storage_client.get_bucket(RAW_BUCKET)
     raw_prefixes = list(
@@ -82,122 +75,24 @@ def get_raw_prefixes():
     )
     return raw_prefixes
 
-
 default_args = {
-    # Tell airflow to start one day ago, so that it runs as soon as you upload it
     "start_date": days_ago(1),
     "project_id": PROJECT_ID,
     "region": REGION,
     "retries": 0,
 }
-# PROFILE + BRONZE
-# with models.DAG(
-#     "aut_assets",  # The id you will see in the DAG airflow page
-#     default_args=default_args,
-#     schedule_interval=None,  # Override to match your needs
-#     on_success_callback=cleanup_xcom,
-#     on_failure_callback=cleanup_xcom,
-#     max_active_tasks=10,
-# ) as dag:
-#     import sys
-#     import logging
 
-#     ingestion_date = "your date"
-#     if ingestion_date is None:
-#         logging.error("No ingestion date set. DAG stopped!!")
-#         sys.exit(1)
-#     logging.info(f"Ingestion date: {ingestion_date}")
-#     raw_prefixes = get_raw_prefixes()
-#     for rp in raw_prefixes:
-#         dl_code = rp.split("/")[-1]
-
-#         # # DEBUG
-#         # if "unique deal identifier" not in dl_code:
-#         #     continue
-#         start = EmptyOperator(task_id=f"{dl_code}_start")
-#         # assets TaskGroup
-#         with TaskGroup(group_id=f"{dl_code}_assets") as tg:
-#             profile_task = DataprocCreateBatchOperator(
-#                 task_id=f"profile_{dl_code}",
-#                 batch={
-#                     "pyspark_batch": {
-#                         "main_python_file_uri": PYTHON_FILE_LOCATION,
-#                         "jar_file_uris": [
-#                             SPARK_DELTA_JAR_FILE,
-#                             SPARK_DELTA_STORE_JAR_FILE,
-#                         ],
-#                         "python_file_uris": [PY_FILES],
-#                         "args": [
-#                             f"--project={PROJECT_ID}",
-#                             f"--raw-bucketname={RAW_BUCKET}",
-#                             f"--data-bucketname={DATA_BUCKET}",
-#                             f"--source-prefix=dl_data/downloaded-data/AUT/{dl_code}",
-#                             "--file-key=Loan_Data",
-#                             "--stage-name=profile_bronze_asset",
-#                             f"--ingestion-date={ingestion_date}",
-#                         ],
-#                     },
-#                     "environment_config": ENVIRONMENT_CONFIG,
-#                     "runtime_config": RUNTIME_CONFIG,
-#                 },
-#                 batch_id=f"{dl_code.lower()}-assets-profile",
-#             )
-#             bronze_task = DataprocCreateBatchOperator(
-#                 task_id=f"bronze_{dl_code}",
-#                 batch={
-#                     "pyspark_batch": {
-#                         "main_python_file_uri": PYTHON_FILE_LOCATION,
-#                         "jar_file_uris": [
-#                             SPARK_DELTA_JAR_FILE,
-#                             SPARK_DELTA_STORE_JAR_FILE,
-#                         ],
-#                         "python_file_uris": [PY_FILES],
-#                         "args": [
-#                             f"--project={PROJECT_ID}",
-#                             f"--raw-bucketname={RAW_BUCKET}",
-#                             f"--data-bucketname={DATA_BUCKET}",
-#                             f"--source-prefix=dl_data/downloaded-data/AUT/{dl_code}",
-#                             "--target-prefix=AUT/bronze/assets",
-#                             "--stage-name=bronze_asset",
-#                             f"--ingestion-date={ingestion_date}",
-#                         ],
-#                     },
-#                     "environment_config": ENVIRONMENT_CONFIG,
-#                     "runtime_config": RUNTIME_CONFIG,
-#                 },
-#                 batch_id=f"{dl_code.lower()}-assets-bronze",
-#             )
-#             (profile_task >> bronze_task)
-#         # clean-up TaskGroup
-#         with TaskGroup(group_id=f"{dl_code}_clean_up") as clean_up_tg:
-#             delete_profile = DataprocDeleteBatchOperator(
-#                 task_id=f"delete_profile_{dl_code}",
-#                 project_id=PROJECT_ID,
-#                 #region=REGION,
-#                 batch_id=f"{dl_code.lower()}-assets-profile",
-#             )
-#             delete_bronze = DataprocDeleteBatchOperator(
-#                 task_id=f"delete_bronze_{dl_code}",
-#                 project_id=PROJECT_ID,
-#                 #region=REGION,
-#                 batch_id=f"{dl_code.lower()}-assets-bronze",
-#             )
-#         end = EmptyOperator(task_id=f"{dl_code}_end")
-#         (start >> tg >> clean_up_tg >> end)
-# -----------------------------------------------------------
-# SILVER
 with models.DAG(
-    "aut_assets",  # The id you will see in the DAG airflow page
+    "aut_assets",
     default_args=default_args,
-    schedule_interval=None,  # Override to match your needs
+    schedule_interval=None,
     on_success_callback=cleanup_xcom,
     on_failure_callback=cleanup_xcom,
     max_active_tasks=1,
+    catchup=False,
 ) as dag:
-    import sys
-    import logging
-
-    ingestion_date = "your date"
+    # L'ingestion date può essere passata come variabile Airflow o parametro DAG
+    ingestion_date = Variable.get("ingestion_date", default_var=None)
     if ingestion_date is None:
         logging.error("No ingestion date set. DAG stopped!!")
         sys.exit(1)
@@ -205,12 +100,8 @@ with models.DAG(
     raw_prefixes = get_raw_prefixes()
     for rp in raw_prefixes:
         dl_code = rp.split("/")[-1]
-
-        # # DEBUG
-        # if "unique deal identifier" not in dl_code:
-        #     continue
         start = EmptyOperator(task_id=f"{dl_code}_start")
-        # assets TaskGroup
+
         silver_task = DataprocCreateBatchOperator(
             task_id=f"silver_{dl_code}",
             batch={
@@ -244,4 +135,4 @@ with models.DAG(
             batch_id=f"{dl_code.lower()}-assets-silver",
         )
         end = EmptyOperator(task_id=f"{dl_code}_end")
-        (start >> silver_task >> delete_silver >> end)
+        start >> silver_task >> delete_silver >> end

@@ -10,15 +10,15 @@ from airflow.utils.task_group import TaskGroup
 from airflow.utils.db import provide_session
 from airflow.models import XCom
 from airflow.decorators import task
+from airflow.models import Variable
+import logging
+import sys
 
-# Prod Var definitions
-PROJECT_ID = "your project id"
-REGION = "your region"
-CODE_BUCKET = "your code bucket name"
-RAW_BUCKET = "your raw bucket name"
-DATA_BUCKET = "your data bucket name"
-PHS_CLUSTER = "your cluster name"
-METASTORE_CLUSTER = "your metastore cluster name"
+# Import config
+from src.aut_etl_pipeline.config import (
+    PROJECT_ID, REGION, CODE_BUCKET, RAW_BUCKET, DATA_BUCKET,
+    PHS_CLUSTER, METASTORE_CLUSTER,
+)
 
 SUBNETWORK_URI = f"projects/{PROJECT_ID}/regions/{REGION}/subnetworks/default"
 PYTHON_FILE_LOCATION = f"gs://{CODE_BUCKET}/dist/aut_main.py"
@@ -31,7 +31,7 @@ METASTORE_SERVICE_LOCATION = (
 )
 
 ENVIRONMENT_CONFIG = {
-    "execution_config": {"subnetwork_uri": "default"},
+    "execution_config": {"subnetwork_uri": SUBNETWORK_URI},
     "peripherals_config": {
         "metastore_service": METASTORE_SERVICE_LOCATION,
         "spark_history_server_config": {
@@ -51,20 +51,14 @@ RUNTIME_CONFIG = {
     "version": "2.0",
 }
 
-
 @task.python(trigger_rule="all_done")
 @provide_session
 def cleanup_xcom(session=None, **kwargs):
     dag = kwargs["dag"]
     dag_id = dag.dag_id
-    # It will delete all xcom of the dag_id
     session.query(XCom).filter(XCom.dag_id == dag_id).delete()
 
-
 def get_raw_prefixes():
-    """
-    Retrive refixes from raw bucket to start a DAG in it.
-    """
     storage_client = storage.Client(project=PROJECT_ID)
     bucket = storage_client.get_bucket(RAW_BUCKET)
     raw_prefixes = list(
@@ -81,26 +75,23 @@ def get_raw_prefixes():
     )
     return raw_prefixes
 
-
 default_args = {
-    # Tell airflow to start one day ago, so that it runs as soon as you upload it
     "start_date": days_ago(1),
     "project_id": PROJECT_ID,
     "region": REGION,
     "retries": 0,
 }
+
 with models.DAG(
-    "aut_deal_details",  # The id you will see in the DAG airflow page
+    "aut_deal_details",
     default_args=default_args,
-    schedule_interval=None,  # Override to match your needs
+    schedule_interval=None,
     on_success_callback=cleanup_xcom,
     on_failure_callback=cleanup_xcom,
     max_active_tasks=1,
+    catchup=False,
 ) as dag:
-    import sys
-    import logging
-
-    ingestion_date = "your date"
+    ingestion_date = Variable.get("ingestion_date", default_var=None)
     if ingestion_date is None:
         logging.error("No ingestion date set. DAG stopped!!")
         sys.exit(1)
@@ -108,12 +99,7 @@ with models.DAG(
     raw_prefixes = get_raw_prefixes()
     for rp in raw_prefixes:
         dl_code = rp.split("/")[-1]
-
-        # # DEBUG
-        # if "unique deal identifier" not in dl_code:
-        #     continue
         start = EmptyOperator(task_id=f"{dl_code}_start")
-        # deal details TaskGroup
         with TaskGroup(group_id=f"{dl_code}_deal_details") as tg:
             bronze_task = DataprocCreateBatchOperator(
                 task_id=f"bronze_{dl_code}",
@@ -133,6 +119,7 @@ with models.DAG(
                             "--target-prefix=AUT/bronze/deal_details",
                             "--file-key=Deal_Details",
                             "--stage-name=bronze_deal_details",
+                            f"--ingestion-date={ingestion_date}",
                         ],
                     },
                     "environment_config": ENVIRONMENT_CONFIG,
@@ -158,6 +145,7 @@ with models.DAG(
                             "--target-prefix=AUT/silver/deal_details",
                             f"--dl-code={dl_code}",
                             "--stage-name=silver_deal_details",
+                            f"--ingestion-date={ingestion_date}",
                         ],
                     },
                     "environment_config": ENVIRONMENT_CONFIG,
@@ -166,7 +154,6 @@ with models.DAG(
                 batch_id=f"{dl_code.lower()}-deal-details-silver",
             )
             bronze_task >> silver_task
-        # clean-up TaskGroup
         with TaskGroup(group_id=f"{dl_code}_clean_up") as clean_up_tg:
             delete_bronze = DataprocDeleteBatchOperator(
                 task_id=f"delete_bronze_{dl_code}",
@@ -181,4 +168,4 @@ with models.DAG(
                 batch_id=f"{dl_code.lower()}-deal-details-silver",
             )
         end = EmptyOperator(task_id=f"{dl_code}_end")
-        (start >> tg >> clean_up_tg >> end)
+        start >> tg >> clean_up_tg >> end
