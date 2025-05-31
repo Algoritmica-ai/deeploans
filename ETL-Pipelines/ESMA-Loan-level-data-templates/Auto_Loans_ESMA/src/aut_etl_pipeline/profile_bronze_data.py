@@ -8,6 +8,7 @@ from src.aut_etl_pipeline.utils.bronze_profile_funcs import (
     profile_data,
 )
 from src.aut_etl_pipeline.utils.validation_rules import asset_schema
+from src.aut_etl_pipeline.config import GCP_PROJECT_ID
 
 # Setup logger
 logger = logging.getLogger(__name__)
@@ -18,29 +19,15 @@ formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-
 def profile_bronze_data(
     raw_bucketname, data_bucketname, source_prefix, file_key, data_type, ingestion_date
 ):
-    """
-    Run main steps of the module.
-
-    :param raw_bucketname: GS bucket where raw files are stored.
-    :param data_bucketname: GS bucket where transformed files are stored.
-    :param source_prefix: specific bucket prefix from where to collect source files.
-    :param file_key: label for file name that helps with the cherry picking with data_type.
-    :param data_type: type of data to handle, ex: amortisation, assets, collaterals.
-    :param ingestion_date: date of the ETL ingestion.
-    :return status: 0 if successful.
-    """
     logger.info(f"Start {data_type.upper()} BRONZE PROFILING job.")
     dl_code = source_prefix.split("/")[-1]
-    storage_client = storage.Client(project="your project_id")
+    storage_client = storage.Client(project=GCP_PROJECT_ID)
     bucket = storage_client.get_bucket(data_bucketname)
-    # Pick Cerberus validator
     if data_type == "assets":
         validator = Validator(asset_schema())
-    # Get all CSV files from Securitisation Repository.
     logger.info(f"Profile {dl_code} files.")
     all_new_files = get_csv_files(raw_bucketname, source_prefix, file_key, data_type)
     if len(all_new_files) == 0:
@@ -56,7 +43,6 @@ def profile_bronze_data(
             clean_dump_csv = bucket.blob(
                 f"clean_dump/{data_type}/{ingestion_date}_{dl_code}_{pcd}.csv"
             )
-            # Check if this file has already been profiled. Skip in this case.
             if clean_dump_csv.exists():
                 logger.info(
                     f"{clean_dump_csv} BRONZE PROFILING job has been already done. Skip!"
@@ -82,8 +68,5 @@ def profile_bronze_data(
                 bucket.blob(
                     f"clean_dump/{data_type}/{ingestion_date}_{dl_code}_{pcd}.csv"
                 ).upload_from_string(clean_df.to_csv(index=False), "text/csv")
-            # START DEBUG ONLY 1 FILE
-            # break
-            # END DEBUG
     logger.info(f"End {data_type.upper()} BRONZE PROFILING job.")
     return 0
