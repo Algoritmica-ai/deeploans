@@ -5,7 +5,7 @@ from pyspark.sql.types import DateType, StringType, DoubleType, BooleanType, Int
 from src.aut_etl_pipeline.utils.silver_funcs import (
     cast_to_datatype,
 )
-from src.aut_etl_pipeline.config import GCP_PROJECT_ID
+from src.aut_etl_pipeline.config import PROJECT_ID
 
 # Setup logger
 logger = logging.getLogger(__name__)

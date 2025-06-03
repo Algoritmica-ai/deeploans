@@ -8,7 +8,7 @@ import pyspark.sql.functions as F
 from pyspark.sql.types import TimestampType
 from src.aut_etl_pipeline.utils.bronze_funcs import perform_scd2
 from delta import *
-from src.aut_etl_pipeline.config import GCP_PROJECT_ID
+from src.aut_etl_pipeline.config import PROJECT_ID
 
 # Setup logger
 logger = logging.getLogger(__name__)
@@ -20,7 +20,7 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 def get_raw_file(bucket_name, prefix, file_key):
-    storage_client = storage.Client(project=GCP_PROJECT_ID)
+    storage_client = storage.Client(project=PROJECT_ID)
     all_files = [
         b.name
         for b in storage_client.list_blobs(bucket_name, prefix=prefix)
@@ -40,7 +40,7 @@ def get_raw_file(bucket_name, prefix, file_key):
         return all_files[0]
 
 def get_old_df(spark, bucket_name, prefix, pcd, dl_code):
-    storage_client = storage.Client(project=GCP_PROJECT_ID)
+    storage_client = storage.Client(project=PROJECT_ID)
     part_pcd = pcd.replace("-", "")
     partition_prefix = f"{prefix}/part={dl_code}_{part_pcd}"
     files_in_partition = [
@@ -57,7 +57,7 @@ def get_old_df(spark, bucket_name, prefix, pcd, dl_code):
         return df
 
 def create_dataframe(spark, bucket_name, xml_file):
-    storage_client = storage.Client(project=GCP_PROJECT_ID)
+    storage_client = storage.Client(project=PROJECT_ID)
     bucket = storage_client.get_bucket(bucket_name)
     blob = bucket.blob(xml_file)
     dest_xml_f = f'/tmp/{xml_file.split("/")[-1]}'
