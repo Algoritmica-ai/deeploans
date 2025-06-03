@@ -1,7 +1,7 @@
 from google.cloud import storage
 import csv
 from io import StringIO
-from aut_etl_pipeline.config import GCP_PROJECT_ID
+from aut_etl_pipeline.config import PROJECT_ID
 
 INITIAL_COL = {
     "assets": "AUTL1"
@@ -23,7 +23,7 @@ def _correct_file_coding(raw_file_obj):
     return clean_file_obj
 
 def get_csv_files(bucket_name, prefix, file_key, data_type):
-    storage_client = storage.Client(project=GCP_PROJECT_ID)
+    storage_client = storage.Client(project=PROJECT_ID)
     if data_type == "assets":
         all_files = [
             b.name
@@ -41,7 +41,6 @@ def get_csv_files(bucket_name, prefix, file_key, data_type):
     return all_files if all_files else []
 
 def profile_data(bucket_name, csv_f, data_type, validator):
-    storage_client = storage.Client(project=GCP_PROJECT_ID)
     bucket = storage_client.get_bucket(bucket_name)
     blob = bucket.blob(csv_f)
     dest_csv_f = f'/tmp/{csv_f.split("/")[-1]}'
