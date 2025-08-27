@@ -1,6 +1,8 @@
 import re
 import logging
 import sys
+import os
+import yaml
 from lxml import objectify
 import pandas as pd
 from google.cloud import storage
@@ -20,16 +22,42 @@ formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
-
-def get_raw_file(bucket_name, prefix, file_key):
+def get_project_id(config_path="config.yaml"):
     """
-    Return list of XML files that satisfy the file_key parameter from Securitisation Repository.
+    Retrieve GCP project id from config file or environment variable.
+    Priority: ENV var > config file > raise Exception
+    """
+    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT_ID")
+    if project_id:
+        return project_id
+
+    if os.path.exists(config_path):
+        with open(config_path, "r") as f:
+            config = yaml.safe_load(f)
+            project_id = config.get("gcp_project_id")
+            if project_id:
+                return project_id
+
+    raise Exception(
+        "GCP project id not found. Set GOOGLE_CLOUD_PROJECT_ID env variable or provide config.yaml with gcp_project_id."
+    )
+
+class NoValidXMLFileException(Exception):
+    """Raised when no valid XML file is found for deal details bronze step."""
+    pass
+
+def get_raw_file(bucket_name, prefix, file_key, config_path="config.yaml"):
+    """
+    Return single XML file that satisfies the file_key parameter from Securitisation Repository.
 
     :param bucket_name: GS bucket where files are stored.
     :param prefix: specific bucket prefix from where to collect files.
     :param file_key: label for file name that helps with the cherry picking.
+    :param config_path: path to config file for GCP project id.
+    :return: xml filename, or raises NoValidXMLFileException
     """
-    storage_client = storage.Client(project="your project_id")
+    project_id = get_project_id(config_path)
+    storage_client = storage.Client(project=project_id)
     all_files = [
         b.name
         for b in storage_client.list_blobs(bucket_name, prefix=prefix)
@@ -39,17 +67,16 @@ def get_raw_file(bucket_name, prefix, file_key):
         logger.error(
             f"No files with key {file_key.upper()} found in {bucket_name}. Exit process!"
         )
-        return None
+        raise NoValidXMLFileException(f"No XML file found with key '{file_key}' in bucket {bucket_name}")
     elif len(all_files) > 1:
         logger.error(
             f"Multiple files with key {file_key.upper()} found in {bucket_name}. Exit process!"
         )
-        return None
+        raise NoValidXMLFileException(f"Multiple XML files found with key '{file_key}' in bucket {bucket_name}")
     else:
         return all_files[0]
 
-
-def get_old_df(spark, bucket_name, prefix, pcd, dl_code):
+def get_old_df(spark, bucket_name, prefix, pcd, dl_code, config_path="config.yaml"):
     """
     Return BRONZE table.
 
@@ -58,9 +85,11 @@ def get_old_df(spark, bucket_name, prefix, pcd, dl_code):
     :param prefix: specific bucket prefix from where to collect files.
     :param pcd: pool cutoff date from source files (valid only when generating TARGET dataframe).
     :param dl_code: deal code to look up for legacy data.
-    :return df: Spark dataframe.
+    :param config_path: path to config file for GCP project id.
+    :return df: Spark dataframe or None if not found.
     """
-    storage_client = storage.Client(project="your project_id")
+    project_id = get_project_id(config_path)
+    storage_client = storage.Client(project=project_id)
     part_pcd = pcd.replace("-", "")
     partition_prefix = f"{prefix}/part={dl_code}_{part_pcd}"
     files_in_partition = [
@@ -72,22 +101,22 @@ def get_old_df(spark, bucket_name, prefix, pcd, dl_code):
         df = (
             spark.read.format("delta")
             .load(f"gs://{bucket_name}/{prefix}")
-            .where(f"part={dl_code}_{part_pcd}")
+            .where(f"part='{dl_code}_{part_pcd}'")
         )
         return df
 
-
-def create_dataframe(spark, bucket_name, xml_file):
+def create_dataframe(spark, bucket_name, xml_file, config_path="config.yaml"):
     """
-    Read files and generate one PySpark DataFrame from them.
+    Read XML file and generate one PySpark DataFrame from it.
 
     :param spark: SparkSession object.
     :param bucket_name: GS bucket where files are stored.
     :param xml_file: file to be read to generate the dataframe.
-    :return df: PySpark dataframe.
-    :return pcd: pool cutoff date.
+    :param config_path: path to config file for GCP project id.
+    :return: (pcd, PySpark dataframe)
     """
-    storage_client = storage.Client(project="your project_id")
+    project_id = get_project_id(config_path)
+    storage_client = storage.Client(project=project_id)
     bucket = storage_client.get_bucket(bucket_name)
     blob = bucket.blob(xml_file)
     dest_xml_f = f'/tmp/{xml_file.split("/")[-1]}'
@@ -139,7 +168,7 @@ def create_dataframe(spark, bucket_name, xml_file):
     df = pd.DataFrame(data).T  # Create DataFrame and transpose it
     df.columns = cols  # Update column names
     pcd = df["PoolCutOffDate"].values[0].split("T")[0]
-    # Conver from Pandas to Spark dataframe and add SCD-2 columns
+    # Convert from Pandas to Spark dataframe and add SCD-2 columns
     spark_df = (
         spark.createDataFrame(df)
         .withColumnRenamed("DeeploansCode", "dl_code")
@@ -166,9 +195,8 @@ def create_dataframe(spark, bucket_name, xml_file):
     )
     return (pcd, spark_df)
 
-
 def generate_deal_details_bronze(
-    spark, raw_bucketname, data_bucketname, source_prefix, target_prefix, file_key
+    spark, raw_bucketname, data_bucketname, source_prefix, target_prefix, file_key, config_path="config.yaml"
 ):
     """
     Run main steps of the module.
@@ -179,35 +207,37 @@ def generate_deal_details_bronze(
     :param source_prefix: specific bucket prefix from where to collect XML files.
     :param target_prefix: specific bucket prefix from where to save Delta Lake files.
     :param file_key: label for file name that helps with the cherry picking with Deal_Details.
-    :return status: 0 is successful.
+    :param config_path: path to config file for GCP project id.
+    :return status: 0 is successful, raises if XML is missing.
+    :raises NoValidXMLFileException: if no or multiple xml files are found.
     """
     # Deal Details behaves differently and it has function on its own.
     # This is just a hack to use bronze_funcs.get_old_df and bronze_funcs.perform_scd2
     data_type = "deal_details"
     dl_code = source_prefix.split("/")[-1]
     logger.info("Start DEAL DETAILS BRONZE job.")
-    xml_file = get_raw_file(raw_bucketname, source_prefix, file_key)
+    try:
+        xml_file = get_raw_file(raw_bucketname, source_prefix, file_key, config_path=config_path)
+    except NoValidXMLFileException as e:
+        logger.warning(f"No valid XML file to retrieve. Workflow stopped! {e}")
+        raise
     logger.info(f"Create NEW {dl_code} dataframe")
-    if len(xml_file) is None:
-        logger.warning("No new XML file to retrieve. Workflow stopped!")
-        sys.exit(1)
-    else:
-        logger.info(f"Retrieved deal details data XML files.")
-        pcd, new_df = create_dataframe(spark, raw_bucketname, xml_file)
+    logger.info(f"Retrieved deal details data XML file {xml_file}.")
+    pcd, new_df = create_dataframe(spark, raw_bucketname, xml_file, config_path=config_path)
 
-        logger.info("Retrieve OLD dataframe.")
-        old_df = get_old_df(spark, data_bucketname, target_prefix, pcd, dl_code)
-        if old_df is None:
-            logger.info("Initial load into DEAL DETAILS BRONZE")
-            (
-                new_df.write.partitionBy("part")
-                .format("delta")
-                .mode("append")
-                .save(f"gs://{data_bucketname}/{target_prefix}")
-            )
-        else:
-            logger.info("Upsert data into DEAL DETAILS BRONZE")
-            perform_scd2(spark, old_df, new_df, data_type)
+    logger.info("Retrieve OLD dataframe.")
+    old_df = get_old_df(spark, data_bucketname, target_prefix, pcd, dl_code, config_path=config_path)
+    if old_df is None:
+        logger.info("Initial load into DEAL DETAILS BRONZE")
+        (
+            new_df.write.partitionBy("part")
+            .format("delta")
+            .mode("append")
+            .save(f"gs://{data_bucketname}/{target_prefix}")
+        )
+    else:
+        logger.info("Upsert data into DEAL DETAILS BRONZE")
+        perform_scd2(spark, old_df, new_df, data_type)
 
     logger.info("End DEAL DETAILS BRONZE job.")
     return 0
