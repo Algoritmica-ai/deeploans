@@ -1,0 +1,71 @@
+FIELD CODE,FIELD NAME,CONTENT TO REPORT,LOAN 1,LOAN 2,LOAN 3,LOAN 4,LOAN 5
+AUTL1,Unique Identifier,The unique identifier assigned by the reporting entity,AUT-2024-001-A,AUT-2024-002-B,AUT-2024-003-C,AUT-2024-004-D,AUT-2024-005-E
+AUTL2,Original Underlying Exposure Identifier,Unique underlying exposure identifier,ORIG-EXP-001,ORIG-EXP-002,ORIG-EXP-003,ORIG-EXP-004,ORIG-EXP-005
+AUTL3,New Underlying Exposure Identifier,New identifier if changed from AUTL2,ORIG-EXP-001,ORIG-EXP-002,ORIG-EXP-003,ORIG-EXP-004,ORIG-EXP-005
+AUTL4,Original Obligor Identifier,Original unique obligor identifier,OBLG-2024-001,OBLG-2024-002,OBLG-2024-003,OBLG-2024-004,OBLG-2024-005
+AUTL5,New Obligor Identifier,New identifier if changed from AUTL4,OBLG-2024-001,OBLG-2024-002,OBLG-2024-003,OBLG-2024-004,OBLG-2024-005
+AUTL6,Data Cut-Off Date,The data cut-off date for this submission,31/12/2024,31/12/2024,31/12/2024,31/12/2024,31/12/2024
+AUTL7,Pool Addition Date,Date exposure was transferred to SSPE,15/01/2024,20/02/2024,10/03/2024,05/04/2024,12/05/2024
+AUTL10,Geographic Region - Obligor,NUTS3 classification where obligor located,DE21A,FR105,ITC4A,ES300,NL113
+AUTL11,Geographic Region Classification,Year of NUTS3 classification used,2021,2021,2021,2021,2021
+AUTL12,Employment Status,Employment status of primary obligor,EMRS,EMRS,SFEM,EMRS,PNNR
+AUTL13,Credit Impaired Obligor,Confirmation of credit impairment status,No,No,No,Yes,No
+AUTL14,Obligor Legal Type,Legal form of customer,INDV,INDV,INDV,INDV,INDV
+AUTL15,Customer Type,Customer type at origination,CNEO,ENEO,CNEO,CNEO,ENEO
+AUTL16,Primary Income,Primary obligor annual income at origination,65000 EUR,52000 EUR,78000 EUR,45000 EUR,38000 EUR
+AUTL17,Primary Income Type,Type of income displayed,GRAN,GRAN,GRAN,GRAN,GRAN
+AUTL18,Primary Income Currency,Currency of primary obligor's income,EUR,EUR,EUR,EUR,EUR
+AUTL19,Primary Income Verification,Primary income verification method,VRFD,VRFD,VRFD,SCRT,VRFD
+AUTL23,Product Type,Classification of the lease/loan,HIRP,HIRP,HIRP,HIRP,HIRP
+AUTL24,Origination Date,Date of original exposure advance,15/08/2023,20/10/2023,10/01/2024,05/02/2024,12/03/2024
+AUTL25,Maturity Date,Date of maturity or lease expiry,15/08/2028,20/10/2028,10/01/2029,05/02/2027,12/03/2027
+AUTL26,Original Term,Original contractual term in months,60,60,60,36,36
+AUTL27,Origination Channel,Origination channel of exposure,ADLR,DIRE,ADLR,ADLR,DIRE
+AUTL28,Currency Denomination,Underlying exposure currency,EUR,EUR,EUR,EUR,EUR
+AUTL29,Original Principal Balance,Principal balance at origination,35000 EUR,28000 EUR,45000 EUR,22000 EUR,18000 EUR
+AUTL30,Current Principal Balance,Balance outstanding as of cut-off date,28500 EUR,24800 EUR,43200 EUR,18700 EUR,16200 EUR
+AUTL31,Purchase Price,Price at which exposure purchased by SSPE,100,100,100,100,100
+AUTL32,Amortisation Type,Type of amortisation,FRXX,FRXX,FRXX,FRXX,FRXX
+AUTL34,Scheduled Principal Payment Frequency,Frequency of principal payments,MNTH,MNTH,MNTH,MNTH,MNTH
+AUTL35,Scheduled Interest Payment Frequency,Frequency of interest payments,MNTH,MNTH,MNTH,MNTH,MNTH
+AUTL36,Payment Method,Usual method of payment,CDTX,CDTX,BTRA,CDTX,CDTX
+AUTL37,Payment Due,Next contractual payment due,689.50 EUR,551.20 EUR,886.40 EUR,732.15 EUR,567.80 EUR
+AUTL39,Down Payment Amount,Deposit/down payment at origination,7000 EUR,5500 EUR,7000 EUR,4500 EUR,3500 EUR
+AUTL40,Current Interest Rate,Current interest rate applicable,4.25,3.95,5.15,6.85,3.75
+AUTL41,Current Interest Rate Index,Base reference interest index,EURI,EURI,EURI,EURI,EURI
+AUTL42,Current Interest Rate Index Tenor,Tenor of current interest rate index,QUTR,QUTR,QUTR,QUTR,QUTR
+AUTL43,Current Interest Rate Margin,Interest rate margin over index,2.75,2.45,3.65,5.35,2.25
+AUTL44,Interest Rate Reset Interval,Months between rate reset dates,3,3,3,3,3
+AUTL45,Interest Rate Cap,Maximum rate obligor must pay,8,7.5,9,10,7
+AUTL46,Interest Rate Floor,Minimum rate obligor must pay,1,1,1,1,1
+AUTL47,Number Of Payments Before Securitisation,Payments made before securitisation,16,14,11,22,20
+AUTL48,Percentage Of Prepayments Allowed Per Year,Prepayment threshold percentage,20,20,20,20,20
+AUTL49,Prepayment Fee,Fee collected for prepayments,1.5 EUR,1.5 EUR,1.5 EUR,2.0 EUR,1.0 EUR
+AUTL50,Prepayment Fee End Date,Date after which no prepayment fee,15/08/2025,20/10/2025,10/01/2026,05/02/2025,12/03/2025
+AUTL52,Cumulative Prepayments,Total prepayments to cut-off date,0 EUR,0 EUR,0 EUR,0 EUR,0 EUR
+AUTL53,Manufacturer,Brand name of vehicle manufacturer,BMW,Audi,Volkswagen,Ford,Mercedes-Benz
+AUTL54,Model,Name of the car model,320i,A4,Golf,Focus,C-Class
+AUTL55,Year Of Registration,Year the car was registered,2023,2022,2024,2023,2022
+AUTL56,New Or Used,Condition of vehicle at origination,NEWX,USED,NEWX,USED,USED
+AUTL57,Energy Performance Certificate Value,Energy performance certificate,EPCC,EPCD,EPCB,EPCC,EPCD
+AUTL58,Energy Performance Certificate Provider Name,Full legal name of EPC provider,T�V S�D AG,Bureau Veritas SA,DEKRA SE,AENOR Internacional SAU,RDW
+AUTL59,Original Loan-To-Value,Ratio of exposure to vehicle value,83.33,83.58,86.54,83.02,83.72
+AUTL60,Original Valuation Amount,List price of vehicle at origination,42000 EUR,33500 EUR,52000 EUR,26500 EUR,21500 EUR
+AUTL61,Original Residual Value Of Vehicle,Estimated residual value at lease origination,21000 EUR,13400 EUR,31200 EUR,10600 EUR,8600 EUR
+AUTL63,Securitised Residual Value,Securitised residual value amount,18900 EUR,11200 EUR,29800 EUR,8900 EUR,7400 EUR
+AUTL64,Updated Residual Value Of Vehicle,Most recent estimated residual value,19500 EUR,12100 EUR,30500 EUR,9200 EUR,7800 EUR
+AUTL65,Date Of Updated Residual Valuation Of Vehicle,Date of most recent valuation update,01/12/2024,15/11/2024,15/12/2024,30/10/2024,20/11/2024
+AUTL68,Arrears Balance,Current balance of arrears,0 EUR,0 EUR,0 EUR,0 EUR,0 EUR
+AUTL69,Number Of Days In Arrears,Days exposure is in arrears,0,0,0,0,0
+AUTL70,Account Status,Current status of exposure,PERF,PERF,PERF,PERF,PERF
+AUTL72,Default Amount,Total gross default amount,0 EUR,0 EUR,0 EUR,0 EUR,0 EUR
+AUTL74,Allocated Losses,Allocated losses to date,0 EUR,0 EUR,0 EUR,0 EUR,0 EUR
+AUTL75,Residual Value Losses,Residual value loss on vehicle turn-in,0 EUR,0 EUR,0 EUR,0 EUR,0 EUR
+AUTL76,Cumulative Recoveries,Total recoveries on defaulted debt,0 EUR,0 EUR,0 EUR,0 EUR,0 EUR
+AUTL78,Deposit Amount,Obligor amounts held potentially offsettable,1500 EUR,1200 EUR,2000 EUR,800 EUR,600 EUR
+AUTL79,Original Lender Name,Full legal name of original lender,Deutsche Bank AG,BNP Paribas SA,UniCredit S.p.A.,Banco Santander SA,ING Bank N.V.
+AUTL80,Original Lender Legal Entity Identifier,LEI of original lender,7LTWFZYICNSX8D621K86,R0MUWSFPU8MPRO8K5P83,549300TRUWO2CD2G5692,5493000F4ZS2OMX7J513,724500VKKSH9QOLTFR81
+AUTL81,Original Lender Establishment Country,Country where original lender established,DE,FR,IT,ES,NL
+AUTL82,Originator Name,Full legal name of originator,Deutsche Bank AG,BNP Paribas SA,UniCredit S.p.A.,Banco Santander SA,ING Bank N.V.
+AUTL83,Originator Legal Entity Identifier,LEI of originator,7LTWFZYICNSX8D621K86,R0MUWSFPU8MPRO8K5P83,549300TRUWO2CD2G5692,5493000F4ZS2OMX7J513,724500VKKSH9QOLTFR81
+AUTL84,Originator Establishment Country,Country where originator established,DE,FR,IT,ES,NL
