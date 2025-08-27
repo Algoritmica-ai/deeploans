@@ -1,5 +1,7 @@
 import logging
 import sys
+import os
+import yaml
 from google.cloud import storage
 from src.aut_etl_pipeline.utils.bronze_funcs import (
     get_old_df,
@@ -18,23 +20,70 @@ handler.setFormatter(formatter)
 logger.addHandler(handler)
 
 
+def get_project_id(config_path="config.yaml"):
+    """
+    Retrieve GCP project id from config file or environment variable.
+    Priority: ENV var > config file > raise Exception
+    """
+    project_id = os.environ.get("GOOGLE_CLOUD_PROJECT_ID")
+    if project_id:
+        return project_id
+
+    if os.path.exists(config_path):
+        with open(config_path, "r") as f:
+            config = yaml.safe_load(f)
+            project_id = config.get("gcp_project_id")
+            if project_id:
+                return project_id
+
+    raise Exception(
+        "GCP project id not found. Set GOOGLE_CLOUD_PROJECT_ID env variable or provide config.yaml with gcp_project_id."
+    )
+
+
+class NoCleanDumpFoundException(Exception):
+    """Raised when no clean_dump CSV files are found for the current bronze step."""
+    pass
+
+
 def generate_bronze_tables(
-    spark, data_bucketname, source_prefix, target_prefix, data_type, ingestion_date
+    spark, data_bucketname, source_prefix, target_prefix, data_type, ingestion_date, config_path="config.yaml"
 ):
     """
-    Run main steps of the module.
+    Esegue la generazione delle tabelle bronze per uno specifico tipo di dato.
 
-    :param spark: SparkSession object.
-    :param data_bucketname: GS bucket where transformed files are stored.
-    :param source_prefix: specific bucket prefix from where to collect bronze new data.
-    :param target_prefix: specific bucket prefix from where to collect bronze old data.
-    :param data_type: type of data to handle, ex: amortisation, assets, collaterals.
-    :param ingestion_date: date of the ETL ingestion.
-    :return status: 0 if successful.
+    Args:
+        spark (SparkSession): Oggetto SparkSession.
+        data_bucketname (str): GS bucket dove sono archiviati i dati trasformati.
+        source_prefix (str): Prefisso del bucket da cui prelevare i nuovi dati bronze.
+        target_prefix (str): Prefisso del bucket dove sono archiviati i dati bronze storici.
+        data_type (str): Tipo di dato da gestire (es: amortisation, assets, collaterals).
+        ingestion_date (str): Data di ingestione ETL.
+        config_path (str): Percorso al file di configurazione (default: config.yaml).
+
+    Returns:
+        int: 0 se eseguito con successo.
+
+    Raises:
+        NoCleanDumpFoundException: se non vengono trovati file clean_dump da elaborare.
+
+    Workflow:
+        - Ricerca i file clean_dump generati dal profiling bronze per il tipo e data specificati.
+        - Se nessun file viene trovato, logga e solleva eccezione.
+        - Per ogni clean_dump trovato:
+            - Estrae il codice deal e altri identificativi.
+            - Recupera il dataframe storico se esiste, altrimenti crea una nuova tabella bronze.
+            - Se non si riesce a costruire il dataframe dai nuovi dati, logga e passa al successivo.
+            - (TODO) Prevede upsert tramite SCD2 ma attualmente fa solo append.
+
+    Side effects:
+        - Scrive i dati bronze su Google Cloud Storage in formato Delta.
+        - Scrive log su stdout.
     """
     logger.info(f"Start {data_type.upper()} BRONZE job.")
     dl_code = source_prefix.split("/")[-1]
-    storage_client = storage.Client(project="your project_id")
+    project_id = get_project_id(config_path)
+    storage_client = storage.Client(project=project_id)
     all_clean_dumps = [
         b
         for b in storage_client.list_blobs(
@@ -46,7 +95,7 @@ def generate_bronze_tables(
         logger.info(
             f"Could not find clean CSV dump file from {data_type.upper()} BRONZE PROFILING job. Workflow stopped!"
         )
-        sys.exit(1)
+        raise NoCleanDumpFoundException(f"No clean_dump files found for {data_type}, ingestion_date {ingestion_date}, dl_code {dl_code}.")
     else:
         logger.info(f"Create NEW {dl_code} dataframe")
         for clean_dump_csv in all_clean_dumps:
