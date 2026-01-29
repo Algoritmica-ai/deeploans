@@ -47,8 +47,6 @@ The asset classes covered are:
 -  Residential Mortgages
 -  Consumer Lending 
 -  Auto loans 
--  Leasing (Dec 24)
--  Credit card (Dec 24)
 
 ## Data Assumptions
 
