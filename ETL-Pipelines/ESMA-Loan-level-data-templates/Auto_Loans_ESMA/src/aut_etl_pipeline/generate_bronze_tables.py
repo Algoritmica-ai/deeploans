@@ -1,23 +1,13 @@
 import os
 import sys
-import logging
-from google.cloud import storage
+from src.aut_etl_pipeline.runtime import get_logger, get_storage_client
 from delta import *
 from src.aut_etl_pipeline.utils.bronze_funcs import (
     get_old_df,
     create_dataframe,
     perform_scd2,
 )
-from src.aut_etl_pipeline.config import PROJECT_ID
-
-# Setup logger
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-handler = logging.StreamHandler(sys.stdout)
-handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+logger = get_logger(__name__)
 
 
 def generate_bronze_tables(
@@ -48,7 +38,7 @@ def generate_bronze_tables(
 
     # GCS mode
     dl_code = source_prefix.split("/")[-1]
-    storage_client = storage.Client(project=PROJECT_ID)
+    storage_client = get_storage_client()
     all_clean_dumps = [
         b for b in storage_client.list_blobs(
             data_bucketname, prefix=f"clean_dump/{data_type}"
@@ -60,7 +50,7 @@ def generate_bronze_tables(
         logger.warning(
             f"Could not find clean CSV dump file from {data_type.upper()} BRONZE PROFILING job. Workflow stopped!"
         )
-        sys.exit(1)
+        raise FileNotFoundError(f"No clean dump files found for {data_type} and {ingestion_date}_{dl_code}")
 
     logger.info(f"Retrieved {len(all_clean_dumps)} clean files for {dl_code}.")
 
