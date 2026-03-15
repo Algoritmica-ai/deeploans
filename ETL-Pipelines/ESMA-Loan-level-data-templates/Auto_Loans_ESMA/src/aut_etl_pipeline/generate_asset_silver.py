@@ -1,24 +1,15 @@
 import os
 import sys
-import logging
 from pyspark.sql.functions import col, length
 from pyspark.sql.types import DateType, StringType, DoubleType, BooleanType, IntegerType
-from google.cloud import storage
 from src.aut_etl_pipeline.utils.silver_funcs import (
     replace_no_data,
     replace_bool_data,
     cast_to_datatype,
 )
-from src.aut_etl_pipeline.config import PROJECT_ID
+from src.aut_etl_pipeline.runtime import get_logger, get_storage_client
 
-# Logger setup
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-handler = logging.StreamHandler(sys.stdout)
-handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+logger = get_logger(__name__)
 
 
 def set_job_params():
@@ -156,7 +147,7 @@ def generate_asset_silver(
         return 0
 
     # GCS MODE
-    storage_client = storage.Client(project=PROJECT_ID)
+    storage_client = get_storage_client()
     all_clean_dumps = [
         b for b in storage_client.list_blobs(bucket_name, prefix="clean_dump/assets")
         if f"{ingestion_date}_{dl_code}" in b.name
@@ -164,7 +155,7 @@ def generate_asset_silver(
 
     if not all_clean_dumps:
         logger.warning("Nessun file clean trovato. Interrompo il job.")
-        sys.exit(1)
+        raise FileNotFoundError("Nessun file clean trovato")
 
     for clean_dump_csv in all_clean_dumps:
         pcd = "_".join(clean_dump_csv.name.split("/")[-1].split("_")[2:4])

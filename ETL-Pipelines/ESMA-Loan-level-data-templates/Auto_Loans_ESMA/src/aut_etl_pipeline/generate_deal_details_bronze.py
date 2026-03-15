@@ -1,26 +1,17 @@
 import re
-import logging
 import sys
 from lxml import objectify
 import pandas as pd
-from google.cloud import storage
 import pyspark.sql.functions as F
 from pyspark.sql.types import TimestampType
 from src.aut_etl_pipeline.utils.bronze_funcs import perform_scd2
 from delta import *
-from src.aut_etl_pipeline.config import PROJECT_ID
+from src.aut_etl_pipeline.runtime import get_logger, get_storage_client
 
-# Setup logger
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-handler = logging.StreamHandler(sys.stdout)
-handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+logger = get_logger(__name__)
 
 def get_raw_file(bucket_name, prefix, file_key):
-    storage_client = storage.Client(project=PROJECT_ID)
+    storage_client = get_storage_client()
     all_files = [
         b.name
         for b in storage_client.list_blobs(bucket_name, prefix=prefix)
@@ -40,7 +31,7 @@ def get_raw_file(bucket_name, prefix, file_key):
         return all_files[0]
 
 def get_old_df(spark, bucket_name, prefix, pcd, dl_code):
-    storage_client = storage.Client(project=PROJECT_ID)
+    storage_client = get_storage_client()
     part_pcd = pcd.replace("-", "")
     partition_prefix = f"{prefix}/part={dl_code}_{part_pcd}"
     files_in_partition = [
@@ -57,7 +48,7 @@ def get_old_df(spark, bucket_name, prefix, pcd, dl_code):
         return df
 
 def create_dataframe(spark, bucket_name, xml_file):
-    storage_client = storage.Client(project=PROJECT_ID)
+    storage_client = get_storage_client()
     bucket = storage_client.get_bucket(bucket_name)
     blob = bucket.blob(xml_file)
     dest_xml_f = f'/tmp/{xml_file.split("/")[-1]}'
@@ -140,7 +131,7 @@ def generate_deal_details_bronze(
     logger.info(f"Create NEW {dl_code} dataframe")
     if xml_file is None:
         logger.warning("No new XML file to retrieve. Workflow stopped!")
-        sys.exit(1)
+        raise FileNotFoundError("No new XML file to retrieve")
     else:
         logger.info(f"Retrieved deal details data XML files.")
         pcd, new_df = create_dataframe(spark, raw_bucketname, xml_file)

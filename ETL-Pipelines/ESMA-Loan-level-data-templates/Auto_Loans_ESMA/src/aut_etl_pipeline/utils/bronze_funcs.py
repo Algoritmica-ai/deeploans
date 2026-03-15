@@ -1,10 +1,9 @@
-from google.cloud import storage
 import pyspark.sql.functions as F
 from pyspark.sql.types import (
     TimestampType,
 )
 import csv
-from aut_etl_pipeline.config import PROJECT_ID
+from aut_etl_pipeline.runtime import get_storage_client
 
 PRIMARY_COLS = {
     "assets": ["AUTL1", "AUTL2"],
@@ -12,7 +11,7 @@ PRIMARY_COLS = {
 }
 
 def get_old_df(spark, bucket_name, prefix, part_pcd, dl_code):
-    storage_client = storage.Client(project=PROJECT_ID)
+    storage_client = get_storage_client()
     partition_prefix = f"{prefix}/part={dl_code}_{part_pcd}"
     files_in_partition = [
         b.name for b in storage_client.list_blobs(bucket_name, prefix=partition_prefix)
