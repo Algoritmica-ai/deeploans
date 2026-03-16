@@ -1,5 +1,8 @@
 # Deeploans App MVP
 
+<img width="1440" height="1214" alt="image" src="https://github.com/user-attachments/assets/89c6beac-a1f5-4447-bc63-5d5428fa50b4" />
+
+
 A lightweight front-end MVP for:
 
 1. **Dataset Ingestion Status**
