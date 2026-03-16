@@ -18,6 +18,12 @@ Deeploans has released ETLs for the following structured finance datasets:
 - Consumer Loans
 - Residential Mortgages
 
+Additional components in this repository include:
+
+- `api/api-backend-main/`: FastAPI backend for data access
+- `deeploans-app-library/data-quality-app/`: data quality frontend utility
+- `mcp-server/`: standalone MCP server for AI/client integrations
+
 <p align="center">
 <img src="deeploans_overview.png" alt="Deeploans Overview" title="deeploans overview" width="400">
 </p>
