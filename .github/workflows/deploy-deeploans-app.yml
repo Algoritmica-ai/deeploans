@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'deeploans-app/**'
+      - 'app-library/data-quality/**'
       - '.github/workflows/deploy-deeploans-app.yml'
   workflow_dispatch:
 
@@ -34,7 +34,7 @@ jobs:
       - name: Prepare artifact
         run: |
           mkdir -p _site
-          cp -R deeploans-app/* _site/
+          cp -R app-library/data-quality/* _site/
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
