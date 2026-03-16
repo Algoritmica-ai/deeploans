@@ -21,7 +21,8 @@ Deeploans has released ETLs for the following structured finance datasets:
 Additional components in this repository include:
 
 - `api/api-backend-main/`: FastAPI backend for data access
-- `deeploans-app-library/data-quality-app/`: data quality frontend utility
+- `app-library/data-quality/`: data quality frontend utility
+- `app-library/hastructure-studio/`: frontend payload builder/connector for Hastructure scenario runs
 - `mcp-server/`: standalone MCP server for AI/client integrations
 
 <p align="center">
