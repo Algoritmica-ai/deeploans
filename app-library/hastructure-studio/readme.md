@@ -1,5 +1,8 @@
 # Deeploans × Hastructure Studio
 
+<img width="1440" height="2160" alt="image" src="https://github.com/user-attachments/assets/4b4ea52a-2eba-468f-ac4c-d4290cace5c3" />
+
+
 This app is the bridge between **Deeploans** and **[Hastructure](https://github.com/absbox/Hastructure)**:
 
 1. Pull loan tape rows from Deeploans (sample or Deeploans API).
