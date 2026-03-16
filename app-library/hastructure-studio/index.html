@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deeploans × Hastructure Studio</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Deeploans × Hastructure Studio</h1>
+      <p>Use Deeploans loan-tape data to derive pool assumptions, then generate and run a Hastructure payload.</p>
+    </header>
+
+    <main>
+      <section class="panel">
+        <h2>1) Deeploans Data Source</h2>
+        <div class="grid source-grid">
+          <label>Data source
+            <select id="sourceMode">
+              <option value="sample">Sample loan tape</option>
+              <option value="api">Deeploans API</option>
+            </select>
+          </label>
+          <label>Base API URL <input id="baseUrl" value="http://localhost:8000" /></label>
+          <label>Credit type
+            <select id="creditType">
+              <option>aut</option><option>cmr</option><option>cre</option>
+              <option>les</option><option>rmb</option><option>sme</option>
+            </select>
+          </label>
+          <label>Table <input id="tableName" value="deals" /></label>
+          <label>Limit <input id="limit" type="number" value="300" min="1" max="10000" /></label>
+          <label>Offset <input id="offset" type="number" value="0" min="0" /></label>
+          <label>Filter query <input id="filterQuery" placeholder="e.g. country:DE" /></label>
+          <label>API key (optional)
+            <input id="apiKey" type="password" placeholder="x-algoritmica-api-key" />
+          </label>
+        </div>
+        <div class="actions">
+          <button id="loadTapeBtn">Load Deeploans Tape</button>
+          <span id="sourceStatus" class="status">Using sample tape.</span>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>2) Deal Inputs (auto-filled from tape)</h2>
+        <div class="grid">
+          <label>Deal Name <input id="dealName" value="DL Demo Auto 2026-1" /></label>
+          <label>Pool Balance (€) <input id="poolBalance" type="number" value="25000000" min="1000" step="1000" /></label>
+          <label>Coupon (%) <input id="coupon" type="number" value="4.8" min="0" step="0.01" /></label>
+          <label>Term (months) <input id="termMonths" type="number" value="60" min="1" /></label>
+          <label>CPR (%) <input id="cpr" type="number" value="6" min="0" step="0.1" /></label>
+          <label>CDR (%) <input id="cdr" type="number" value="1.8" min="0" step="0.1" /></label>
+          <label>Severity (%) <input id="severity" type="number" value="35" min="0" max="100" step="0.1" /></label>
+          <label>Senior % <input id="seniorPct" type="number" value="82" min="1" max="99" step="0.1" /></label>
+        </div>
+
+        <h3>3) Hastructure Connection</h3>
+        <div class="grid two">
+          <label>Service URL <input id="serviceUrl" value="http://localhost:8081/runDeal" /></label>
+          <button id="runBtn">Run in Hastructure</button>
+        </div>
+
+        <div class="actions">
+          <button id="buildBtn">Build Payload</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <h2>4) Tape Summary + Preview Metrics</h2>
+        <div id="tapeSummary" class="kpis"></div>
+        <div id="kpis" class="kpis"></div>
+        <div class="table-wrap"><table id="cashflowTable"></table></div>
+      </section>
+
+      <section class="panel">
+        <h2>Generated Hastructure-style Payload</h2>
+        <pre id="payload"></pre>
+      </section>
+
+      <section class="panel">
+        <h2>Hastructure Response</h2>
+        <pre id="response">No run yet.</pre>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
