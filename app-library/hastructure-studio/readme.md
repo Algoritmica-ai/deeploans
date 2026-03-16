@@ -1,6 +1,6 @@
 # Deeploans × Hastructure Studio
 
-This app is the bridge between **Deeploans** and **Hastructure**:
+This app is the bridge between **Deeploans** and **[Hastructure](https://github.com/absbox/Hastructure)**:
 
 1. Pull loan tape rows from Deeploans (sample or Deeploans API).
 2. Derive deal assumptions from tape-level fields (pool balance, WAC, WARM, proxy CPR/CDR/severity).
