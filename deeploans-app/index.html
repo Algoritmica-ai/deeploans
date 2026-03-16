@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deeploans Explorer MVP</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Deeploans Loan Tape Explorer + Data Quality Monitor</h1>
+      <p>MVP for ingestion status, tape exploration, quality checks, and API usage starter.</p>
+    </header>
+
+    <main>
+      <aside class="panel">
+        <h2>Connection</h2>
+        <label>Data source
+          <select id="sourceMode">
+            <option value="sample">Sample data</option>
+            <option value="api">API</option>
+          </select>
+        </label>
+        <label>Base API URL
+          <input id="baseUrl" value="http://localhost:8000" />
+        </label>
+        <label>API key (optional)
+          <input id="apiKey" type="password" placeholder="x-algoritmica-api-key" />
+        </label>
+        <label>Credit type
+          <select id="creditType">
+            <option>aut</option><option>cmr</option><option>cre</option>
+            <option>les</option><option>rmb</option><option>sme</option>
+          </select>
+        </label>
+        <label>Table
+          <input id="tableName" value="deals" />
+        </label>
+        <label>Limit
+          <input id="limit" type="number" value="500" min="1" max="10000" />
+        </label>
+        <label>Offset
+          <input id="offset" type="number" value="0" min="0" />
+        </label>
+        <label>Filter query
+          <input id="filterQuery" placeholder="e.g. country:DE" />
+        </label>
+        <button id="loadBtn">Load dataset</button>
+      </aside>
+
+      <section class="content">
+        <section class="panel">
+          <h2>1) Dataset Ingestion Status</h2>
+          <div id="kpis" class="kpis"></div>
+        </section>
+
+        <section class="panel">
+          <h2>2) Loan Tape Explorer</h2>
+          <div class="table-wrap"><table id="loanTable"></table></div>
+        </section>
+
+        <section class="panel">
+          <h2>3) Data Quality Dashboard</h2>
+          <div id="qualitySummary"></div>
+          <div class="table-wrap"><table id="qualityTable"></table></div>
+        </section>
+
+        <section class="panel">
+          <h2>4) API Usage Console (starter)</h2>
+          <p>
+            API key input is wired in this MVP. Next step: integrate admin endpoints
+            <code>/api/v1/dev/users</code> and <code>/api/v1/dev/user/&lt;id&gt;</code> for quota and user management.
+          </p>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
