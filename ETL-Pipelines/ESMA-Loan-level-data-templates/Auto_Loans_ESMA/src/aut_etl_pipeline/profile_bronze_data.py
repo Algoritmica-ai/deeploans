@@ -1,24 +1,15 @@
 import os
 import sys
-import logging
 import pandas as pd
 from cerberus import Validator
-from google.cloud import storage
 from src.aut_etl_pipeline.utils.bronze_profile_funcs import (
     get_csv_files,
     profile_data,
 )
 from src.aut_etl_pipeline.utils.validation_rules import asset_schema
-from aut_etl_pipeline.config import PROJECT_ID
+from src.aut_etl_pipeline.runtime import get_logger, get_storage_client
 
-# Setup logger
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-handler = logging.StreamHandler(sys.stdout)
-handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+logger = get_logger(__name__)
 
 
 def profile_bronze_data(
@@ -44,7 +35,7 @@ def profile_bronze_data(
         validator = Validator(asset_schema())
     else:
         logger.error(f"No schema defined for data_type: {data_type}")
-        sys.exit(1)
+        raise ValueError(f"No schema defined for data_type: {data_type}")
 
     if local_mode:
         # Profiling locale
@@ -82,13 +73,13 @@ def profile_bronze_data(
     else:
         # Profiling su GCS
         dl_code = source_prefix.split("/")[-1]
-        storage_client = storage.Client(project=PROJECT_ID)
+        storage_client = get_storage_client()
         bucket = storage_client.get_bucket(data_bucketname)
 
         all_new_files = get_csv_files(raw_bucketname, source_prefix, file_key, data_type)
         if len(all_new_files) == 0:
             logger.warning("No new CSV files to retrieve. Workflow stopped!")
-            sys.exit(1)
+            raise FileNotFoundError("No new CSV files to retrieve")
 
         logger.info(f"Retrieved {len(all_new_files)} {data_type} data CSV files.")
         for new_file_name in all_new_files:
@@ -101,7 +92,7 @@ def profile_bronze_data(
                 logger.info(f"{clean_blob_path} already exists. Skipping.")
                 continue
 
-            clean_content, dirty_content = profile_data(raw_bucketname, new_file_name, data_type, validator)
+            clean_content, dirty_content = profile_data(raw_bucketname, new_file_name, data_type, validator, storage_client)
 
             if dirty_content:
                 logger.info(f"Found {len(dirty_content)} failed records.")

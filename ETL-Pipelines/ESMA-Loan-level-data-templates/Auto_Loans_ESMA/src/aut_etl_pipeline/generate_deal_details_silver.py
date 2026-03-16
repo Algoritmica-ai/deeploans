@@ -1,20 +1,11 @@
-import logging
-import sys
 import pyspark.sql.functions as F
 from pyspark.sql.types import DateType, StringType, DoubleType, BooleanType, IntegerType
 from src.aut_etl_pipeline.utils.silver_funcs import (
     cast_to_datatype,
 )
-from src.aut_etl_pipeline.config import PROJECT_ID
+from src.aut_etl_pipeline.runtime import get_logger
 
-# Setup logger
-logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
-handler = logging.StreamHandler(sys.stdout)
-handler.setLevel(logging.DEBUG)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-handler.setFormatter(formatter)
-logger.addHandler(handler)
+logger = get_logger(__name__)
 
 def set_job_params():
     config = {}
