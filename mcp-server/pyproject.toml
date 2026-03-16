@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "deeploans-mcp-server"
+version = "0.1.0"
+description = "MCP server for Deeploans data platform"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "mcp>=1.2.0"
+]
+
+[project.scripts]
+deeploans-mcp = "deeploans_mcp.server:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["deeploans_mcp*"]
