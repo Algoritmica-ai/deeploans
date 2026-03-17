@@ -1,0 +1,4 @@
+facility_id,sponsor,country,report_date,gross_revenue_eur,energy_cost_eur,opex_eur,debt_service_eur,market_value_eur,outstanding_debt_eur,it_load_mw,leased_capacity_mw
+DC-AMS-01,NorthGrid Partners,NL,2025-01-31,12400000,3800000,2100000,3900000,168000000,112560000,32,29
+DC-FRA-02,Vector Infra,DE,2025-01-31,10900000,4100000,1950000,3700000,149000000,105790000,30,26
+DC-MAD-04,Helio Compute,ES,2025-01-31,13700000,3500000,2250000,4200000,182000000,114660000,35,33
