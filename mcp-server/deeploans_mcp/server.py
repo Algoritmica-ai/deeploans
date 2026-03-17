@@ -71,6 +71,10 @@ def _extract_credit_type_and_table(path: str) -> tuple[str, str] | None:
     return None
 
 
+def _normalize_identifier(value: str) -> str:
+    return value.strip().lower()
+
+
 @mcp.tool()
 def list_platform_components() -> dict[str, Any]:
     """Return a high-level view of Deeploans components and repository layout."""
@@ -149,6 +153,10 @@ def list_tables(credit_type: str, base_url: str | None = None) -> dict[str, Any]
         credit_type: Dataset credit type (e.g., "sme").
         base_url: Optional API base URL. If unavailable, local OpenAPI is used.
     """
+    normalized_credit_type = _normalize_identifier(credit_type)
+    if not normalized_credit_type:
+        return {"ok": False, "credit_type": credit_type, "error": "credit_type is required"}
+
     try:
         payload = _load_openapi_metadata(base_url=base_url)
     except MetadataLoadError as exc:
@@ -158,13 +166,22 @@ def list_tables(credit_type: str, base_url: str | None = None) -> dict[str, Any]
         {
             parsed[1]
             for path in payload.get("paths", {})
-            if (parsed := _extract_credit_type_and_table(path)) and parsed[0] == credit_type
+            if (parsed := _extract_credit_type_and_table(path)) and parsed[0] == normalized_credit_type
         }
     )
 
+    if not tables:
+        return {
+            "ok": False,
+            "credit_type": normalized_credit_type,
+            "tables": [],
+            "count": 0,
+            "error": "No tables found for credit_type",
+        }
+
     return {
         "ok": True,
-        "credit_type": credit_type,
+        "credit_type": normalized_credit_type,
         "tables": tables,
         "count": len(tables),
     }
@@ -173,25 +190,35 @@ def list_tables(credit_type: str, base_url: str | None = None) -> dict[str, Any]
 @mcp.tool()
 def describe_table(credit_type: str, table_name: str) -> dict[str, Any]:
     """Describe available columns and filterability for a table from local schema metadata."""
+    normalized_credit_type = _normalize_identifier(credit_type)
+    normalized_table_name = _normalize_identifier(table_name)
+    if not normalized_credit_type or not normalized_table_name:
+        return {
+            "ok": False,
+            "credit_type": normalized_credit_type,
+            "table_name": normalized_table_name,
+            "error": "credit_type and table_name are required",
+        }
+
     try:
         schema = _load_tables_schema()
     except MetadataLoadError as exc:
         return {
             "ok": False,
-            "credit_type": credit_type,
-            "table_name": table_name,
+            "credit_type": normalized_credit_type,
+            "table_name": normalized_table_name,
             "error": str(exc),
         }
 
-    table_meta = schema.get(credit_type, {}).get(table_name)
+    table_meta = schema.get(normalized_credit_type, {}).get(normalized_table_name)
     if not table_meta:
         return {
             "ok": False,
-            "credit_type": credit_type,
-            "table_name": table_name,
+            "credit_type": normalized_credit_type,
+            "table_name": normalized_table_name,
             "error": "Table metadata not found",
             "available_credit_types": sorted(schema.keys()),
-            "available_tables": sorted(schema.get(credit_type, {}).keys()),
+            "available_tables": sorted(schema.get(normalized_credit_type, {}).keys()),
         }
 
     columns = []
@@ -208,8 +235,8 @@ def describe_table(credit_type: str, table_name: str) -> dict[str, Any]:
 
     return {
         "ok": True,
-        "credit_type": credit_type,
-        "table_name": table_name,
+        "credit_type": normalized_credit_type,
+        "table_name": normalized_table_name,
         "column_count": len(columns),
         "filterable_count": len(filterable),
         "filterable_columns": filterable,
@@ -250,8 +277,8 @@ def build_filter_examples(credit_type: str, table_name: str, limit: int = 8) -> 
 
     return {
         "ok": True,
-        "credit_type": credit_type,
-        "table_name": table_name,
+        "credit_type": table_description["credit_type"],
+        "table_name": table_description["table_name"],
         "single_clause_examples": examples,
         "combined_examples": combined_examples,
         "note": "Use : for equals, ~ for LIKE, and prefix '-' for negation.",
@@ -270,8 +297,22 @@ def sample_rows(
 
     Returns an informative error if the API is unreachable or unauthorized.
     """
-    row_limit = max(1, min(limit, 100))
-    url = f"{base_url.rstrip('/')}/api/v1/{credit_type}/{table_name}?limit={row_limit}&offset=0"
+    normalized_credit_type = _normalize_identifier(credit_type)
+    normalized_table_name = _normalize_identifier(table_name)
+    if not normalized_credit_type or not normalized_table_name:
+        return {
+            "ok": False,
+            "credit_type": credit_type,
+            "table_name": table_name,
+            "error": "credit_type and table_name are required",
+        }
+
+    try:
+        row_limit = max(1, min(int(limit), 100))
+    except ValueError:
+        return {"ok": False, "error": "limit must be an integer"}
+
+    url = f"{base_url.rstrip('/')}/api/v1/{normalized_credit_type}/{normalized_table_name}?limit={row_limit}&offset=0"
     headers = {"Accept": "application/json"}
     if api_key:
         headers["x-algoritmica-api-key"] = api_key
