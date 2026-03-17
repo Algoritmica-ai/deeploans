@@ -47,6 +47,16 @@ The asset classes covered are:
 -  Residential Mortgages
 -  Consumer Lending 
 -  Auto loans 
+-  Exotic private debt (Data Centers)
+
+
+## Exotic Templates
+
+A new **exotic** family is available at:
+
+- `etl-pipelines/exotic/data-centers/`
+
+This pipeline provides an MVP for ingesting and transforming data-center facility operating data into junior-note monitoring outputs.
 
 ## Data Assumptions
 
