@@ -17,7 +17,7 @@ OPERATORS = [":", "<", ">", "<=", ">=", "~"]
 
 def parse_filter_query(credit_type: str,
                        table_name: str,
-                       q: str) -> str:
+                       q: str) -> list[dict]:
     filters = []
     q = q.upper()
     filters_list = q.split(" ")
