@@ -52,10 +52,10 @@ The asset classes covered are:
 
 Primary keys for various datasets are based on a combination of unique identifiers:
 
-- Assets: `dl_code` + `Loan ID` (e.g. AS3 for SME Loans)
-- Collateral: `dl_code` + `Collateral ID` (e.g. CS1 for SME loans)
-- Bond Information: `dl_code` + `Report Date` (BS1 for SME loans) + `Issuer` (BS2 for SME loans)
-- Amortization: `dl_code` + `AS3` (relevant for SME loans only)
+- Assets: `dl_code` + `Loan ID` (e.g. AS3 for ECB SME Loans Template)
+- Collateral: `dl_code` + `Collateral ID` (e.g. CS1 for ECB SME Loans Template)
+- Bond Information: `dl_code` + `Report Date` (BS1 for ECB SME Loans Template) + `Issuer` (BS2 for ECB SME Loans Template)
+- Amortization: `dl_code` + `AS3` (relevant for SME Loans Templates only)
 
 ## Running the ETL Pipeline
 
@@ -85,7 +85,7 @@ Python for scripting the ETL jobs and Cloud Platform (Storage, Dataproc,  BigQue
 
 **Specs on CI/CD capabilities:** Google Cloud Composer,​​ no fully automated CI/CD pipeline in place
 
-**Main assumptions about the data injection layer:** Data ingested from external sources following ECB data templates and stored in GC Storage. From Bigquery into GKE pods and Angular UI for end-to-end automation
+**Main assumptions about the data injection layer:** Data ingested from external sources following ECB / ESMA data templates and stored in GC Storage. From Bigquery into GKE pods and Angular UI for end-to-end automation
 
 **Field mappings maintenance:** Manually within the ETL code. Feature engineering and mappings are managed directly within the script (utils)
 
