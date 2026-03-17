@@ -1,5 +1,8 @@
 # Deeploans Data Center Junior Note MVP
 
+<img width="1440" height="1000" alt="image" src="https://github.com/user-attachments/assets/a27cc4b7-fa67-4212-ac3b-9e17dd1708f5" />
+
+
 This MVP demonstrates how a **private debt investor** could use Deeploans to monitor and manage a **junior note backed by data centers**.
 
 ## What it shows
