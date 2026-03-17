@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Deeploans Data Center Junior Note MVP</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Deeploans MVP · Junior Note Manager (Data Centers)</h1>
+      <p>Portfolio monitoring, covenant checks, stress testing, and investor actions for private debt funds.</p>
+    </header>
+
+    <main>
+      <aside class="panel controls">
+        <h2>Scenario Controls</h2>
+        <label>NOI shock (%)
+          <input id="noiShock" type="range" min="-25" max="10" value="0" />
+          <span id="noiShockValue">0%</span>
+        </label>
+        <label>Energy cost inflation (%)
+          <input id="energyInflation" type="range" min="0" max="35" value="8" />
+          <span id="energyInflationValue">8%</span>
+        </label>
+        <label>Refinancing spread shift (bps)
+          <input id="spreadShift" type="range" min="0" max="450" value="120" />
+          <span id="spreadShiftValue">120 bps</span>
+        </label>
+        <button id="runScenario">Run scenario</button>
+      </aside>
+
+      <section class="content">
+        <section class="panel">
+          <h2>1) Junior Note Portfolio Snapshot</h2>
+          <div id="kpis" class="kpis"></div>
+        </section>
+
+        <section class="panel">
+          <h2>2) Facility Monitor</h2>
+          <div class="table-wrap"><table id="facilityTable"></table></div>
+        </section>
+
+        <section class="panel">
+          <h2>3) Covenant & Trigger Engine</h2>
+          <div id="triggerSummary"></div>
+          <div class="table-wrap"><table id="triggerTable"></table></div>
+        </section>
+
+        <section class="panel">
+          <h2>4) Recommended Investor Actions</h2>
+          <ul id="actions"></ul>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

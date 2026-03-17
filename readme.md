@@ -23,6 +23,7 @@ Additional components in this repository include:
 - `api/api-backend-main/`: FastAPI backend for data access
 - `app-library/data-quality/`: data quality frontend utility
 - `app-library/hastructure-studio/`: frontend payload builder/connector for Hastructure scenario runs
+- `app-library/datacenter-junior-note/`: MVP for private debt monitoring of junior notes backed by data centers
 - `mcp-server/`: standalone MCP server for AI/client integrations
 
 <p align="center">
