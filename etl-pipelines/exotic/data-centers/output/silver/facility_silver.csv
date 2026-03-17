@@ -1,0 +1,4 @@
+facility_id,sponsor,country,report_date,noi_eur,dscr,ltv_pct,occupancy_pct,energy_cost_ratio_pct,junior_note_watch_status
+DC-AMS-01,NorthGrid Partners,NL,2025-01-31,6500000.0,1.667,67.0,90.62,30.65,ok
+DC-FRA-02,Vector Infra,DE,2025-01-31,4850000.0,1.311,71.0,86.67,37.61,watch
+DC-MAD-04,Helio Compute,ES,2025-01-31,7950000.0,1.893,63.0,94.29,25.55,ok
