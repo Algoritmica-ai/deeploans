@@ -1,0 +1,16 @@
+:root { font-family: Inter, system-ui, sans-serif; }
+body { margin: 0; background: #f1f4fa; color: #0f172a; }
+header { padding: 1rem 1.5rem; background: linear-gradient(90deg, #0f3f8f, #8a3ab9); color: #fff; }
+main { display: grid; grid-template-columns: 340px 1fr; gap: 1rem; padding: 1rem; }
+.panel { background: #fff; border-radius: 10px; padding: 1rem; box-shadow: 0 1px 4px rgba(0,0,0,.08); margin-bottom: 1rem; }
+label { display: block; margin-bottom: .7rem; font-size: .9rem; }
+input, select, button, textarea { width: 100%; box-sizing: border-box; padding: .55rem; margin-top: .25rem; }
+button { border: none; border-radius: 6px; background: #d91f26; color: #fff; cursor: pointer; font-weight: 600; }
+.kpis { display: flex; gap: .75rem; flex-wrap: wrap; }
+.kpi { background: #eef2ff; border-left: 4px solid #2b6cb0; border-radius: 6px; padding: .6rem .75rem; min-width: 145px; }
+.table-wrap { overflow: auto; max-height: 320px; border: 1px solid #e2e8f0; }
+table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+th, td { border-bottom: 1px solid #e2e8f0; padding: .42rem .5rem; text-align: left; }
+th { position: sticky; top: 0; background: #f8fafc; }
+#signals { margin: .8rem 0 0; padding-left: 1.2rem; }
+@media (max-width: 980px) { main { grid-template-columns: 1fr; } }
