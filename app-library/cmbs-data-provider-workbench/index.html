@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CMBS Data Provider Workbench</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>CMBS Data Provider Workbench</h1>
+      <p>CMBS data provider-style monitoring app powered by Deeploans API.</p>
+    </header>
+
+    <main>
+      <aside class="panel">
+        <h2>Deeploans API Integration</h2>
+        <label>Data source
+          <select id="sourceMode">
+            <option value="api">Deeploans API (cre/deals)</option>
+            <option value="sample">Sample fallback</option>
+          </select>
+        </label>
+        <label>Deeploans base URL
+          <input id="baseUrl" value="http://localhost:8000" />
+        </label>
+        <label>API key (optional)
+          <input id="apiKey" type="password" placeholder="x-algoritmica-api-key" />
+        </label>
+        <p class="hint">
+          ETL outputs are expected to be loaded into Deeploans tables first; the UI always reads through the API layer.
+        </p>
+        <button id="loadBtn">Load CMBS universe</button>
+      </aside>
+
+      <section class="content">
+        <section class="panel">
+          <h2>Newsflash-Style Overview</h2>
+          <div id="kpis" class="kpis"></div>
+        </section>
+
+        <section class="panel">
+          <h2>Deal & Loan Monitor</h2>
+          <div class="table-wrap"><table id="dealTable"></table></div>
+        </section>
+
+        <section class="panel">
+          <h2>Risk Signals from Servicer Commentary</h2>
+          <textarea id="commentary" rows="7" placeholder="Paste CMBS data provider-style commentary here..."></textarea>
+          <button id="analyzeBtn">Extract signals</button>
+          <ul id="signals"></ul>
+        </section>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>
