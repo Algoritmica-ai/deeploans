@@ -9,17 +9,16 @@
   <body>
     <header>
       <h1>CMBS Data Provider Workbench</h1>
-      <p>CMBS data provider-style CMBS monitoring app powered by Deeploans + CRE ETL output.</p>
+      <p>CMBS data provider-style monitoring app powered by Deeploans API.</p>
     </header>
 
     <main>
       <aside class="panel">
-        <h2>Deeploans Integration</h2>
+        <h2>Deeploans API Integration</h2>
         <label>Data source
           <select id="sourceMode">
-            <option value="etl">CRE ETL JSON (local)</option>
             <option value="api">Deeploans API (cre/deals)</option>
-            <option value="sample">Sample</option>
+            <option value="sample">Sample fallback</option>
           </select>
         </label>
         <label>Deeploans base URL
@@ -28,9 +27,7 @@
         <label>API key (optional)
           <input id="apiKey" type="password" placeholder="x-algoritmica-api-key" />
         </label>
-        <label>CRE ETL JSON path
-          <input id="etlPath" value="../../etl-pipelines/ESMA-Loan-level-data-templates/commercial-real-estate/output/cre_normalized.json" />
-        </label>
+        <p class="hint">ETL outputs are expected to be loaded into Deeploans tables first; the UI always reads through the API layer.</p>
         <button id="loadBtn">Load CMBS universe</button>
       </aside>
 
