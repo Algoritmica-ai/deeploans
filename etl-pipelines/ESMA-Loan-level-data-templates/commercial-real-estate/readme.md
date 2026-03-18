@@ -21,7 +21,7 @@ This folder now contains a working **CRE ETL pipeline** based on the
 
 ```bash
 cd etl-pipelines/ESMA-Loan-level-data-templates/commercial-real-estate
-PYTHONPATH=src python src/cre_main.py \
+python src/cre_main.py \
   --input_csv sample_data/cre_underlying_exposures_sample.csv \
   --taxonomy_xlsx "annex3_underlying_exposures-commercial_real_estate (2).xlsx" \
   --output_json output/cre_normalized.json \

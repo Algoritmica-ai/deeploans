@@ -103,26 +103,14 @@ async function fetchFromApi() {
   }));
 }
 
-async function fetchFromEtlJson() {
-  const response = await fetch(el('etlPath').value.trim());
-  if (!response.ok) throw new Error(`ETL JSON unavailable (${response.status})`);
-  const payload = await response.json();
-  return Array.isArray(payload.records) ? payload.records : [];
-}
-
 async function loadDataset() {
   const source = el('sourceMode').value;
   try {
-    const rows = source === 'api'
-      ? await fetchFromApi()
-      : source === 'etl'
-        ? await fetchFromEtlJson()
-        : sampleRows;
-
+    const rows = source === 'sample' ? sampleRows : await fetchFromApi();
     renderKpis(rows, source);
     renderTable(rows);
   } catch (error) {
-    renderKpis(sampleRows, `${source}-fallback`);
+    renderKpis(sampleRows, 'api-fallback');
     renderTable(sampleRows);
   }
 }
