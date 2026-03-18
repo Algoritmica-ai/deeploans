@@ -3,11 +3,18 @@
 A lightweight app for **CMBS deal monitoring** with a CMBS data provider-style workflow, using
 **Deeploans as the integration layer**.
 
+## Architecture decision
+
+Yes — ETL should be intermediated by the API layer.
+
+- The CRE ETL pipeline prepares and normalizes data.
+- Deeploans API is the contract/stability layer consumed by this UI.
+- This app reads **only from Deeploans API** (plus optional local sample fallback for development).
+
 ## Features
 
-1. **Deeploans integration mode** (`/api/v1/cre/deals`) for live CRE data.
-2. **CRE ETL integration mode** loading normalized output from:
-   - `etl-pipelines/ESMA-Loan-level-data-templates/commercial-real-estate/output/cre_normalized.json`
+1. **Deeploans API integration mode** (`/api/v1/cre/deals`) for CRE/CMBS data.
+2. **Sample fallback mode** for local UI testing when API is unavailable.
 3. **Newsflash-style risk extraction** from servicer commentary (forbearance, special servicing, bankruptcy, DSCR/occupancy mentions).
 4. **Deal and loan monitor** with key metrics (balance, appraisal, DSCR, occupancy).
 
