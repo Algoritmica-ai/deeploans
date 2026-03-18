@@ -26,6 +26,23 @@ Additional components in this repository include:
 - `app-library/datacenter-junior-note/`: MVP for private debt monitoring of junior notes backed by data centers
 - `mcp-server/`: standalone MCP server for AI/client integrations
 
+## Quickstart
+
+If this is your first time in the repository, use this lightweight path:
+
+1. Start here: read this overview and scan the architecture diagram below to understand what Deeploans covers.
+2. Pick a goal:
+   - Learn the core data pipelines: [`etl-pipelines/readme.md`](etl-pipelines/readme.md)
+   - Explore the API/backend: [`api/api-backend-main/readme.md`](api/api-backend-main/readme.md)
+   - Try the MCP server for AI workflows: [`mcp-server/README.md`](mcp-server/README.md)
+   - Browse frontend prototypes: [`app-library/data-quality/readme.md`](app-library/data-quality/readme.md) and [`app-library/hastructure-studio/readme.md`](app-library/hastructure-studio/readme.md)
+3. If you only want to understand the project, focus on the ETL overview and app screenshots first. You do not need to install anything to get a sense of the platform.
+4. If you want to run something locally, start with one small component instead of the full stack:
+   - MCP server: quickest Python-based entry point
+   - Frontend prototypes: simple static apps served locally
+   - API backend: better if you want to inspect endpoints and data access
+5. When you are ready to contribute, read [`CONTRIBUTING.md`](CONTRIBUTING.md), open a discussion or issue, and then work from the component-specific docs above.
+
 <p align="center">
 <img src="deeploans_overview.png" alt="Deeploans Overview" title="deeploans overview" width="400">
 </p>
