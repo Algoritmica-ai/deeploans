@@ -17,6 +17,7 @@ Deeploans has released ETLs for the following structured finance datasets:
 - SME Loans
 - Consumer Loans
 - Residential Mortgages
+- Commercial Mortgages
 
 Additional components in this repository include:
 
