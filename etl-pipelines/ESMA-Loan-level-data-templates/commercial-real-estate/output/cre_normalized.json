@@ -1,0 +1,97 @@
+{
+  "asset_class": "cre",
+  "deeploans_code": "BMARK_2026-CMBS1",
+  "record_count": 3,
+  "quality": {
+    "rows_missing_primary_identifiers": 0
+  },
+  "records": [
+    {
+      "deal_id": "BMARK_2026-CMBS1",
+      "obligor_id": "OBL-0001A",
+      "loan_id": "LN-10001A",
+      "property_type": "Office",
+      "country": "US",
+      "current_balance": 149800000.0,
+      "appraised_value": 255000000.0,
+      "dscr": 1.12,
+      "occupancy_rate": 68.5,
+      "default_status": "Performing",
+      "special_servicing": "Yes",
+      "raw": {
+        "CREL1": "BMARK_2026-CMBS1",
+        "CREL2": "OBL-0001",
+        "CREL3": "OBL-0001A",
+        "CREL4": "LN-10001",
+        "CREL5": "LN-10001A",
+        "CREL19": "US",
+        "CREL26": "Office",
+        "CREL32": "255000000",
+        "CREL40": "149800000",
+        "CREL41": "149800000",
+        "CREL44": "1.12",
+        "CREL59": "68.5",
+        "CREL68": "Performing",
+        "CREL71": "Yes"
+      }
+    },
+    {
+      "deal_id": "BMARK_2026-CMBS1",
+      "obligor_id": "OBL-0002A",
+      "loan_id": "LN-10002A",
+      "property_type": "Industrial",
+      "country": "US",
+      "current_balance": 152600000.0,
+      "appraised_value": 178400000.0,
+      "dscr": 1.43,
+      "occupancy_rate": 91.0,
+      "default_status": "Performing",
+      "special_servicing": "No",
+      "raw": {
+        "CREL1": "BMARK_2026-CMBS1",
+        "CREL2": "OBL-0002",
+        "CREL3": "OBL-0002A",
+        "CREL4": "LN-10002",
+        "CREL5": "LN-10002A",
+        "CREL19": "US",
+        "CREL26": "Industrial",
+        "CREL32": "178400000",
+        "CREL40": "152600000",
+        "CREL41": "152600000",
+        "CREL44": "1.43",
+        "CREL59": "91.0",
+        "CREL68": "Performing",
+        "CREL71": "No"
+      }
+    },
+    {
+      "deal_id": "BMARK_2026-CMBS1",
+      "obligor_id": "OBL-0003A",
+      "loan_id": "LN-10003A",
+      "property_type": "Retail",
+      "country": "US",
+      "current_balance": 83400000.0,
+      "appraised_value": 99500000.0,
+      "dscr": 0.88,
+      "occupancy_rate": 72.2,
+      "default_status": "Watchlist",
+      "special_servicing": "Yes",
+      "raw": {
+        "CREL1": "BMARK_2026-CMBS1",
+        "CREL2": "OBL-0003",
+        "CREL3": "OBL-0003A",
+        "CREL4": "LN-10003",
+        "CREL5": "LN-10003A",
+        "CREL19": "US",
+        "CREL26": "Retail",
+        "CREL32": "99500000",
+        "CREL40": "83400000",
+        "CREL41": "83400000",
+        "CREL44": "0.88",
+        "CREL59": "72.2",
+        "CREL68": "Watchlist",
+        "CREL71": "Yes"
+      }
+    }
+  ]
+}

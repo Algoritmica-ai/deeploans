@@ -1,0 +1,1274 @@
+{
+  "asset_class": "cre",
+  "template": "ESMA Annex 3 commercial real estate",
+  "field_count": 181,
+  "fields": [
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL1",
+      "field_name": "Unique Identifier",
+      "content_to_report": "The unique identifier assigned by the reporting entity in accordance with Article 11(1) of Delegated Regulation (EU) \u2026/\u2026 [include number].",
+      "format_hint": "{ALPHANUM-28}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL2",
+      "field_name": "Original Obligor Identifier",
+      "content_to_report": "Original unique obligor identifier. The identifier must be different from any external identification number, in order to ensure anonymity of the obligor. The reporting entity must not amend this unique identifier.",
+      "format_hint": "{ALPHANUM-1000}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL3",
+      "field_name": "New Obligor Identifier",
+      "content_to_report": "If the original identifier in field CREL2 cannot be maintained in this field enter the new identifier here. If there has been no change in the identifier, enter the same identifier as in CREL2. The reporting entity must not amend this unique identifier.",
+      "format_hint": "{ALPHANUM-1000}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL4",
+      "field_name": "Original Underlying Exposure Identifier",
+      "content_to_report": "Unique underlying exposure identifier. The identifier must be different from any external identification number, in order to ensure anonymity of the obligor. The reporting entity must not amend this unique identifier.",
+      "format_hint": "{ALPHANUM-1000}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL5",
+      "field_name": "New Underlying Exposure Identifier",
+      "content_to_report": "If the original identifier in field CREL4 cannot be maintained in this field enter the new identifier here. If there has been no change in the identifier, enter the same identifier as in CREL4. The reporting entity must not amend this unique identifier.",
+      "format_hint": "{ALPHANUM-1000}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL6",
+      "field_name": "Data Cut-Off Date",
+      "content_to_report": "The data cut-off date for this data submission.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL7",
+      "field_name": "Pool Addition Date",
+      "content_to_report": "The date that the underlying exposure was transferred to the SSPE. For all underlying exposures in the pool as at the cut-off date in the first report submitted to the securitisation repository, if this information is not available then enter the later of: (i) the closing date of the securitisation, and (ii) the origination date of the underlying exposure.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL8",
+      "field_name": "Date Of Restructuring",
+      "content_to_report": "Enter the date at which the underlying exposure has been restructured. Restructuring refers to any changes made to the contractual terms of the underlying exposure agreement due to forbearance, including payment holidays, arrears capitalisation, change of interest rate basis or margins, fees, penalties, maturity and/or other generally-accepted measures of restructuring due to forbearance.\n\nIn the event of multiple dates, all dates must be provided in accordance with the XML schema.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL9",
+      "field_name": "Date Of Repurchase",
+      "content_to_report": "Date on which the underlying exposure was repurchased from the pool.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL10",
+      "field_name": "Date Of Substitution",
+      "content_to_report": "If underlying exposure was substituted for another underlying exposure after the Securitisation Date, the date of such substitution.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL11",
+      "field_name": "Redemption Date",
+      "content_to_report": "Date on which account redeemed or (for defaulted underlying exposures) the date that the recovery process was completed.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL12",
+      "field_name": "Geographic Region - Obligor",
+      "content_to_report": "The geographic region (NUTS3 classification) where the obligor is located. Where no NUTS3 classification has been produced by Eurostat (e.g. a non-EU jurisdiction), enter the two-digit country code in {COUNTRYCODE_2} format followed by 'ZZZ'.",
+      "format_hint": "{NUTS}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL13",
+      "field_name": "Geographic Region Classification",
+      "content_to_report": "Enter the year of the NUTS3 classification used for the Geographic Region fields, e.g. 2013 for NUTS3 2013. All geographic region fields must use the same classification consistently for each underlying exposure and across all underlying exposures in the data submission. For example, reporting using NUTS3 2006 for some geographic fields relating to a given underlying exposure and reporting using NUTS3 2013 for other fields relating to the same exposure is not allowed. In the same way, reporting geographic region fields using NUTS3 2006 for some underlying exposures and reporting geographic region fields using NUTS3 2013 for other underlying exposures in the same data submission is not allowed.",
+      "format_hint": "{YEAR}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL14",
+      "field_name": "Special Scheme",
+      "content_to_report": "If the underlying exposure is governed by any special public sector arrangement, enter the full name (without abbreviations) of the arrangement here.",
+      "format_hint": "{ALPHANUM-10000}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL15",
+      "field_name": "Origination Date",
+      "content_to_report": "Date of original underlying exposure advance.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL16",
+      "field_name": "Start Date Of Amortisation",
+      "content_to_report": "The date that amortisation will commence on the securitised underlying exposure (this can be a date prior to the securitisation date).",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL17",
+      "field_name": "Maturity Date At Securitisation Date",
+      "content_to_report": "The maturity date of the underlying exposure as defined in the underlying exposure agreement. This would not take into account any extended maturity date that may be allowed under the underlying exposure agreement.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL18",
+      "field_name": "Maturity Date",
+      "content_to_report": "The date of maturity of the underlying exposure or expiry of the lease.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL19",
+      "field_name": "Original Term",
+      "content_to_report": "Original contractual term (number of months) at the origination date.",
+      "format_hint": "{INTEGER-9999}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL20",
+      "field_name": "Duration Of Extension Option",
+      "content_to_report": "Duration in months of any maturity extension option available to the underlying exposure. In the event of multiple maturity extensions available, enter the duration of the option that has the shortest extension period for the underlying exposure.",
+      "format_hint": "{INTEGER-9999}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL21",
+      "field_name": "Nature Of Extension Option",
+      "content_to_report": "Reference thresholds involved for the possibility of triggering/exercising the extension option referred to in field CREL20:\n\nMinimum Interest Coverage Ratio (MICR)\nMinimum Debt Service Coverage Ratio (MDSC)\nMaximum Loan-To-Value (MLTV)\nMultiple Conditions (MLTC)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL22",
+      "field_name": "Currency Denomination",
+      "content_to_report": "The underlying exposure currency denomination.",
+      "format_hint": "{CURRENCYCODE_3}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL23",
+      "field_name": "Current Principal Balance",
+      "content_to_report": "Outstanding principal balance of the securitised underlying exposure. This includes any amounts that are secured by the mortgage and will be classed as principal in the securitisation. For example if fees have been added to the underlying exposure balance and are part of the principal in the securitisation these are to be added. It excludes any interest arrears or penalty amounts.\nCurrent balance includes the principal arrears. However, savings amount are to be deducted if a subparticipation exists. (i.e. underlying exposure balance = underlying exposure +/- subparticipation; +/- 0 if no subparticipation).\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL24",
+      "field_name": "Original Principal Balance",
+      "content_to_report": "Original underlying exposure balance (inclusive of fees). \nThis is referring to the balance of the underlying exposure at the underlying exposure origination date, not the date of the underlying exposure\u2019s sale to the SSPE or the closing date of the securitisation.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL25",
+      "field_name": "Original Principal Balance At Securitisation Date",
+      "content_to_report": "Original Principal Balance of the securitised underlying exposure at the Securitisation Date as identified in the Offering Circular.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL26",
+      "field_name": "Committed Undrawn Facility Underlying Exposure Balance",
+      "content_to_report": "The total whole underlying exposure remaining facility/ Undrawn balance at the end of the period. The total whole underlying exposure remaining facility at the end of the Interest Payment Date that the obligor can still draw upon.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL27",
+      "field_name": "Total Other Amounts Outstanding",
+      "content_to_report": "Cumulative outstanding amounts on loan (e.g. insurance premium, ground rents, cap ex) that have been expended by SSPE/Servicer. The cumulative amount of any property protection advances or other sums that have been advanced by the Servicer or SSPE and not yet reimbursed by the obligor.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL28",
+      "field_name": "Purchase Price",
+      "content_to_report": "Enter the price, relative to par, at which the underlying exposure was purchased by the SSPE. Enter 100 if no discounting was applied.",
+      "format_hint": "{PERCENTAGE}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL29",
+      "field_name": "Latest Utilisation Date",
+      "content_to_report": "Date of the most recent utilisation/drawdown of the underlying exposure facility agreement.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL30",
+      "field_name": "Purpose",
+      "content_to_report": "Underlying exposure purpose - In the event of multiple purposes, report the option that best describes the arrangement:\n\nAcquisition for investment (ACQI)\nAcquisition for Liquidation (ACQL)\nRefinancing (RFIN)\nConstruction (CNST)\nRedevelopment (RDVL)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL31",
+      "field_name": "Structure",
+      "content_to_report": "Underlying Exposure Structure:\n\nWhole loan - not split into subordinated debt items/notes (LOAN)\nParticipated mortgage underlying exposure with pari passu debt outside the issuance vehicle (PMLP)\nParticipated mortgage underlying exposure with subordinate debt outside the issuance vehicle (PMLS)\nA Loan; as part of an A/B participation structure (AABP)\nB Loan; as part of an A/B participation structure (BABP)\nA Loan; as part of an A/B/C participation structure (AABC)\nB Loan; as part of an A/B/C participation structure (BABC)\nC Loan; as part of an A/B/C participation structure (CABC)\nStructural mezzanine financing (MZZD)\nSubordinate debt with separate loan documentation outside the issuance vehicle (SOBD)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL32",
+      "field_name": "Waterfall A-B Pre Enforcement Scheduled Interest Payments",
+      "content_to_report": "Waterfall pre-enforcement schedule for interest payments:\n\nSequential (SQNL)\nB loan first (BLLF)\nPro-Rata (PRAT)\nModified Pro-Rata (MPRT)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL33",
+      "field_name": "Waterfall A-B Pre Enforcement Scheduled Principal Payments",
+      "content_to_report": "Waterfall pre-enforcement schedule for principal payments:\n\nSequential (SQNL)\nB loan first (BLLF)\nPro-Rata (PRAT)\nModified Pro-Rata (MPRT)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL34",
+      "field_name": "Principal Payment Allocation To Senior Loan",
+      "content_to_report": "Insert % of all periodical scheduled principal payments that go to the senior loan (e.g. A loan), if there are multiple loans in the lending arrangement (for example, if field CREL31 is completed with values PMLS, AABP, BABP, AABC, BABC, or CABC).",
+      "format_hint": "{PERCENTAGE}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL35",
+      "field_name": "Waterfall Type",
+      "content_to_report": "Type of waterfall governing the overall lending arrangement:\n\nInterest A, principal A, interest B, principal B (IPIP)\nInterest A, interest B, principal A, principal B (IIPP)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL36",
+      "field_name": "Defaulted Underlying Exposure Purchase Price",
+      "content_to_report": "If the subordinated loan holder (e.g. B loan holder) can purchase the senior loan in an event of default, enter the purchase price as per the applicable co-lender/intercreditor agreement.",
+      "format_hint": "{PERCENTAGE}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL37",
+      "field_name": "Cure Payments Possible?",
+      "content_to_report": "Can the subordinated loan holder (e.g. B loan holder) make cure payments in lieu of the mortgage obligor? Select from the list below:\n\nNo possibility to make cure payment (NCPP)\nCure payment can be made up to a fixed number limit over the lifetime of the underlying exposure (FNLP)\nCure payment can be made without limit over the lifetime of the underlying exposure (NLCP)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL38",
+      "field_name": "Restrictions On Sale Of Subordinated Loan?",
+      "content_to_report": "Are there any restrictions on the ability of the subordinated loan holder (e.g. B loan holder) to sell off the loan to a third party?",
+      "format_hint": "{Y/N}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL39",
+      "field_name": "Subordinated Loan Holder Affiliated To Obligor?",
+      "content_to_report": "Is there a non-disenfranchised subordinated loan holder (e.g. B loan holder) affiliated (i.e. part of the same financial group) as the commercial mortgage obligor?",
+      "format_hint": "{Y/N}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL40",
+      "field_name": "Subordinated Loan Holder Control Of Workout Process",
+      "content_to_report": "Can the subordinated loan holder (e.g. B loan holder) exercise control over the decision to and process to enforce and sell the loan collateral?",
+      "format_hint": "{Y/N}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL41",
+      "field_name": "Do Non-Payments On Prior Ranking Claims Constitute A Default Of The Underlying Exposure?",
+      "content_to_report": "Do Non-payments on Prior Ranking Claims Constitute a Default of the underlying exposure?",
+      "format_hint": "{Y/N}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL42",
+      "field_name": "Do Non-Payments On Equal Ranking Underlying Exposures Constitute Default Of Property?",
+      "content_to_report": "Do Non-payments on Equal Ranking underlying exposures Constitute Default of Property?",
+      "format_hint": "{Y/N}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL43",
+      "field_name": "Noteholder Consent",
+      "content_to_report": "Is Noteholder consent needed in any restructuring? Restructuring includes changes in the securitised underlying exposure's payment terms (including interest rate, fees, penalties, maturity, repayment schedule, and/or other generally-accepted measures of payment terms)",
+      "format_hint": "{Y/N}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL44",
+      "field_name": "Noteholder Meeting Scheduled",
+      "content_to_report": "What date is the next noteholder meeting scheduled for?",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL45",
+      "field_name": "Syndicated",
+      "content_to_report": "Is the underlying exposure syndicated?",
+      "format_hint": "{Y/N}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL46",
+      "field_name": "Participation Of SSPE",
+      "content_to_report": "Method used by the SSPE to acquire ownership in the syndicated underlying exposure:\n\nAssignment (ASGN)\nNovation (NOVA)\nEquitable Assignment (EQTB)\nFunded Participation (pari passu interest) (PARI)\nJunior Participation Interest (JUNP)\nLegal Assignment (LGAS)\nNotified Assignment (NOTA)\nSub Participation (SUBP)\nRisk Participation (RSKP)\nSale Event (SALE)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL47",
+      "field_name": "Consequence For Breach Of Financial Covenant",
+      "content_to_report": "The consequence for the financial covenant breach:\n\nEvent of Default (EDFT)\nAdditional Amortisation (AAMR)\nCash Trap Reserve (CTRS)\nTerminate Property Manager (TPRM)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL48",
+      "field_name": "Financial Information Non-Submission Penalties",
+      "content_to_report": "Are there any monetary penalties for obligor's failure to submit required financial information (Op. Statement, Schedule, etc.) as per underlying exposure documents?",
+      "format_hint": "{Y/N}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL49",
+      "field_name": "Recourse",
+      "content_to_report": "Is there recourse (full or limited) to the obligor's assets beyond the proceeds of any collateral for this underlying exposure?",
+      "format_hint": "{Y/N}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL50",
+      "field_name": "Recourse - 3rd Party",
+      "content_to_report": "Is there recourse (full or limited) to another party (e.g. guarantor) in the event the obligor defaults on an obligation under the underlying exposure agreement?",
+      "format_hint": "{Y/N}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL51",
+      "field_name": "Servicing Standard",
+      "content_to_report": "Does the servicer of this securitised underlying exposure also service the whole underlying exposure or only one/several components of the whole underlying exposure (e.g. A or B component; or one of the pari-passu components)?",
+      "format_hint": "{Y/N}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL52",
+      "field_name": "Amounts Held In Escrow",
+      "content_to_report": "Total balance of the legally charged reserve accounts as at the data cut-off date.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL53",
+      "field_name": "Collection Of Escrows",
+      "content_to_report": "Enter Y if any payments are held in reserve accounts to cover ground lease payments, insurance or taxes only (not maintenance, improvements, capex etc.) as required under the underlying exposure agreement.",
+      "format_hint": "{Y/N}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL54",
+      "field_name": "Collection Of Other Reserves",
+      "content_to_report": "Are any amounts other than ground rents taxes or insurance held in reserve accounts as required under the terms of the underlying exposure agreement for tenant improvements, leasing commissions and similar items in respect of the related property or for purpose of providing additional collateral for such underlying exposure?",
+      "format_hint": "{Y/N}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL55",
+      "field_name": "Trigger For Escrow To Be Held",
+      "content_to_report": "Type of trigger event leading to amounts to be paid into escrow:\n\nNo Trigger (NONE)\nLoan to Value Trigger (LVTX)\nInterest Coverage Trigger (ICVR)\nDebt Service Coverage Trigger (DSCT)\nNet Operating Income Trigger (NOIT)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL56",
+      "field_name": "Target Escrow Amounts / Reserves",
+      "content_to_report": "Target escrow amounts / reserves.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL57",
+      "field_name": "Escrow Account Release Conditions",
+      "content_to_report": "Release conditions of the escrow account. If multiple conditions, each condition must be provided in accordance with the XML schema.",
+      "format_hint": "{ALPHANUM-1000}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL58",
+      "field_name": "Conditions Of Drawing Cash Reserve",
+      "content_to_report": "When the Cash Reserve can be used:\n\nFinancial Covenant Breach (FICB)\nTrigger Event (TREV)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL59",
+      "field_name": "Escrow Account Currency",
+      "content_to_report": "Escrow account currency denomination.",
+      "format_hint": "{CURRENCYCODE_3}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL60",
+      "field_name": "Escrow Payments Currency",
+      "content_to_report": "Currency of the Escrow payments. Fields CREL52 and CREL56.",
+      "format_hint": "{CURRENCYCODE_3}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL61",
+      "field_name": "Total Reserve Balance",
+      "content_to_report": "Total balance of the reserve accounts at the underlying exposure level at the underlying exposure Payment Date. Includes Maintenance, Repairs & Environmental, etc. (excludes Tax & Insurance reserves). Includes LC's for reserves. To be completed if field CREL54 (\"Collection of Other Reserves\") is equal to \"Y\" = Yes.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL62",
+      "field_name": "Reserve Balance Currency",
+      "content_to_report": "Reserve account currency denomination.",
+      "format_hint": "{CURRENCYCODE_3}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL63",
+      "field_name": "Escrow Trigger Event Occurred",
+      "content_to_report": "Enter Y if an event has occurred which has caused reserve amounts to be established. Enter N if payments are built up as a normal condition of the underlying exposure agreement.",
+      "format_hint": "{Y/N}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL64",
+      "field_name": "Amounts Added To Escrows In Current Period",
+      "content_to_report": "Amount that has been added to any escrows or reserves between the previous data cut-off date and the data cut-off date of this data submission.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL65",
+      "field_name": "Revenue",
+      "content_to_report": "Total revenues from all sources for the period covered by the most recent financial operating statement (i.e. year to date or trailing 12 months) for all the properties. May be normalised if required by the applicable servicing agreement.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL66",
+      "field_name": "Operating Expenses At Securitisation Date",
+      "content_to_report": "Total underwritten operating expenses for all the properties as described in the Offering Circular. These may include real estate taxes, insurance, management, utilities, maintenance and repairs and direct property costs to the landlord; capital expenditures and leasing commissions are excluded. If multiple properties exist, total the operating expenses of the underlying properties.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL67",
+      "field_name": "Capital Expenditures At Securitisation Date",
+      "content_to_report": "Anticipated capex over the life of the securitised underlying exposure at Securitisation Date (as opposed to repairs and maintenance) if identified in the Offering Circular.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL68",
+      "field_name": "Financial Statement Currency",
+      "content_to_report": "The currency used in the initial financial reporting of fields CREL65 - CREL66.",
+      "format_hint": "{CURRENCYCODE_3}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL69",
+      "field_name": "Obligor Reporting Breach",
+      "content_to_report": "Is obligor in breach of its obligation to deliver reports to underlying exposure servicer or lender? Y = Yes or N = No.",
+      "format_hint": "{Y/N}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL70",
+      "field_name": "Debt Service Coverage Ratio Method",
+      "content_to_report": "Define the calculation of the Debt Service Coverage Ratio financial covenant requirement, the inferred method of calculation. If the calculation method differs between the whole loan and the A-loan, then enter the A-loan method.\n\nCurrent Period (CRRP)\nProjection - 6 month forward calculation (PRSF)\nProjection - 12 month forward calculation (PRTF)\nCombo 6 - Current period and a 6 month forward calculation (CMSF)\nCombo 12 - Current period and a 6 month forward calculation (CMTF)\nHistorical - 6 month forward calculation (HISF)\nHistorical - 12 month forward calculation (HITF)\nModified - Includes a reserve injection or a percentage rental income probability calculation (MODI)\nMultiple Period - Consecutive period calculation (MLTP)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL71",
+      "field_name": "Debt Service Coverage Ratio Indicator At Securitisation Date",
+      "content_to_report": "How the Debt Service Coverage Ratio is calculated or applied when an underlying exposure relates to multiple properties:\n\nPartial - Not all properties received financials, servicer to leave empty (PRTL)\nAverage - Not all properties received financials, servicer allocates debt service only to properties where financials are received (AVER)\nFull - All statements collected for all properties (FULL)\nWorst Case - Not all properties received financials, servicer allocates 100% of debt service to all properties where financials are received (WCAS)\nNone Collected - No financials were received (NCOT)\nConsolidated - All properties reported on one \"rolled up\" financial from the obligor (COND)\nWhole loan based on loan agreements (WLAG)\nWhole loan based on other method (WLOT)\nTrust Note based on loan agreement (TNAG)\nTrust Note based on other method (TNOT)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL72",
+      "field_name": "Most Recent Debt Service Coverage Ratio Indicator",
+      "content_to_report": "How the Debt Service Coverage Ratio is calculated or applied when an underlying exposure relates to multiple properties:\n\nPartial - Not all properties received financials, servicer to leave empty (PRTL)\nAverage - Not all properties received financials, servicer allocates debt service only to properties where financials are received (AVER)\nFull - All statements collected for all properties (FULL)\nWorst Case - Not all properties received financials, servicer allocates 100% of debt service to all properties where financials are received (WCAS)\nNone Collected - No financials were received (NCOT)\nConsolidated - All properties reported on one \"rolled up\" financial from the obligor (COND)\nWhole loan based on loan agreements (WLAG)\nWhole loan based on other method (WLOT)\nTrust Note based on loan agreement (TNAG)\nTrust Note based on other method (TNOT)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL73",
+      "field_name": "Debt Service Coverage Ratio At The Securitisation Date",
+      "content_to_report": "The Debt Service Coverage Ratio calculation for the securitised underlying exposure, at the Securitisation Date, based on the underlying exposure documentation.",
+      "format_hint": "{PERCENTAGE}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL74",
+      "field_name": "Current Debt Service Coverage Ratio",
+      "content_to_report": "Current Debt Service Coverage Ratio calculation for the securitised underlying exposure, based on the underlying exposure documentation.",
+      "format_hint": "{PERCENTAGE}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL75",
+      "field_name": "Original Loan-To-Value",
+      "content_to_report": "The Loan to Value ratio (LTV) for the entire lending arrangement (i.e. not just reflecting the securitised loan amount), as at the Securitisation Date.",
+      "format_hint": "{PERCENTAGE}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL76",
+      "field_name": "Current Loan-To-Value",
+      "content_to_report": "Current Loan to Value ratio (LTV) for the entire lending arrangement (i.e. not just reflecting the securitised loan amount).",
+      "format_hint": "{PERCENTAGE}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL77",
+      "field_name": "Interest Coverage Ratio At The Securitisation Date",
+      "content_to_report": "The Interest Coverage Ratio calculation for the securitised underlying exposure, at the Securitisation Date.",
+      "format_hint": "{PERCENTAGE}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL78",
+      "field_name": "Current Interest Coverage Ratio",
+      "content_to_report": "Current Interest Coverage Ratio calculation for the securitised underlying exposure.",
+      "format_hint": "{PERCENTAGE}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL79",
+      "field_name": "Interest Coverage Ratio Method",
+      "content_to_report": "Define the calculation of the Interest Coverage Ratio financial covenant requirement at the level of the securitised underlying exposure (or the whole underlying exposure level if not specified for any specific underlying exposure arrangements within the overall lending arrangement), the inferred method of calculation:\n\nCurrent Period (CRRP)\nProjection - 6 month forward calculation (PRSF)\nProjection - 12 month forward calculation (PRTF)\nCombo 6 - Current period and a 6 month forward calculation (CMSF)\nCombo 12 - Current period and a 6 month forward calculation (CMTF)\nHistorical - 6 month forward calculation (HISF)\nHistorical - 12 month forward calculation (HITF)\nModified - Includes a reserve injection or a percentage rental income probability calculation (MODI)\nMultiple Period - Consecutive period calculation (MLTP)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL80",
+      "field_name": "Number Of Properties At Securitisation Date",
+      "content_to_report": "The number of properties that serve as security for the underlying exposure at the Securitisation Date.",
+      "format_hint": "{INTEGER-9999}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL81",
+      "field_name": "Number Of Properties At Data Cut-Off Date",
+      "content_to_report": "The number of properties that serve as security for the underlying exposure.",
+      "format_hint": "{INTEGER-9999}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL82",
+      "field_name": "Properties Collateralised To The Underlying Exposure",
+      "content_to_report": "Enter the unique collateral identifiers (CREC4) of the properties that serve as security for the underlying exposure at the data cut-off date. If multiple properties enter all of the identifiers as set out in the XML schema.",
+      "format_hint": "{ALPHANUM-1000}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL83",
+      "field_name": "Property Portfolio Value At Securitisation Date",
+      "content_to_report": "The valuation of the properties securing the underlying exposure at the Securitisation Date as described in the Offering Circular. If multiple properties then sum the value of the properties.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL84",
+      "field_name": "Property Portfolio Valuation Currency At Securitisation Date",
+      "content_to_report": "The currency of the valuation in CREL83.",
+      "format_hint": "{CURRENCYCODE_3}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL85",
+      "field_name": "Status Of Properties",
+      "content_to_report": "Status of properties. Where multiple situations from the list below exist, choose the situation which best represents the overall set of properties.\n\nLasting Power of Attorney (LPOA)\nReceivership (RCVR)\nIn Foreclosure (FCLS)\nReal Estate Owned (REOW)\nDefeased (DFSD)\nPartial Release (PRLS)\nReleased (RLSD)\nSame as at Securitisation Date (SCDT)\nIn special servicing (SSRV)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL86",
+      "field_name": "Valuation Date At Securitisation Date",
+      "content_to_report": "The date the valuation was prepared for the values disclosed in the Offering Circular. For multiple properties, if several dates, take the most recent date.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL87",
+      "field_name": "Amortisation Type",
+      "content_to_report": "Type of amortisation of the underlying exposure including principal and interest.\n\nFrench - i.e. Amortisation in which the total amount \u2014 principal plus interest \u2014 repaid in each instalment is the same. (FRXX)\nGerman - i.e. Amortisation in which the first instalment is interest-only and the remaining instalments are constant, including capital amortisation and interest. (DEXX)\nFixed amortisation schedule - i.e. Amortisation in which the principal amount repaid in each instalment is the same. (FIXE)\nBullet - i.e. Amortisation in which the full principal amount is repaid in the last instalment. (BLLT)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL88",
+      "field_name": "Principal Grace Period End Date",
+      "content_to_report": "If applicable as at the data cut-off date, indicate the principal grace period end date.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL89",
+      "field_name": "Grace Days Allowed",
+      "content_to_report": "The number of days after a payment is due in which the lender will not consider the missed payment to be an Event of Default. This refers to missed payments due to non-technical reasons (i.e. missed payments not due to systems failures for example).",
+      "format_hint": "{INTEGER-9999}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL90",
+      "field_name": "Scheduled Principal Payment Frequency",
+      "content_to_report": "Frequency of principal payments due, i.e. period between payments:\n\nMonthly (MNTH)\nQuarterly (QUTR)\nSemi Annual (SEMI)\nAnnual (YEAR)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL91",
+      "field_name": "Scheduled Interest Payment Frequency",
+      "content_to_report": "Frequency of interest payments due, i.e. period between payments:\n\nMonthly (MNTH)\nQuarterly (QUTR)\nSemi Annual (SEMI)\nAnnual (YEAR)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL92",
+      "field_name": "Number Of Payments Before Securitisation",
+      "content_to_report": "Enter the number of payments made prior to the exposure being transferred to the securitisation.",
+      "format_hint": "{INTEGER-9999}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL93",
+      "field_name": "Prepayment Terms Description",
+      "content_to_report": "Must reflect the information in offering circular. For instance, if the prepayment terms are the payment of a 1% fee in year one, 0.5% in year two and 0.25% in year three of the loan this may be shown in the offering circular as: 1%(12), 0.5%(24), 0.25%(36).",
+      "format_hint": "{ALPHANUM-100}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL94",
+      "field_name": "Prepayment Lock-Out End Date",
+      "content_to_report": "The date after which the lender allows prepayment of the underlying exposure.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL95",
+      "field_name": "Yield Maintenance End Date",
+      "content_to_report": "Date after which underlying exposure can be prepaid without yield maintenance.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL96",
+      "field_name": "Prepayment Fee",
+      "content_to_report": "Amount collected from the obligor as the fee/penalty due for making prepayments as required under the terms of the underlying exposure agreement. This is not intended to include any amounts paid as a \"break cost\" to make up interest payments up to the underlying exposure Payment Date.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL97",
+      "field_name": "Prepayment Fee End Date",
+      "content_to_report": "The date after which the lender allows prepayment of the underlying exposure without requirement for a prepayment fee to be paid.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL98",
+      "field_name": "Unscheduled Principal Collections",
+      "content_to_report": "Unscheduled payments of principal received in the most recent collection period. Other principal payments received during the interest period that will be used to pay down the underlying exposure. This may relate to sales proceeds, voluntary prepayments, or liquidation amounts.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL99",
+      "field_name": "Liquidation / Prepayment Date",
+      "content_to_report": "The most recent date on which an unscheduled principal payment was received or liquidation proceeds are received.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL100",
+      "field_name": "Liquidation / Prepayment Code",
+      "content_to_report": "Code assigned to any unscheduled principal payments or liquidation proceeds received during the collection period:\n\nPartial Liquidation (Curtailment) (PTLQ)\nPayoff Prior to Maturity (PTPY)\nLiquidation or Disposition (LQDP)\nRepurchase or Substitution (RPSB)\nFull Payoff at Maturity (FLPY)\nDiscounted Payoff (DPOX)\nPayoff with Penalty (PYPN)\nPayoff with Yield Maintenance (YLMT)\nCurtailment with Penalty (CTPL)\nCurtailment with Yield Maintenance (CTYL)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL101",
+      "field_name": "Prepayment Interest Excess / Shortfall",
+      "content_to_report": "Shortfall or excess of actual interest payment from the scheduled interest payment that is not related to an underlying exposure default. Results from a prepayment received on a date other than a scheduled payment due date: Shortfall \u2013 The difference by which the amount of interest paid is less than the scheduled interest that was due on the underlying exposure Payment Date, (this would only apply if there is a shortfall after the obligor has paid any break costs). Excess \u2013 Interest collected in excess of the accrued interest due for the underlying exposure interest accrual period. A negative number represents a shortfall and excess is represented as a positive number.\n\n Refers to the entire lending arrangement (i.e. not just reflecting the securitised underlying exposure amount)\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL102",
+      "field_name": "Payment Date",
+      "content_to_report": "The most recent date principal and interest is paid to the SSPE as at the data cut-off date, this would normally be the interest payment date of the underlying exposure.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL103",
+      "field_name": "Next Payment Adjustment Date",
+      "content_to_report": "For adjustable rate underlying exposures, the next date that the amount of scheduled principal and/or interest is due to change. For fixed rate underlying exposures, enter the next payment date.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL104",
+      "field_name": "Next Payment Date",
+      "content_to_report": "Date of next underlying exposure payment.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL105",
+      "field_name": "Payment Due",
+      "content_to_report": "This is the next contractual payment due by the obligor according to the payment frequency of the underlying exposure.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL106",
+      "field_name": "Original Interest Rate",
+      "content_to_report": "Underlying exposure all-in interest rate at the date of origination of the securitised underlying exposure.",
+      "format_hint": "{PERCENTAGE}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL107",
+      "field_name": "Interest Rate At The Securitisation Date",
+      "content_to_report": "The total interest rate (e.g. EURIBOR + Margin) that is being used to calculate interest due on the securitised underlying exposure for the first Interest Payment Date after the Securitisation Date.",
+      "format_hint": "{PERCENTAGE}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL108",
+      "field_name": "First Payment Adjustment Date",
+      "content_to_report": "For adjustable rate underlying exposures, the first date that the amount of scheduled principal and/or interest is due to change. For fixed rate underlying exposures, enter the first date that the amount of scheduled principal or interest is due (not the first date after securitisation on which it could change).",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL109",
+      "field_name": "Interest Rate Type",
+      "content_to_report": "Interest rate type:\n\nFloating rate underlying exposure (for life) (FLIF)\nFloating rate underlying exposure linked to one index that will revert to another index in the future (FINX)\nFixed rate underlying exposure (for life) (FXRL)\nFixed with future periodic resets (FXPR)\nFixed rate underlying exposure with compulsory future switch to floating (FLCF)\nFloating rate underlying exposure with floor (FLFL)\nFloating rate underlying exposure with cap (CAPP)\nFloating rate underlying exposure with both floor and cap (FLCA)\nDiscount (DISC)\nSwitch Optionality (SWIC)\nObligor Swapped (OBLS)\nModular (MODE)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL110",
+      "field_name": "Current Interest Rate",
+      "content_to_report": "Gross rate per annum used to calculate the current period scheduled interest on the securitised underlying exposure. Rates calculated on a period-by-period basis must be annualised.",
+      "format_hint": "{PERCENTAGE}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL111",
+      "field_name": "Current Interest Rate Index",
+      "content_to_report": "The base reference interest index currently applicable (the reference rate off which the interest rate is set):\n\nMuniAAA (MAAA)\nFutureSWAP (FUSW)\nLIBID (LIBI)\nLIBOR (LIBO)\nSWAP (SWAP)\nTreasury (TREA)\nEuribor (EURI)\nPfandbriefe (PFAN)\nEONIA (EONA)\nEONIASwaps (EONS)\nEURODOLLAR (EUUS)\nEuroSwiss (EUCH)\nTIBOR (TIBO)\nISDAFIX (ISDA)\nGCFRepo (GCFR)\nSTIBOR (STBO)\nBBSW (BBSW)\nJIBAR (JIBA)\nBUBOR (BUBO)\nCDOR (CDOR)\nCIBOR (CIBO)\nMOSPRIM (MOSP)\nNIBOR (NIBO)\nPRIBOR (PRBO)\nTELBOR (TLBO)\nWIBOR (WIBO)\nBank of England Base Rate (BOER)\nEuropean Central Bank Base Rate (ECBR) \nLender's Own Rate (LDOR)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL112",
+      "field_name": "Current Interest Rate Index Tenor",
+      "content_to_report": "Tenor of the current interest rate index:\n\nOvernight (OVNG)\nIntraDay (INDA)\n1 day (DAIL)\n1 week (WEEK)\n2 week (TOWK)\n1 month (MNTH)\n2 month (TOMN)\n3 month (QUTR)\n4 month (FOMN)\n6 month (SEMI)\n12 month (YEAR)\nOn Demand (ONDE)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL113",
+      "field_name": "Current Interest Rate Margin",
+      "content_to_report": "Current interest rate margin of the floating-rate underlying exposure over (or under, in which case input as a negative) the index rate.",
+      "format_hint": "{PERCENTAGE}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL114",
+      "field_name": "Interest Rate Reset Interval",
+      "content_to_report": "Number of months between each interest rate reset date on the underlying exposure.",
+      "format_hint": "{INTEGER-9999}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL115",
+      "field_name": "Current Index Rate",
+      "content_to_report": "The index rate used to determine the current securitised underlying exposure interest rate. The interest rate (before margin) used to calculate the interest paid on the securitised underlying exposure payment date in field CREL102.",
+      "format_hint": "{PERCENTAGE}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL116",
+      "field_name": "Index Determination Date",
+      "content_to_report": "If the underlying exposure Agreement states specific dates for the index to be set, enter the next index determination date.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL117",
+      "field_name": "Rounding Increment",
+      "content_to_report": "The incremental percentage by which an index rate is to be rounded in determining the interest rate as set out in the underlying exposure agreement.",
+      "format_hint": "{PERCENTAGE}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL118",
+      "field_name": "Interest Rate Cap",
+      "content_to_report": "Maximum rate that the obligor must pay on a floating rate underlying exposure as required under the terms of the underlying exposure agreement.",
+      "format_hint": "{PERCENTAGE}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL119",
+      "field_name": "Interest Rate Floor",
+      "content_to_report": "Minimum rate that the obligor must pay on a floating rate underlying exposure as required under the terms of the underlying exposure agreement.",
+      "format_hint": "{PERCENTAGE}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL120",
+      "field_name": "Current Default Interest Rate",
+      "content_to_report": "Interest rate used to calculate the default interest paid on the securitised underlying exposure payment date in field CREL102.",
+      "format_hint": "{PERCENTAGE}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL121",
+      "field_name": "Accrual Of Interest Allowed",
+      "content_to_report": "Do the documents describing the terms and conditions of the underlying exposure allow for interest to be accrued and capitalised?",
+      "format_hint": "{Y/N}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL122",
+      "field_name": "Day Count Convention",
+      "content_to_report": "The 'days' convention used to calculate interest:\n\n30 / 360 (A011)\nActual / 365 (A005)\nActual / 360 (A004)\nActual / Actual ICMA (A006)\nActual / Actual ISDA (A008)\nActual / Actual AFB (A010)\nActual / 366 (A009)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL123",
+      "field_name": "Total Scheduled Principal & Interest Due",
+      "content_to_report": "Scheduled principal & interest payment due on the securitised underlying exposure on the most recent payment date, as at the data cut-off date.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL124",
+      "field_name": "Total Scheduled Principal & Interest Paid",
+      "content_to_report": "Scheduled Principal & Interest payment paid on the securitised underlying exposure on the most recent payment date, as at the data cut-off date.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL125",
+      "field_name": "Negative Amortisation",
+      "content_to_report": "Negative amortisation/deferred interest/capitalised interest without penalty. Negative amortisation occurs when interest accrued during a payment period is greater than the scheduled payment and the excess amount is added to the outstanding underlying exposure balance. Refers to the entire lending arrangement (i.e. not just reflecting the securitised underlying exposure amount)\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL126",
+      "field_name": "Deferred Interest",
+      "content_to_report": "Deferred interest on the whole loan (i.e. including the securitised loan and any other loan belonging to the lending arrangement with the obligor). Deferred interest is the amount by which the interest an obligor is required to pay on a mortgage loan, less than the amount of interest accrued on the outstanding principal balance.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL127",
+      "field_name": "Total Shortfalls In Principal & Interest Outstanding",
+      "content_to_report": "Cumulative outstanding principal and interest amounts due on the entire lending arrangement (i.e. not just the securitised underlying exposure) as at the data cut-off date.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL128",
+      "field_name": "Date Last In Arrears",
+      "content_to_report": "Date the obligor was last in arrears.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL129",
+      "field_name": "Arrears Balance",
+      "content_to_report": "Current balance of arrears, which is defined as:\n\nTotal payments due to date\nPLUS any amounts capitalised \nPLUS any fees applied to the account\nLESS total payments received to date.\n\nIf no arrears then enter 0.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL130",
+      "field_name": "Number Of Days In Arrears",
+      "content_to_report": "Number of days this underlying exposure is in arrears (either interest or principal and, if different, the higher number of the two) as at the data cut-off date.",
+      "format_hint": "{INTEGER-9999}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL131",
+      "field_name": "Reason for Default or Foreclosure",
+      "content_to_report": "If the underlying exposure is in default as per Article 178 of Regulation (EU) No 575/2013, select the appropriate reason:\n\nIn default because the debtor is unlikely to pay, in accordance with Article 178 of Regulation (EU) No 575/2013. (UPXX)\nIn default because any debt is more than 90/180 days past due, in accordance with Article 178 of Regulation (EU) No 575/2013. (PDXX)\nIn default both because it is considered that the debtor is unlikely to pay and because any debt is more than 90/180 days past due, in accordance with Article 178 of Regulation (EU) No 575/2013. (UPPD)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL132",
+      "field_name": "Default Amount",
+      "content_to_report": "Total gross default amount before the application of sale proceeds and recoveries and inclusive of any capitalised fees/penalties/etc. If not in default, enter 0.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL133",
+      "field_name": "Default Date",
+      "content_to_report": "The date of default.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL134",
+      "field_name": "Interest In Arrears",
+      "content_to_report": "Is the interest that accrues on the underlying exposure paid in arrears?",
+      "format_hint": "{Y/N}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL135",
+      "field_name": "Actual Default Interest",
+      "content_to_report": "Actual default interest paid between the previous data cut-off date and the data cut-off date of this data submission. Total amount of default interest paid by the obligor during the interest period or on the underlying exposure payment date.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL136",
+      "field_name": "Account Status",
+      "content_to_report": "Current status of the underlying exposure that has been securitised:\n\nPerforming (PERF)\nRestructured - No Arrears (RNAR)\nRestructured - Arrears (RARR)\nDefaulted according to Article 178 of Regulation (EU) No 575/2013 (DFLT)\nNot defaulted according to Article 178 of Regulation (EU) No 575/2013 but classified as defaulted due to another definition of default being met (NDFT)\nDefaulted both according to Article 178 of Regulation (EU) No 575/2013 and according to another definition of default being met (DTCR)\nDefaulted only under another definition of default being met (DADB)\nArrears (ARRE)\nRepurchased by Seller \u2013 Breach of Representations and Warranties (REBR)\nRepurchased by Seller \u2013 Defaulted (REDF)\nRepurchased by Seller \u2013 Restructured (RERE)\nRepurchased by Seller \u2013 Special Servicing (RESS)\nRepurchased by Seller \u2013 Other Reason (REOT)\nRedeemed (RDMD)\nOther (OTHR)\n\nRestructuring refers to any changes made to the contractual terms of the underlying exposure agreement due to forbearance, including payment holidays, arrears capitalisation, change of interest rate basis or margins, fees, penalties, maturity, and/or other generally-accepted measures of restructuring due to forbearance.",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL137",
+      "field_name": "Allocated Losses",
+      "content_to_report": "The allocated losses to date, net of fees, accrued interest etc. after application of sale proceeds (excluding prepayment charge if subordinate to principal recoveries). Show any gain on sale as a negative number. Should reflect most recent situation as at the data cut-off date, i.e. as recoveries are collected and the work out process progresses.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL138",
+      "field_name": "Net Proceeds Received On Liquidation",
+      "content_to_report": "Net proceeds received on liquidation used to determine loss to the SSPE per the Securitisation Documents. The amount of the net proceeds of sale received, this will determine whether there is a loss or shortfall on the underlying exposure.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL139",
+      "field_name": "Liquidation Expense",
+      "content_to_report": "Expenses associated with the liquidation to be netted from the other assets of issuer to determine loss per the Securitisation Documents. Amount of any liquidation expenses that will be paid out of the net sales proceeds to determine whether there will be any loss.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL140",
+      "field_name": "Expected Timing Of Recoveries",
+      "content_to_report": "The underlying exposure servicer's expected recovery timing in months.",
+      "format_hint": "{INTEGER-9999}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL141",
+      "field_name": "Cumulative Recoveries",
+      "content_to_report": "Total recoveries (regardless of their source) on the (defaulted/charged-off/etc.) debt, net of costs. Include all sources of recoveries here, not just proceeds from the disposal of any collateral.\u00a0\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL142",
+      "field_name": "Enforcement Start Date",
+      "content_to_report": "The date on which foreclosure or administration proceedings or alternative enforcement procedures were initiated against or agreed by the obligor.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL143",
+      "field_name": "Workout Strategy Code",
+      "content_to_report": "Work-out strategy:\n\nModification (MODI)\nEnforcement (ENFR)\nReceivership (RCVR)\nInsolvency (NSOL)\nExtension (XTSN)\nLoan Sale (LLES)\nDiscounted Pay Off (DPFF)\nProperty in Possession (PPOS)\nResolved (RSLV)\nPending Return to Servicer (PRTS)\nDeed in Lieu of Foreclosure (DLFR)\nFull Pay Off (FPOF)\nRepresentations and Warranties (REWR)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL144",
+      "field_name": "Modification",
+      "content_to_report": "Type of modification:\n\nMaturity Date Extension (MEXT)\nAmortisation Change (AMMC)\nPrincipal Write-off (PWOF)\nTemporary Rate Reduction (TMRR)\nCapitalisation of Interest (CINT)\nCapitalisation of Costs Advanced (e.g. insurance, ground rent) (CPCA)\nCombination (COMB)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL145",
+      "field_name": "Special Servicing Status",
+      "content_to_report": "As of the underlying exposure Payment Date is the underlying exposure currently being specially serviced?",
+      "format_hint": "{Y/N}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL146",
+      "field_name": "Most Recent Special Servicer Transfer Date",
+      "content_to_report": "The date an underlying exposure was transferred to the special Servicer following a servicing transfer event. Note: If the underlying exposure has had multiple transfers, this is the last date transferred to special servicing.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL147",
+      "field_name": "Most Recent Primary Servicer Return Date",
+      "content_to_report": "The date an underlying exposure becomes a \"corrected mortgage underlying exposure\", which is the date the underlying exposure was returned to the master/primary Servicer from the special Servicer. Note: If the underlying exposure has had multiple transfers, this is the last date returned to the master/primary Servicer from special servicing.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL148",
+      "field_name": "Non Recoverability Determined",
+      "content_to_report": "Indicator (Yes/No) as to whether the Servicer or Special Servicer has determined that there will be a shortfall in recovering any advances it has made and the outstanding underlying exposure balance and any other amounts owing on the underlying exposure from proceeds upon sale or liquidation of the property or underlying exposure.",
+      "format_hint": "{Y/N}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL149",
+      "field_name": "Covenant Breach / Trigger",
+      "content_to_report": "Type of Covenant Breach / Trigger:\n\nInterest Coverage Ratio (ICRX)\nDebt Service Coverage Ratio (DSCR)\nLoan-to-Value (LLTV)\nInterest Coverage Ratio or Debt Service Coverage Ratio (ICDS)\nInterest Coverage Ratio or Debt Service Coverage Ratio or Loan-to-Value (ICDL)\nProperty Level Breach (PROP)\nObligor Level Breach (OBLG)\nTenant or Vacancy Level Breach (TENT)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL150",
+      "field_name": "Date Of Breach",
+      "content_to_report": "The date that any breach of the underlying exposure terms and conditions occurred. If multiple breaches, the date of the earliest breach.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL151",
+      "field_name": "Date Of Breach Cure",
+      "content_to_report": "The date that any breach reported in field CREL150 cured. If multiple breaches, the date which the last breach cured.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL152",
+      "field_name": "Servicer Watchlist Code",
+      "content_to_report": "If the underlying exposure has been entered onto the servicer watchlist, enter the most appropriate corresponding code from Table 2 in Annex I of this Regulation. If multiple criteria are applicable, list the most detrimental code.",
+      "format_hint": "{WATCHLIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL153",
+      "field_name": "Servicer Watchlist Date",
+      "content_to_report": "Determination Date that an underlying exposure was placed on the Watchlist. If underlying exposure came off the Watchlist in a prior period and is now coming back on, use the new entry date.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL154",
+      "field_name": "Interest Rate Swap Provider",
+      "content_to_report": "If there is an interest rate swap on the underlying exposure, provide the full legal name of the interest rate swap provider. The name entered must match the name associated with the LEI in the Global Legal Entity Foundation (GLEIF) database.",
+      "format_hint": "{ALPHANUM-1000}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL155",
+      "field_name": "Interest Rate Swap Provider Legal Entity Identifier",
+      "content_to_report": "Provide the Legal Entity Identifier (as specified in the Global Legal Entity Foundation (GLEIF) database) of the underlying exposure interest rate swap provider.",
+      "format_hint": "{LEI}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL156",
+      "field_name": "Interest Rate Swap Maturity Date",
+      "content_to_report": "Date of maturity for the interest rate underlying exposure level swap.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL157",
+      "field_name": "Interest Rate Swap Notional",
+      "content_to_report": "Interest rate underlying exposure level swap notional amount\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL158",
+      "field_name": "Currency Swap Provider",
+      "content_to_report": "If there is an exchange rate swap on the underlying exposure, provide the full legal name of the exchange rate swap provider. The name entered must match the name associated with the LEI in the Global Legal Entity Foundation (GLEIF) database.",
+      "format_hint": "{ALPHANUM-1000}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL159",
+      "field_name": "Currency Swap Provider Legal Entity Identifier",
+      "content_to_report": "Provide the Legal Entity Identifier (as specified in the Global Legal Entity Foundation (GLEIF) database) of the underlying exposure currency swap provider.",
+      "format_hint": "{LEI}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL160",
+      "field_name": "Currency Swap Maturity Date",
+      "content_to_report": "Date of maturity for the currency underlying exposure level swap.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL161",
+      "field_name": "Currency Swap Notional",
+      "content_to_report": "Currency underlying exposure level swap notional amount\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL162",
+      "field_name": "Exchange Rate For Swap",
+      "content_to_report": "The exchange rate that has been set for a currency underlying exposure level swap.",
+      "format_hint": "{PERCENTAGE}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL163",
+      "field_name": "Other Swap Provider",
+      "content_to_report": "The full legal name of the swap provider for the underlying exposure, where the swap is neither an interest rate nor currency swap. The name entered must match the name associated with the LEI in the Global Legal Entity Foundation (GLEIF) database.",
+      "format_hint": "{ALPHANUM-1000}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL164",
+      "field_name": "Other Swap Provider Legal Entity Identifier",
+      "content_to_report": "Provide the Legal Entity Identifier (as specified in the Global Legal Entity Foundation (GLEIF) database) of the underlying exposure 'other' swap provider.",
+      "format_hint": "{LEI}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL165",
+      "field_name": "Obligor Must Pay Breakage On Swap",
+      "content_to_report": "Extent to which the obligor is obligated to pay breakage costs to the underlying exposure swap provider. In the event of multiple swaps, enter the most appropriate value.\n\nTotal Indemnification from obligor (TOTL)\nPartial Indemnification from obligor (PINO)\nNo Indemnification from obligor (NOPE)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL166",
+      "field_name": "Full Or Partial Termination Event Of Swap For Current Period",
+      "content_to_report": "If underlying exposure swap has been terminated between the previous data cut-off date and the data cut-off date of the current report submission, identify reason. In the event of multiple swaps, enter the most appropriate value.\n\nSwap Terminated due to Ratings Downgrade of Underlying Exposure Swap Provider (RTDW)\nSwap Terminated due to Payment Default to Underlying Exposure Swap Provider (PYMD)\nSwap Terminated due to Other Type of Default by Underlying Exposure Swap Counterparty (CNTD)\nSwap Terminated due to Full or Partial Prepayment by Obligor (PRPY)\nSwap Terminated due to Other Type of Default by Obligor (OBGD)\nOther (OTHR)",
+      "format_hint": "{LIST}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL167",
+      "field_name": "Net Periodic Payment Made By Swap Provider",
+      "content_to_report": "Net amount of payment made by the swap counterparty securitised underlying exposure, on the underlying exposure Payment Date as required by the swap contract. This does not include any breakage or termination payments. In the event of multiple swaps, enter the sum across all swaps.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL168",
+      "field_name": "Breakage Costs Due To Underlying Exposure Swap Provider",
+      "content_to_report": "Amount of any payment due from the obligor to the swap counterparty for partial of full termination of the swap. In the event of multiple swaps, enter the most appropriate value.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL169",
+      "field_name": "Shortfall In Payment Of Breakage Costs On Swap",
+      "content_to_report": "Amount of any shortfall, if any, of breakage costs resulting from the full or partial termination of the swap, paid by the obligor. In the event of multiple swaps, enter the sum across all swaps.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL170",
+      "field_name": "Breakage Costs Due From Swap Counterparty",
+      "content_to_report": "Amount of any gains paid by the swap counterparty to the obligor on full or partial termination. In the event of multiple swaps, enter the most appropriate value.\n\nInclude the currency in which the amount is denominated, using {CURRENCYCODE_3} format.",
+      "format_hint": "{MONETARY}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL171",
+      "field_name": "Next Swap Reset Date",
+      "content_to_report": "Date of next reset date on the underlying exposure level swap. In the event of multiple swaps, enter the most appropriate value.",
+      "format_hint": "{DATEFORMAT}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL172",
+      "field_name": "Sponsor",
+      "content_to_report": "The name of the underlying exposure sponsor.",
+      "format_hint": "{ALPHANUM-100}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL173",
+      "field_name": "Agent Bank Of Syndication Legal Entity Identifier",
+      "content_to_report": "Provide the Legal Entity Identifier (as specified in the Global Legal Entity Foundation (GLEIF) database) of the agent bank of syndication, i.e. the entity acting as an interface between the obligor and the lending parties involved in the syndicated underlying exposure.",
+      "format_hint": "{LEI}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL174",
+      "field_name": "Servicer Legal Entity Identifier",
+      "content_to_report": "Provide the Legal Entity Identifier (as specified in the Global Legal Entity Foundation (GLEIF) database) of the underlying exposure servicer.",
+      "format_hint": "{LEI}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL175",
+      "field_name": "Servicer Name",
+      "content_to_report": "Give the full legal name of the underlying exposure servicer. The name entered must match the name associated with the LEI in the Global Legal Entity Foundation (GLEIF) database.",
+      "format_hint": "{ALPHANUM-100}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL176",
+      "field_name": "Originator Name",
+      "content_to_report": "Give the full legal name of the underlying exposure originator. The name entered must match the name associated with the LEI in the Global Legal Entity Foundation (GLEIF) database.",
+      "format_hint": "{ALPHANUM-100}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL177",
+      "field_name": "Originator Legal Entity Identifier",
+      "content_to_report": "Provide the Legal Entity Identifier (as specified in the Global Legal Entity Foundation (GLEIF) database) of the underlying exposure originator.",
+      "format_hint": "{LEI}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL178",
+      "field_name": "Originator Establishment Country",
+      "content_to_report": "Country where the underlying exposure originator is established.",
+      "format_hint": "{COUNTRYCODE_2}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL179",
+      "field_name": "Original Lender Name",
+      "content_to_report": "Give the full legal name of the original lender. The name entered must match the name associated with the LEI in the Global Legal Entity Foundation (GLEIF) database.",
+      "format_hint": "{ALPHANUM-100}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL180",
+      "field_name": "Original Lender Legal Entity Identifier",
+      "content_to_report": "Provide the Legal Entity Identifier (as specified in the Global Legal Entity Foundation (GLEIF) database) of the original lender.\n\nWhere no Legal Entity Identifier is available, enter ND5.",
+      "format_hint": "{LEI}"
+    },
+    {
+      "section": "Underlying exposures information section",
+      "field_code": "CREL181",
+      "field_name": "Original Lender Establishment Country",
+      "content_to_report": "Country where the original lender is established.",
+      "format_hint": "{COUNTRYCODE_2}"
+    }
+  ]
+}
