@@ -1,3 +1,9 @@
+# Deeploans
+
+Deeploans is an open-source project for preparing and standardizing loan-level data so it can be used more reliably across financial workflows. It focuses on turning fragmented raw files into consistent, analysis-ready datasets.
+
+It is built for credit analysts, data engineers, and financial institutions that need dependable data foundations for reporting, risk analysis, and model development. As loan data standards continue to evolve across markets, having a transparent and reusable standardization workflow is increasingly important.
+
 # Deeploans Overview
 
 Deeploans is an open-source **ETL** framework designed for working with **loan-level**, **economic**, and **alternative credit data**. It extracts, cleans, transforms, and standardizes **structured finance datasets**, making them easier to use in analytics, machine learning models, and financial applications.
