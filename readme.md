@@ -1,4 +1,4 @@
-# deeploans Overview
+# deeploans overview
 
 deeploans is an open-source **ETL** framework designed for working with **granular asset data**. It extracts, cleans, transforms, and standardizes **datasets**, making them easier to use in analytics, machine learning models, and downstream applications.
 
@@ -34,33 +34,33 @@ Additional components in this repository include:
 Deeploans is available under the Apache licence. See here for [full text]([url](https://www.apache.org/licenses/LICENSE-2.0)). 
 <br>
 
-# How to Get Involved
+# How to get involved
 
 deeploans is a growing open-source project where developers and data analysts can directly shape the future of their tools and infrastructure. 
 
-🛠 **Help Build Deeploans**
+🛠 **Help build deeploans**
 <br>
 We’re actively expanding deeploans, and now is the perfect time to jump in. Whether you’re experienced with ETL pipelines, data processing, or just getting started, now is the time to become a core part of the deeploans project.
 
-🔨 **Code Contributions**
+🔨 **Code contributions**
 <br>
 Got an idea to improve our data processing? Spotted something that could use some tweaking? Even smaller contributions can make a real impact.
 
-📊 **Test and Give Feedback**
+📊 **Test and give feedback**
 <br>
 Not a developer? No problem. Run Deeploans with real data, report bugs, and let us know how it performs. Your feedback makes the tool more robust for everyone.
 Have an idea for improvement? Open a discussion—real-world testing is just as valuable as coding.
 
-📖 **Improve the Docs**
+📖 **Improve the docs**
 <br>
 Documentation is everything. If something unclear or missing, your contributions to our docs can help the next developer get started faster.
 
-💡**Feature Requests & Ideas**
+💡**Feature requests & ideas**
 <br>
 Got a use case we haven’t covered? Open an issue or drop a comment in [Discussions]([url](https://github.com/orgs/Algoritmica-ai/discussions)) to brainstorm.
 <br>
 
-## Get Started
+## Get started
 
 - **Fork the repo** and clone it locally.
 - Explore the codebase and try it out.
@@ -76,7 +76,7 @@ To get in touch, drop an email at:
 - [luca.borella@algoritmica.ai](mailto:luca.borella@algoritmica.ai)
 - [dylan.thiam@algoritmica.ai](mailto:dylan.p.thiam@algoritmica.ai)
 
-# deeploans Background
+# deeploans background
 
 deeploans began as an AI-powered analytics tool designed to help portfolio managers predict default risk. 
 
