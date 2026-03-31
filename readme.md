@@ -1,18 +1,17 @@
-# Deeploans Overview
+# deeploans Overview
 
-Deeploans is an open-source **ETL** framework designed for working with **loan-level**, **economic**, and **alternative credit data**. It extracts, cleans, transforms, and standardizes **structured finance datasets**, making them easier to use in analytics, machine learning models, and financial applications.
+deeploans is an open-source **ETL** framework designed for working with **granular asset data**. It extracts, cleans, transforms, and standardizes **datasets**, making them easier to use in analytics, machine learning models, and downstream applications.
 
-Initially developed as an advanced risk analytics tool for portfolio managers, Deeploans evolved into an open data infrastructure project to address the industry-wide challenge of **inconsistent** and **fragmented financial data**. It enables users to:
+Initially developed as an advanced credit risk analytics tool for portfolio managers and bankers, deeploans evolved into an open data infrastructure project to address the industry-wide challenge of **inconsistent** and **fragmented financial data**. It enables users to:
 
 - Ingest loan-level datasets from multiple sources.
 - Process and standardize data formats for easier integration.
 - **Validate** and **clean** incomplete or inconsistent records.
-- Output **better-structured data** suitable for analysis, modeling, or reporting.
+- Output **better-structured data** suitable for analysis, modeling, data science or reporting.
 
-Deeploans is designed for analysts, data scientists, and developers working with financial data who need an efficient and cost-effective way to handle structured datasets without relying on third-party providers. It supports modern data workflows and removes the bottlenecks associated with manual data preparation.
+deeploans is designed for analysts, data scientists, and developers working with granular asset data who need an efficient and cost-effective way to handle structured datasets without relying on third-party providers. It supports modern data workflows and removes the bottlenecks associated with manual data preparation.
 
-Deeploans has released ETLs for the following structured finance datasets:
-
+deeploans includes ETLs for the following structured finance datasets:
 - Auto Loans
 - SME Loans
 - Consumer Loans
@@ -37,11 +36,11 @@ Deeploans is available under the Apache licence. See here for [full text]([url](
 
 # How to Get Involved
 
-Deeploans is a growing open-source project where developers and data analysts can directly shape the future of their tools and infrastructure. 
+deeploans is a growing open-source project where developers and data analysts can directly shape the future of their tools and infrastructure. 
 
 🛠 **Help Build Deeploans**
 <br>
-We’re actively expanding Deeploans, and now is the perfect time to jump in. Whether you’re experienced with ETL pipelines, data processing, or just getting started, now is the time to become a core part of the deeploans project.
+We’re actively expanding deeploans, and now is the perfect time to jump in. Whether you’re experienced with ETL pipelines, data processing, or just getting started, now is the time to become a core part of the deeploans project.
 
 🔨 **Code Contributions**
 <br>
@@ -77,10 +76,10 @@ To get in touch, drop an email at:
 - [luca.borella@algoritmica.ai](mailto:luca.borella@algoritmica.ai)
 - [dylan.thiam@algoritmica.ai](mailto:dylan.p.thiam@algoritmica.ai)
 
-# Deeploans Background
+# deeploans Background
 
-Deeploans began as an AI-powered analytics tool designed to help portfolio managers predict default risk. 
+deeploans began as an AI-powered analytics tool designed to help portfolio managers predict default risk. 
 
 However, we quickly recognised a fundamental challenge: before the market can adopt more advanced tools, it needs clean and better-structured data.
 
-Thus, deeploans evolved into an open data infrastructure project. Today, deeploans solves the fragmented, inconsistent and incomplete data problem in structured finance, enabling analysts and developers to build better tools. 
+Thus, deeploans evolved into an open data infrastructure project. Today, deeploans solves the fragmented, inconsistent and incomplete data problem in finance, enabling analysts and developers to build better tools. 
