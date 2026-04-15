@@ -24,6 +24,16 @@ Additional components in this repository include:
 - `app-library/`: A library of (MVP) applications that run on top of deeploans
 - `mcp-server/`: standalone MCP server for AI/client integrations
 
+## Where to start (quick navigation)
+
+If you are new to the project, start here:
+
+1. `readme.md` (this file) for a project overview.
+2. `CONTRIBUTING.md` for contribution flow and PR tips.
+3. `etl-pipelines/readme.md` for data lakehouse ETL architecture.
+4. `mcp-server/README.md` for AI/client integration setup.
+5. `api/readme.md` for backend API orientation.
+
 <p align="center">
 <img src="deeploans_overview.png" alt="Deeploans Overview" title="deeploans overview" width="400">
 </p>
@@ -31,12 +41,12 @@ Additional components in this repository include:
 
 # Licence
 
-Deeploans is available under the Apache licence. See here for [full text]([url](https://www.apache.org/licenses/LICENSE-2.0)). 
+Deeploans is available under the Apache licence. See here for [full text](https://www.apache.org/licenses/LICENSE-2.0).
 <br>
 
 # How to get involved
 
-deeploans is a growing open-source project where developers and data analysts can directly shape the future of their tools and infrastructure. 
+deeploans is a growing open-source project where developers and data analysts can directly shape the future of their tools and infrastructure.
 
 🛠 **Help build deeploans**
 <br>
@@ -57,7 +67,7 @@ Documentation is everything. If something unclear or missing, your contributions
 
 💡**Feature requests & ideas**
 <br>
-Got a use case we haven’t covered? Open an issue or drop a comment in [Discussions]([url](https://github.com/orgs/Algoritmica-ai/discussions)) to brainstorm.
+Got a use case we haven’t covered? Open an issue or drop a comment in [Discussions](https://github.com/orgs/Algoritmica-ai/discussions) to brainstorm.
 <br>
 
 ## Get started
@@ -78,8 +88,8 @@ To get in touch, drop an email at:
 
 # deeploans background
 
-deeploans began as an AI-powered analytics tool designed to help portfolio managers predict default risk. 
+deeploans began as an AI-powered analytics tool designed to help portfolio managers predict default risk.
 
 However, we quickly recognised a fundamental challenge: before the market can adopt more advanced tools, it needs clean and better-structured data.
 
-Thus, deeploans evolved into an open data infrastructure project. Today, deeploans solves the fragmented, inconsistent and incomplete data problem in finance, enabling analysts and developers to build better tools. 
+Thus, deeploans evolved into an open data infrastructure project. Today, deeploans solves the fragmented, inconsistent and incomplete data problem in finance, enabling analysts and developers to build better tools.
