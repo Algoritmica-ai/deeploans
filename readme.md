@@ -29,6 +29,45 @@ Additional components in this repository include:
 </p>
 
 
+# Quickstart
+
+Get started with Deeploans in minutes:
+
+### 1. Clone the Repository
+```bash
+git clone https://github.com/Algoritmica-ai/deeploans.git
+cd deeploans
+```
+
+### 2. Set Up a Virtual Environment (Recommended)
+```bash
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+```
+
+### 3. Install Components
+Deeploans is modular. You can install specific components based on your needs:
+
+#### FastAPI Backend
+To set up the FastAPI backend for data access:
+```bash
+cd api/api-backend-main/backend
+pip install -r requirements.txt
+```
+
+#### ETL Pipelines
+Explore the templates for different finance datasets in the `etl-pipelines/` directory. Each template includes its own documentation and processing logic.
+
+#### Note for Non-Developers
+If you are an analyst or researcher looking to understand the project without coding, check out the `deeploans_overview.png` and explore the `etl-pipelines/` directory to see the types of financial datasets we support.
+
+#### MCP Server
+Install the standalone MCP server for AI/client integrations:
+```bash
+cd mcp-server
+pip install -e .
+```
+
 # Licence
 
 Deeploans is available under the Apache licence. See here for [full text](https://www.apache.org/licenses/LICENSE-2.0). 
