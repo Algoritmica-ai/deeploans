@@ -31,7 +31,7 @@ Additional components in this repository include:
 
 # Licence
 
-Deeploans is available under the Apache licence. See here for [full text]([url](https://www.apache.org/licenses/LICENSE-2.0)). 
+Deeploans is available under the Apache licence. See the [full text](https://www.apache.org/licenses/LICENSE-2.0). 
 <br>
 
 # How to get involved
@@ -57,7 +57,7 @@ Documentation is everything. If something unclear or missing, your contributions
 
 💡**Feature requests & ideas**
 <br>
-Got a use case we haven’t covered? Open an issue or drop a comment in [Discussions]([url](https://github.com/orgs/Algoritmica-ai/discussions)) to brainstorm.
+Got a use case we haven’t covered? Open an issue or drop a comment in [Discussions](https://github.com/orgs/Algoritmica-ai/discussions) to brainstorm.
 <br>
 
 ## Get started
@@ -68,6 +68,15 @@ Got a use case we haven’t covered? Open an issue or drop a comment in [Discuss
 - Once issues are posted, grab one and submit a pull request when you're ready.
 - Stay tuned to join the community on Discord!
 <br>
+
+
+
+## Quick start by persona
+
+- **Data analyst**: Start with [`etl-pipelines/readme.md`](etl-pipelines/readme.md) for lakehouse context, asset classes, and ETL workflow assumptions.
+- **API consumer**: Go to [`api/api-backend-main/readme.md`](api/api-backend-main/readme.md) for backend setup requirements and endpoint usage.
+- **AI / MCP integrator**: Use [`mcp-server/README.md`](mcp-server/README.md) to run the standalone MCP server and connect it to your MCP client.
+- **Contributor**: Read [`CONTRIBUTING.md`](CONTRIBUTING.md) and [`cla.md`](cla.md) before opening a PR.
 
 
 # Contacts
