@@ -31,7 +31,7 @@ Additional components in this repository include:
 
 # Licence
 
-Deeploans is available under the Apache licence. See here for [full text]([url](https://www.apache.org/licenses/LICENSE-2.0)). 
+Deeploans is available under the Apache licence. See here for [full text](https://www.apache.org/licenses/LICENSE-2.0). 
 <br>
 
 # How to get involved
@@ -57,7 +57,7 @@ Documentation is everything. If something unclear or missing, your contributions
 
 💡**Feature requests & ideas**
 <br>
-Got a use case we haven’t covered? Open an issue or drop a comment in [Discussions]([url](https://github.com/orgs/Algoritmica-ai/discussions)) to brainstorm.
+Got a use case we haven’t covered? Open an issue or drop a comment in [Discussions](https://github.com/orgs/Algoritmica-ai/discussions) to brainstorm.
 <br>
 
 ## Get started
