@@ -42,6 +42,17 @@ Before you submit, please:
 - update docs if needed
 - check for obvious formatting or link issues
 
+## Repository hygiene
+
+To keep the repository clean and reviewable, please avoid committing generated or local-only files:
+
+- Python caches (for example `__pycache__/`, `*.pyc`)
+- Local OS files (for example `.DS_Store`)
+- ETL run outputs and temporary dumps generated during local experiments
+
+If your change needs sample output for documentation, prefer a tiny, curated fixture in a clearly named folder and explain why it is required in the PR.
+
+
 ## Commit message guidance
 
 If possible, use one of these prefixes:
