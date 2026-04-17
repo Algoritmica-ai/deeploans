@@ -109,3 +109,14 @@ Delete a user with given id - this operation is irreversible!
 }
 ```
 &nbsp;
+
+## Common query parameters (all credit types)
+
+All `GET /api/v1/{credit_type}/{table}` endpoints support:
+
+- `filter`: Deeploans filter syntax (e.g. `AS15:PL and AS26:3`)
+- `limit`: row limit
+- `offset`: row offset
+- `columns`: comma-separated column projection
+- `detailed`: when `false`, returns list-style rows instead of dict-style rows
+
