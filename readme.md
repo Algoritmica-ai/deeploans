@@ -21,7 +21,7 @@ deeploans includes ETLs for the following structured finance datasets:
 Additional components in this repository include:
 
 - `api/api-backend-main/`: FastAPI backend for data access
-- `app-library/`: A library of (MVP) applications that run on top of deeploans
+- `app-library/`: A library of (MVP) applications that run on top of deeploans (see `app-library/readme.md`)
 - `mcp-server/`: standalone MCP server for AI/client integrations
 
 <p align="center">
