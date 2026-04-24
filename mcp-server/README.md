@@ -41,6 +41,21 @@ deeploans-mcp
 }
 ```
 
+## Testing
+
+Run unit tests from the repository root:
+
+```bash
+python -m unittest mcp-server/tests/test_server.py
+```
+
+Or from the `mcp-server` folder:
+
+```bash
+cd mcp-server
+python -m unittest tests/test_server.py
+```
+
 ## Notes
 
 - API-calling tools expect the backend to be running (default: `http://localhost:8000`).
