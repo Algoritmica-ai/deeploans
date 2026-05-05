@@ -140,3 +140,34 @@ class TestSmeEndpointsWithMockedBQ:
             params={"filter": "BADCOLUMN:val"},
         )
         assert resp.status_code == 400
+
+
+class TestEtlQualitySummariesEndpoint:
+    """Tests for the ETL quality summaries endpoint."""
+
+    def test_etl_quality_summaries_route_exists(self, test_client, auth_header):
+        resp = test_client.get("/api/v1/etl/quality-summaries", headers=auth_header)
+        assert resp.status_code != 404
+
+    def test_etl_quality_summaries_returns_mocked_data(
+        self, test_client, auth_header, mock_bigquery_dicts,
+    ):
+        resp = test_client.get("/api/v1/etl/quality-summaries", headers=auth_header)
+        assert resp.status_code == 200
+        data = resp.json()
+        assert isinstance(data, list)
+        assert data[0]["dl_code"] == "TEST001"
+
+    def test_etl_quality_summaries_uses_expected_query_params(
+        self, test_client, auth_header, mock_bigquery_dicts,
+    ):
+        test_client.get(
+            "/api/v1/etl/quality-summaries",
+            headers=auth_header,
+            params={"limit": 7, "offset": 3},
+        )
+        call_kwargs = mock_bigquery_dicts.call_args.kwargs
+        assert call_kwargs["credit_type"] == "sme"
+        assert call_kwargs["table_name"] == "quality_summaries"
+        assert call_kwargs["limit"] == 7
+        assert call_kwargs["offset"] == 3
