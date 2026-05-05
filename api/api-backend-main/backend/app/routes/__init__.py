@@ -7,6 +7,7 @@ from app.config import API_VERSION as version
 # from app.routes.les import router as les_router
 # from app.routes.rmb import router as rmb_router
 from app.routes.sme import router as sme_router
+from app.routes.etl import router as etl_router
 
 router = HandleTrailingSlashRouter()
 
@@ -16,3 +17,4 @@ router = HandleTrailingSlashRouter()
 # router.include_router(les_router, prefix=f"/api/{version}/les")
 # router.include_router(rmb_router, prefix=f"/api/{version}/rmb")
 router.include_router(sme_router, prefix=f"/api/{version}/sme")
+router.include_router(etl_router, prefix=f"/api/{version}/etl")
