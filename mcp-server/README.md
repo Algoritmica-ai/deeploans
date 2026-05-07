@@ -41,6 +41,16 @@ deeploans-mcp
 }
 ```
 
+## Testing
+
+Run the MCP server test suite from the repository root:
+
+```bash
+python -m pytest mcp-server/tests
+```
+
+The smoke tests spin up an in-process localhost HTTP server, so they do not require production credentials, a real Deeploans API key, or network access outside the local machine.
+
 ## Notes
 
 - API-calling tools expect the backend to be running (default: `http://localhost:8000`).
