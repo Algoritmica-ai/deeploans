@@ -37,6 +37,13 @@ def transform_underlying_exposures(
 
     output_rows: list[dict[str, Any]] = []
     missing_required = 0
+    validation_rule_counts = {
+        "negative_current_balance": 0,
+        "occupancy_out_of_range": 0,
+        "missing_loan_id": 0,
+        "non_numeric_dscr": 0,
+    }
+    valid_record_count = 0
 
     with Path(input_csv).open("r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
@@ -52,11 +59,31 @@ def transform_underlying_exposures(
             if row.get("CREL1") is None or row.get("CREL4") is None:
                 missing_required += 1
 
+            loan_id = row.get("CREL5") or row.get("CREL4")
+            failed_rules: list[str] = []
+
+            if balance is not None and balance < 0:
+                failed_rules.append("negative_current_balance")
+            if occupancy is not None and (occupancy < 0 or occupancy > 100):
+                failed_rules.append("occupancy_out_of_range")
+            if loan_id is None:
+                failed_rules.append("missing_loan_id")
+            raw_dscr = row.get("CREL44")
+            if raw_dscr is not None and dscr is None:
+                failed_rules.append("non_numeric_dscr")
+
+            for rule in failed_rules:
+                validation_rule_counts[rule] += 1
+
+            is_valid = len(failed_rules) == 0
+            if is_valid:
+                valid_record_count += 1
+
             output_rows.append(
                 {
                     "deal_id": row.get("CREL1"),
                     "obligor_id": row.get("CREL3") or row.get("CREL2"),
-                    "loan_id": row.get("CREL5") or row.get("CREL4"),
+                    "loan_id": loan_id,
                     "property_type": row.get("CREL26"),
                     "country": row.get("CREL19"),
                     "current_balance": balance,
@@ -65,6 +92,7 @@ def transform_underlying_exposures(
                     "occupancy_rate": occupancy,
                     "default_status": row.get("CREL68"),
                     "special_servicing": row.get("CREL71"),
+                    "validation": {"is_valid": is_valid, "failed_rules": failed_rules},
                     "raw": row,
                 }
             )
@@ -75,6 +103,11 @@ def transform_underlying_exposures(
         "record_count": len(output_rows),
         "quality": {
             "rows_missing_primary_identifiers": missing_required,
+            "validation_summary": {
+                "valid_record_count": valid_record_count,
+                "invalid_record_count": len(output_rows) - valid_record_count,
+                "rule_failures": validation_rule_counts,
+            },
         },
         "records": output_rows,
     }
