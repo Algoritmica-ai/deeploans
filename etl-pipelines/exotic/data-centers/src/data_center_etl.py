@@ -43,6 +43,7 @@ def run_stage(input_csv: str, output_root: str, stage_name: str) -> None:
     print(f"Bronze: {paths.bronze}")
     print(f"Silver: {paths.silver}")
     print(f"Gold:   {paths.gold}")
+    print(f"Quality:{paths.quality_report}")
 
 
 def parse_args() -> argparse.Namespace:
