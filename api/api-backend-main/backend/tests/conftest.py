@@ -7,6 +7,79 @@ can be imported without a real .env file or external services.
 import os
 import sys
 
+import types
+
+# Provide lightweight stubs for optional third-party dependencies used at
+# import-time by app.server_startup_tasks in minimal CI environments.
+if "pymongo" not in sys.modules:
+    pymongo_stub = types.ModuleType("pymongo")
+
+    class _DummyMongoClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def close(self):
+            pass
+
+    class _DummyDatabase(dict):
+        pass
+
+    class _DummyCollection(dict):
+        pass
+
+    database_stub = types.ModuleType("pymongo.database")
+    collection_stub = types.ModuleType("pymongo.collection")
+    database_stub.Database = _DummyDatabase
+    collection_stub.Collection = _DummyCollection
+
+    pymongo_stub.MongoClient = _DummyMongoClient
+    sys.modules["pymongo"] = pymongo_stub
+    sys.modules["pymongo.database"] = database_stub
+    sys.modules["pymongo.collection"] = collection_stub
+
+if "google.oauth2" not in sys.modules:
+    google_stub = types.ModuleType("google")
+    oauth2_stub = types.ModuleType("google.oauth2")
+    service_account_stub = types.ModuleType("google.oauth2.service_account")
+
+    class _DummyCredentials:
+        @staticmethod
+        def from_service_account_file(*args, **kwargs):
+            return object()
+
+    service_account_stub.Credentials = _DummyCredentials
+    oauth2_stub.service_account = service_account_stub
+
+    cloud_stub = types.ModuleType("google.cloud")
+    bigquery_stub = types.ModuleType("google.cloud.bigquery")
+
+    class _DummyBigQueryClient:
+        def __init__(self, *args, **kwargs):
+            pass
+
+    bigquery_stub.Client = _DummyBigQueryClient
+    cloud_stub.bigquery = bigquery_stub
+
+    sys.modules["google"] = google_stub
+    sys.modules["google.oauth2"] = oauth2_stub
+    sys.modules["google.oauth2.service_account"] = service_account_stub
+    sys.modules["google.cloud"] = cloud_stub
+    sys.modules["google.cloud.bigquery"] = bigquery_stub
+
+if "bson.objectid" not in sys.modules:
+    bson_stub = types.ModuleType("bson")
+    objectid_stub = types.ModuleType("bson.objectid")
+
+    class _DummyObjectId:
+        def __init__(self, *args, **kwargs):
+            pass
+
+    objectid_stub.ObjectId = _DummyObjectId
+    bson_stub.objectid = objectid_stub
+    sys.modules["bson"] = bson_stub
+    sys.modules["bson.objectid"] = objectid_stub
+
+
 # ---------------------------------------------------------------------------
 # Bootstrap: must run before any `app.*` import so that app.config can read
 # its required environment variables and find its JSON schema file.
