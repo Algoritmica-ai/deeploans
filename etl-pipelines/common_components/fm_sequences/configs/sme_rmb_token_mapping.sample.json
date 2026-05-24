@@ -1,0 +1,34 @@
+{
+  "schemas": [
+    {
+      "name": "ecb_sme_asset_silver_v1",
+      "entity_type": "sme_loan",
+      "id_fields": ["AS3", "loan_id", "asset_id"],
+      "time_fields": ["AS1", "snapshot_date", "as_of_date", "report_date"],
+      "features": [
+        {"column": "dl_code", "token": "asset_class"},
+        {"column": "AS2", "token": "obligor_id"},
+        {"column": "AS27", "token": "orig_balance"},
+        {"column": "AS30", "token": "current_balance"},
+        {"column": "AS54", "token": "interest_rate"},
+        {"column": "AS115", "token": "arrears_balance"},
+        {"column": "AS121", "token": "forbearance_flag", "missing_token": "__MISSING__"}
+      ]
+    },
+    {
+      "name": "ecb_rmb_asset_silver_v1",
+      "entity_type": "resi_mortgage",
+      "id_fields": ["AR3", "loan_id", "asset_id"],
+      "time_fields": ["AR1", "snapshot_date", "as_of_date", "report_date"],
+      "features": [
+        {"column": "dl_code", "token": "asset_class"},
+        {"column": "AR2", "token": "originator_loan_ref"},
+        {"column": "AR19", "token": "orig_balance"},
+        {"column": "AR24", "token": "current_balance"},
+        {"column": "AR31", "token": "interest_rate"},
+        {"column": "AR90", "token": "arrears_balance"},
+        {"column": "AR122", "token": "restructured_flag", "missing_token": "__MISSING__"}
+      ]
+    }
+  ]
+}
