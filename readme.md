@@ -25,7 +25,7 @@ Additional components in this repository include:
 - `mcp-server/`: standalone MCP server for AI/client integrations
 
 <p align="center">
-<img src="deeploans_overview.png" alt="Deeploans Overview" title="deeploans overview" width="400">
+<img src="deeploans-overview.png" alt="Deeploans Overview" title="deeploans overview" width="400">
 </p>
 
 
