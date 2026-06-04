@@ -6,9 +6,9 @@ for pretraining credit foundation models, downstream cash-flow projection,
 and back-testing.
 
 The generator targets the Hypoport "Green Lion" RMBS schema byte-for-byte
-(71 columns) and uses **NVIDIA NeMo Data Designer** for per-row primitive
-sampling plus a vectorised numpy ageing pass for longitudinal dynamics
-(amortisation, Markov delinquency, prepayments, HPI indexing).
+(71 columns) and uses **Data Designer** for per-row primitive sampling plus a
+vectorised numpy ageing pass for longitudinal dynamics (amortisation, Markov
+delinquency, prepayments, HPI indexing).
 
 Default scale: **500,000 loan IDs × 24 monthly cutoffs (Jan 2024 → Dec 2025)
 ≈ 11–12 M loan-month rows**. Zero LLM calls — every column is a sampler or
@@ -17,14 +17,30 @@ modern laptop.
 
 ---
 
+## Table of Contents
+
+- [Project layout](#project-layout)
+- [Quick start](#quick-start)
+- [Production run](#production-run--500000-loan-ids)
+- [Architecture](#architecture)
+- [Schema (71 columns)](#schema-71-columns)
+- [Lifecycle semantics](#lifecycle-semantics)
+- [Testing](#testing)
+- [Calibration knobs](#calibration-knobs)
+- [Known limitations](#known-limitations-and-follow-ups)
+- [References](#references)
+- [License](#license)
+
+---
+
 ## Project layout
 
 ```
-nemo_rmbs/
+synthetic-data-designer/
 ├── README.md                          ← this file
 ├── RUN_PLAN.md                        ← detailed run plan & scaling guide
 ├── COLUMN_GLOSSARY.md                 ← per-column definitions (all 71)
-├── data_designer_loan_book.py         ← NeMo Data Designer config + pandas
+├── data_designer_loan_book.py         ← Data Designer config + pandas
 │                                        post-processor for the month-0 book
 ├── age_to_panel.py                    ← vectorised ageing pass (Markov
 │                                        delinquency, prepayment, amortisation)
@@ -88,7 +104,7 @@ python run.py \
 
 | Resource | Estimate (modern laptop) | Estimate (sandbox VM) |
 |---|---|---|
-| Phase 1: NeMo Data Designer + pandas derivations | 3–5 min | ~10 min |
+| Phase 1: Data Designer + pandas derivations | 3–5 min | ~10 min |
 | Phase 2: 24-cutoff ageing pass | 2–4 min | ~7 min |
 | Phase 3: consolidation to `all_cutoffs.parquet` | ~1 min | ~2 min |
 | **Total wall time** | **~7–10 min** | **~19 min** |
@@ -117,7 +133,7 @@ with the reference Green Lion files.
 
 ```
             ┌─────────────────────────────┐
-            │  NeMo Data Designer config  │
+            │    Data Designer config     │
             │ UUID / Category / Subcat /  │
             │ Gaussian / Lognorm /        │
             │ Bernoulli + tiny Jinja flag │
@@ -160,7 +176,7 @@ green_lion_202401_1_synthetic_loan_tape.csv  ...  green_lion_202512_1_synthetic_
 
 ### Why split the work this way?
 
-NeMo Data Designer is per-row. It excels at realistic, correlated origination
+Data Designer is per-row. It excels at realistic, correlated origination
 snapshots (province → NUTS-3 region via `SUBCATEGORY`, lognormal balances,
 employment-status-conditional NHG, EPC label distributions, …). It does not
 model cross-row dynamics over time — that's the longitudinal panel. So Data
@@ -171,7 +187,7 @@ derived numeric fields.
 
 ### Why zero LLM calls?
 
-NeMo Data Designer has two families of column generators: **local** (samplers,
+Data Designer has two families of column generators: **local** (samplers,
 expression columns, custom Python callables) and **LLM-backed**
 (`LLMTextColumnConfig`, `LLMStructuredColumnConfig`, `LLMJudgeColumnConfig`,
 embeddings, images). The Hypoport schema has no free-text fields, so the
@@ -366,11 +382,11 @@ The most useful tunables, with calibration anchors:
 - **Hypoport / Green Lion reference data** — three monthly cutoffs of
   `green_lion_<yyyymm>_1_synthetic_loan_tape.csv` used as the schema and
   calibration anchor.
-- **NVIDIA NeMo Data Designer** — <https://github.com/NVIDIA-NeMo/DataDesigner>
+- **Data Designer** — <https://github.com/NVIDIA-NeMo/DataDesigner>
   (Apache 2.0). Docs: <https://nvidia-nemo.github.io/DataDesigner/>.
 - **deeploans** — <https://github.com/Algoritmica-ai/deeploans> (Apache 2.0).
   Repository home for ETLs and the eventual landing folder for this
-  generator (`synthetic-generators/rmbs-nl/`).
+  generator (`synthetic-data-designer/`).
 - **ESMA Annex 2** — *Underlying exposures — residential real estate.*
   Securitisation Regulation (EU) 2017/2402 disclosure technical standards.
 - **Calibration sources cited in the SOW** — Fitch NQM1 / RATE 2025-J1
