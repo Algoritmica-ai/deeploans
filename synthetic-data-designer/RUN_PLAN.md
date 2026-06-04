@@ -1,15 +1,15 @@
-# Synthetic Dutch RMBS Generator — Run Plan (NeMo Data Designer)
+# Synthetic Dutch RMBS Generator — Run Plan
 
 End-to-end plan for generating **500,000 Dutch residential-mortgage loan IDs
 across 24 monthly cutoffs (Jan 2024 → Dec 2025)** in the Hypoport / ESMA
-Annex 2 schema, using NVIDIA NeMo Data Designer for primitive sampling and a
+Annex 2 schema, using Data Designer for primitive sampling and a
 vectorised pandas+numpy ageing pass for longitudinal dynamics.
 
 ## 1. What this directory contains
 
 | File | Role |
 |---|---|
-| `data_designer_loan_book.py` | NeMo Data Designer config (samplers + tiny flag expressions) and the pandas post-processor that produces the 71-column Hypoport-parity loan book at month 0. |
+| `data_designer_loan_book.py` | Data Designer config (samplers + tiny flag expressions) and the pandas post-processor that produces the 71-column Hypoport-parity loan book at month 0. |
 | `age_to_panel.py` | Vectorised numpy ageing pass: prepayment hazard, Markov delinquency, amortisation, HPI uplift, bucket recomputation. Emits 24 per-cutoff CSVs. |
 | `run.py` | End-to-end orchestrator. |
 | `RUN_PLAN.md` | This file. |
@@ -17,7 +17,7 @@ vectorised pandas+numpy ageing pass for longitudinal dynamics.
 
 ## 2. Architecture in one paragraph
 
-NeMo Data Designer is per-row — it samples each record independently and is
+Data Designer is per-row — it samples each record independently and is
 strong at enforcing correlations **between columns of the same row** (via
 SUBCATEGORY conditioning, expression columns, validators). It is **not**
 designed to enforce correlations *across rows of the same loan over time*
@@ -28,7 +28,7 @@ numpy, which is two orders of magnitude faster per row.
 
 ```
        ┌─────────────────────────┐      ┌────────────────────────┐
-       │ NeMo Data Designer      │ ───▶ │ Pandas post-processor  │
+       │ Data Designer           │ ───▶ │ Pandas post-processor  │
        │ • UUID / Category /     │      │ • Annuity formula      │
        │   Gaussian / Lognorm /  │      │ • Maturity date        │
        │   Subcategory samplers  │      │ • OLTV → market value  │
@@ -69,9 +69,8 @@ Python 3.10–3.13. Tested with `data-designer==0.6.0`.
 
 **No API key is required** for this pipeline. We use only samplers and
 expression columns (no LLM calls); the Data Designer init prints a warning
-about missing `NVIDIA_API_KEY` / `OPENAI_API_KEY` / `OPENROUTER_API_KEY`
-which can be ignored. If you want to add LLM-generated columns later (e.g.,
-synthetic underwriting notes), set one of:
+about missing API keys which can be ignored. If you want to add LLM-generated
+columns later (e.g., synthetic underwriting notes), set one of:
 
 ```bash
 export NVIDIA_API_KEY=...       # free tier at build.nvidia.com
@@ -90,8 +89,8 @@ python run.py --num-records 5000 --out-dir ./out_smoke
 Expected output:
 
 ```
-=== Phase 1: NeMo Data Designer loan book (5,000 records) ===
-[loan-book] NeMo DataDesigner generating 5,000 records...
+=== Phase 1: Data Designer loan book (5,000 records) ===
+[loan-book] DataDesigner generating 5,000 records...
 [loan-book] Deriving static fields (5,000 rows)...
 [loan-book] Wrote 5,000 rows × 71 cols → out_smoke/loan_book.parquet
     done in 6.0s
@@ -127,7 +126,7 @@ Expected resources on a modern laptop (M-series Mac or 8-core x86):
 
 | Phase | Time | Peak RAM | Output |
 |---|---|---|---|
-| NeMo DD sampling (500k rows × 26 samplers) | 3–5 min | ~3 GB | `loan_book.parquet` (~120 MB) |
+| Data Designer sampling (500k rows × 26 samplers) | 3–5 min | ~3 GB | `loan_book.parquet` (~120 MB) |
 | Ageing (500k × 24 months) | 2–4 min | ~3.5 GB | 24× CSV (~250–350 MB each) |
 | Consolidation | ~1 min | ~6 GB peak | `all_cutoffs.parquet` (~1.2 GB) |
 | **Total** | **~10 min** | **~6 GB** | **~7 GB on disk** |
@@ -200,13 +199,13 @@ defaulted the loan stays defaulted.
 | SOW item | How |
 |---|---|
 | (2) HuggingFace upload | `huggingface-cli login` then `huggingface-cli upload Algoritmica/rmbs-nl-synthetic ./out_full/cutoffs --repo-type dataset`. Include a `README.md` dataset card describing the schema, calibration anchors, and the 24-cutoff structure. |
-| (3) Source-code PR to deeploans | New folder `synthetic-generators/rmbs-nl/` containing this directory's contents + a top-level `README.md`. |
+| (3) Source-code PR to deeploans | New folder `synthetic-data-designer/` containing this directory's contents + a top-level `README.md`. |
 | (4) Showcase (Fri 5 Jun) | Demo: run `python run.py --num-records 5000` live (10s), open one cutoff CSV side-by-side with Hypoport, then show a default-rate-vs-time plot across the 24 cutoffs. |
 | (5) Nexus delivery | Out of scope per SOW. |
 
 ## 10. Known limitations & follow-ups
 
-1. **NeMo Data Designer 0.6.0 quirk** — `convert_to='int'` on a CATEGORY
+1. **Data Designer 0.6.0 quirk** — `convert_to='int'` on a CATEGORY
    sampler with string values raises `Expected numeric dtype, got object`.
    Workaround in code: pass int values directly to `CategorySamplerParams`.
 2. **Markov chain calibration is hot** — at default settings the 24-month
