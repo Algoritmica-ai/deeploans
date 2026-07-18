@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# Fit a raw-score -> PD calibrator on a held-out calibration window (v1.1 G6.1).
+# Input = a scores file from score_portfolio at a labeled PAST cutoff that is NOT a test cutoff
+# (the script refuses test_cutoffs — embargo discipline extended to calibration).
+#
+#   python scripts/score_portfolio.py -c configs/fannie_mae/scoring.yaml \
+#       --cutoff 2021-12-31 --out ${paths.runs}/calibration_scores.parquet
+#   python scripts/calibrate.py -c configs/fannie_mae/calibrate.yaml
+
+include: common.yaml
+
+scores: ${paths.runs}/calibration_scores.parquet  # score_portfolio output at the calibration cutoff
+labeled_panel: ${paths.raw}/panel_2000_2024.parquet
+label_col: default_event
+time_col: reporting_date
+horizon_months: 12
+
+method: isotonic               # isotonic (default; monotone step fit) | platt (2-param sigmoid)
+test_cutoffs: [2022-12-31, 2023-12-31]   # the OOT protocol's test window — REFUSED for fitting
+bins: 10                       # reliability-table bins (report only)
+
+out: ${paths.runs}/calibrator.json

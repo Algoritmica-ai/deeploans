@@ -1,0 +1,38 @@
+# Baseline task config — Dutch mortgages (ESMA Annex 2).
+# Everything asset-specific lives here so scripts/train_baseline.py stays generic.
+id_col: loan_id
+time_col: reporting_date
+label_col: default_crr_flag        # event column; label = this becomes label_value in the horizon
+label_value: "Y"
+obs_date: "2024-12-31"             # observation cutoff
+horizon_months: 6                  # predict the event within the next N cutoffs
+
+gate_col: arrears_bucket           # "currently performing" filter (predict NEW events)
+gate_values: ["Performing", "1-29 DPD", "30-59 DPD", "60-89 DPD"]
+
+exclude:                           # structural non-features (ids, deal metadata, constants)
+  - transaction_name
+  - esma_transaction_identifier
+  - closing_date
+  - maturity_date_proxy
+  - originator_name
+  - servicer_name
+  - currency
+  - country
+  - property_valuation_type
+  - interest_payment_frequency
+  - principal_payment_frequency
+leakage:                           # contemporaneous-state features (cheat for default prediction)
+  - arrears_bucket
+  - performing_status
+  - default_crr_flag
+  - foreclosure_flag
+  - days_past_due
+  - arrears_amount
+  - forbearance_flag
+  - restructuring_flag
+segment_col: _segment              # hidden latent in loan_book (eval-only ceiling validation)
+segment_names:                     # human labels for the segment latent (report only)
+  0: stable
+  1: baseline
+  2: fragile

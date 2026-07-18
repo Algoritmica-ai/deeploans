@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# Fit the KVT tokenizer on TRAIN (M1) + write the token QA report.
+# The field schema comes from the shared `schema` key (configs/fannie_mae/tokenizer.yaml).
+#
+#   python scripts/train_tokenizer.py -c configs/fannie_mae/tokenizer_fit.yaml
+#   python scripts/train_tokenizer.py -c configs/fannie_mae/tokenizer_fit.yaml --max_fit_rows 500000
+
+include: common.yaml
+
+train: ${paths.processed}/train.parquet
+out: configs/fannie_mae/tokenizer.json
+report: reports/fannie_tokenizer_report.md
+
+qa_loans: 2000           # loans sampled for the QA report
+max_fit_rows: null       # optional row cap for fitting

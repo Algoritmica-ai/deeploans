@@ -1,0 +1,38 @@
+# Data — keep the folder scaffold, ignore the actual data files
+data/*
+!data/raw/
+!data/processed/
+!data/README.md
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+*.parquet
+
+# Model weights (keep dir scaffold, ignore weights)
+models/**/*.bin
+models/**/*.safetensors
+models/**/*.pt
+!**/.gitkeep
+
+# Experiment tracking
+wandb/
+mlruns/
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+logs/
+runs/
+/runs_*.log

@@ -1,0 +1,21 @@
+torch>=2.2
+transformers>=4.40
+peft>=0.10
+numpy
+pandas
+pyarrow
+scikit-learn
+xgboost
+lightgbm
+pyyaml
+wandb
+matplotlib
+tqdm
+# dev
+pytest
+pytest-cov
+ruff
+# pluggable storage (credit_fm.utils.storage): fsspec URLs — swap scheme for the backend
+fsspec
+gcsfs            # gs:// (GCS)
+# s3fs           # s3:// (AWS) — uncomment when moving the bucket to S3

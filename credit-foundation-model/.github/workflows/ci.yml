@@ -1,0 +1,45 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Install
+        run: pip install -e ".[dev]"
+      - name: Lint
+        run: ruff check .
+      - name: Test
+        run: pytest -q
+
+  # v1.1 G5.1 — prove the WHEEL is self-sufficient: build it, install it into a clean
+  # environment (no `-e .`, no src/ on the path), import it, and run the training-core tests
+  # against the installed package (a toy MLM pretrain runs inside test_trainer/test_training).
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+      - name: Build wheel
+        run: |
+          pip install build
+          python -m build --wheel
+      - name: Install wheel (clean, from dist only)
+        run: pip install dist/*.whl pytest
+      - name: Import + version check
+        run: |
+          cd /tmp   # away from the repo so src/ can't shadow the installed package
+          python -c "import credit_fm; print('credit_fm', credit_fm.__version__)"
+          python -c "from credit_fm import KVTTokenizer, CreditDataModule, CreditFoundationModel, train_mlm"
+      - name: Toy pretrain smoke on the installed wheel
+        run: pytest tests/test_trainer.py tests/test_training.py tests/test_models.py tests/test_packaging.py -q
