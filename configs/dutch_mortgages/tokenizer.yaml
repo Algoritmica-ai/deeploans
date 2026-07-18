@@ -1,0 +1,96 @@
+# SPDX-License-Identifier: Apache-2.0
+# Generated reproducibly by scripts/classify_schema.py — DO NOT hand-edit.
+# Regenerate: python scripts/classify_schema.py --input data/processed/train.parquet --out configs/dutch_mortgages/tokenizer.yaml --drop interest_only_flag,self_employed_flag,property_usage,buy_to_let_flag,days_past_due,primary_energy_demand_kwh_m2,construction_year_bucket
+# Vocab + numeric bins fit on data/processed/train.parquet ONLY (decision DL-008).
+schema: esma_annex2
+id_col: loan_id
+time_col: reporting_date
+num_buckets: 16
+zero_bucket: true
+
+drop_constant:        # single value across the panel — no signal
+  - transaction_name
+  - esma_transaction_identifier
+  - closing_date
+  - originator_name
+  - servicer_name
+  - currency
+  - country
+  - guarantee_type
+  - property_valuation_type
+  - interest_payment_frequency
+  - principal_payment_frequency
+
+drop_redundant:       # exact-dup / numeric bucket (auto) + chosen functional deps
+  - interest_only_flag    # = f(repayment_type)
+  - fixed_interest_period_end_in_months    # == remaining_interest_fixed_period_months
+  - property_usage    # = f(occupancy)
+  - self_employed_flag    # = f(employment_status)
+  - buy_to_let_flag    # = f(occupancy)
+  - days_past_due    # = f(arrears_bucket)
+  - epc_issue_year    # == origination_year
+  - primary_energy_demand_kwh_m2    # user --drop
+  - balance_bucket    # bucketed original_balance
+  - cltomv_current_bucket    # bucketed cltomv_current
+  - cltimv_current_bucket    # bucketed cltimv_current
+  - oltomv_original_bucket    # bucketed oltomv_original
+  - loan_to_income_bucket    # bucketed loan_to_income
+  - payment_due_to_income_pct_bucket    # bucketed payment_due_to_income_pct
+  - construction_year_bucket    # = f(construction_year)
+
+profile:        # static fields
+  numeric:
+    - original_balance
+    - current_interest_rate_pct
+    - oltomv_original
+    - original_market_value_at_origination
+    - loan_to_income
+    - payment_due_to_income_pct
+    - borrower_annual_income
+    - scheduled_monthly_payment
+    - construction_deposit_amount
+  categorical:
+    - origination_year
+    - repayment_type
+    - rate_type
+    - legal_maturity_months
+    - loan_part_count
+    - debtor_count
+    - property_type
+    - province
+    - economic_region_nuts3
+    - construction_year
+    - occupancy
+    - employment_status
+    - borrower_type
+    - loan_purpose
+    - epc_label
+    - construction_deposit_pct
+  flags:
+    - nhg_flag
+    - forbearance_flag
+    - restructuring_flag
+    - construction_deposit_flag
+
+event:        # dynamic fields
+  numeric:
+    - current_balance
+    - remaining_interest_fixed_period_months
+    - seasoning_months
+    - remaining_term_months
+    - cltomv_current
+    - cltimv_current
+    - current_original_market_value
+    - indexed_market_value
+    - arrears_amount
+  categorical:
+    - arrears_bucket
+    - performing_status
+  flags:
+    - default_crr_flag
+    - foreclosure_flag
+
+temporal:
+  reference: origination
+  log_seconds: true
+  cyclical: [month, quarter]
