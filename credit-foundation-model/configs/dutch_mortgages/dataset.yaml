@@ -1,0 +1,48 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# Dataset contract — Dutch mortgages synthetic panel (ESMA Annex 2; validation/ablation asset).
+# See configs/fannie_mae/dataset.yaml for the contract documentation.
+
+dataset:
+  name: dutch_mortgages
+  adapter: generic                 # the HF panel already conforms — no ingest derivations needed
+  id_col: loan_id
+  time_col: reporting_date
+  origination_col: origination_date
+  origination_derived: true        # panel has no origination column; the split derives it as
+                                   # reporting_date - seasoning_months (DL-007)
+
+labels:
+  default_6m:
+    type: forward_event
+    event_col: default_crr_flag    # string flag — 'Y' means the CRR default definition fired
+    event_value: "Y"
+    horizon_months: 6
+    gate_col: arrears_bucket       # observe only not-yet-defaulted buckets
+    gate_values: ["Performing", "1-29 DPD", "30-59 DPD", "60-89 DPD"]
+
+schema: configs/dutch_mortgages/tokenizer.yaml
+
+exclude:                           # structural non-features (ids, deal metadata, constants)
+  - transaction_name
+  - esma_transaction_identifier
+  - closing_date
+  - maturity_date_proxy
+  - originator_name
+  - servicer_name
+  - currency
+  - country
+  - property_valuation_type
+  - interest_payment_frequency
+  - principal_payment_frequency
+
+leakage:                           # contemporaneous-state features (cheat for default prediction)
+  - arrears_bucket
+  - performing_status
+  - default_crr_flag
+  - foreclosure_flag
+  - days_past_due
+  - arrears_amount
+  - forbearance_flag
+  - restructuring_flag

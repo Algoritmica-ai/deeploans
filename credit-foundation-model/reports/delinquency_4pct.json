@@ -1,0 +1,478 @@
+{
+  "source": "gs://sriram-credit-fm-data/output/raw/fannie_mae/panel_2000_2024.parquet",
+  "source_kind": "panel",
+  "delinquency_only": true,
+  "generated_utc": "2026-07-08T11:12:16+00:00",
+  "n_rows": 125027505,
+  "n_loans": 2264282,
+  "n_columns": 0,
+  "reporting_range": [
+    "2000-01-31",
+    "2024-12-31"
+  ],
+  "origination_range": [
+    "1999-01-31",
+    "2024-12-31"
+  ],
+  "columns": {},
+  "delinquency_by_reporting_year": [
+    {
+      "year": 2000,
+      "loan_months": 289883,
+      "known_status": 288647,
+      "dpd30_plus": 3566,
+      "dpd30_plus_pct": 1.2354,
+      "d180_plus": 31,
+      "d180_plus_pct": 0.0107,
+      "default_event": 33,
+      "default_event_pct": 0.0114,
+      "performing_pct": 98.3435
+    },
+    {
+      "year": 2001,
+      "loan_months": 1160039,
+      "known_status": 1133853,
+      "dpd30_plus": 20061,
+      "dpd30_plus_pct": 1.7693,
+      "d180_plus": 646,
+      "d180_plus_pct": 0.057,
+      "default_event": 690,
+      "default_event_pct": 0.0595,
+      "performing_pct": 96.0133
+    },
+    {
+      "year": 2002,
+      "loan_months": 2384366,
+      "known_status": 2330327,
+      "dpd30_plus": 42766,
+      "dpd30_plus_pct": 1.8352,
+      "d180_plus": 2490,
+      "d180_plus_pct": 0.1069,
+      "default_event": 2689,
+      "default_event_pct": 0.1128,
+      "performing_pct": 95.94
+    },
+    {
+      "year": 2003,
+      "loan_months": 3672247,
+      "known_status": 3552419,
+      "dpd30_plus": 65176,
+      "dpd30_plus_pct": 1.8347,
+      "d180_plus": 4761,
+      "d180_plus_pct": 0.134,
+      "default_event": 5174,
+      "default_event_pct": 0.1409,
+      "performing_pct": 94.9621
+    },
+    {
+      "year": 2004,
+      "loan_months": 4187781,
+      "known_status": 4120623,
+      "dpd30_plus": 76508,
+      "dpd30_plus_pct": 1.8567,
+      "d180_plus": 6218,
+      "d180_plus_pct": 0.1509,
+      "default_event": 6803,
+      "default_event_pct": 0.1624,
+      "performing_pct": 96.5694
+    },
+    {
+      "year": 2005,
+      "loan_months": 4188593,
+      "known_status": 4131299,
+      "dpd30_plus": 80431,
+      "dpd30_plus_pct": 1.9469,
+      "d180_plus": 6567,
+      "d180_plus_pct": 0.159,
+      "default_event": 7120,
+      "default_event_pct": 0.17,
+      "performing_pct": 96.7119
+    },
+    {
+      "year": 2006,
+      "loan_months": 4228867,
+      "known_status": 4190757,
+      "dpd30_plus": 82642,
+      "dpd30_plus_pct": 1.972,
+      "d180_plus": 7628,
+      "d180_plus_pct": 0.182,
+      "default_event": 8180,
+      "default_event_pct": 0.1934,
+      "performing_pct": 97.1446
+    },
+    {
+      "year": 2007,
+      "loan_months": 4324136,
+      "known_status": 4289839,
+      "dpd30_plus": 87285,
+      "dpd30_plus_pct": 2.0347,
+      "d180_plus": 7449,
+      "d180_plus_pct": 0.1736,
+      "default_event": 8043,
+      "default_event_pct": 0.186,
+      "performing_pct": 97.1883
+    },
+    {
+      "year": 2008,
+      "loan_months": 4600758,
+      "known_status": 4565300,
+      "dpd30_plus": 122846,
+      "dpd30_plus_pct": 2.6909,
+      "d180_plus": 14025,
+      "d180_plus_pct": 0.3072,
+      "default_event": 14911,
+      "default_event_pct": 0.3241,
+      "performing_pct": 96.5592
+    },
+    {
+      "year": 2009,
+      "loan_months": 4941266,
+      "known_status": 4871558,
+      "dpd30_plus": 216372,
+      "dpd30_plus_pct": 4.4415,
+      "d180_plus": 53277,
+      "d180_plus_pct": 1.0936,
+      "default_event": 55017,
+      "default_event_pct": 1.1134,
+      "performing_pct": 94.2104
+    },
+    {
+      "year": 2010,
+      "loan_months": 5066218,
+      "known_status": 4994052,
+      "dpd30_plus": 256718,
+      "dpd30_plus_pct": 5.1405,
+      "d180_plus": 88419,
+      "d180_plus_pct": 1.7705,
+      "default_event": 92020,
+      "default_event_pct": 1.8163,
+      "performing_pct": 93.5083
+    },
+    {
+      "year": 2011,
+      "loan_months": 5072883,
+      "known_status": 5001708,
+      "dpd30_plus": 231061,
+      "dpd30_plus_pct": 4.6196,
+      "d180_plus": 87856,
+      "d180_plus_pct": 1.7565,
+      "default_event": 91318,
+      "default_event_pct": 1.8001,
+      "performing_pct": 94.0421
+    },
+    {
+      "year": 2012,
+      "loan_months": 5060419,
+      "known_status": 4953893,
+      "dpd30_plus": 205899,
+      "dpd30_plus_pct": 4.1563,
+      "d180_plus": 81812,
+      "d180_plus_pct": 1.6515,
+      "default_event": 85217,
+      "default_event_pct": 1.684,
+      "performing_pct": 93.8261
+    },
+    {
+      "year": 2013,
+      "loan_months": 5069874,
+      "known_status": 4985926,
+      "dpd30_plus": 168296,
+      "dpd30_plus_pct": 3.3754,
+      "d180_plus": 64223,
+      "d180_plus_pct": 1.2881,
+      "default_event": 66837,
+      "default_event_pct": 1.3183,
+      "performing_pct": 95.0246
+    },
+    {
+      "year": 2014,
+      "loan_months": 5177394,
+      "known_status": 5130417,
+      "dpd30_plus": 135381,
+      "dpd30_plus_pct": 2.6388,
+      "d180_plus": 46405,
+      "d180_plus_pct": 0.9045,
+      "default_event": 48224,
+      "default_event_pct": 0.9314,
+      "performing_pct": 96.4778
+    },
+    {
+      "year": 2015,
+      "loan_months": 5346394,
+      "known_status": 5287144,
+      "dpd30_plus": 121886,
+      "dpd30_plus_pct": 2.3053,
+      "d180_plus": 37534,
+      "d180_plus_pct": 0.7099,
+      "default_event": 38803,
+      "default_event_pct": 0.7258,
+      "performing_pct": 96.612
+    },
+    {
+      "year": 2016,
+      "loan_months": 5558061,
+      "known_status": 5487225,
+      "dpd30_plus": 114436,
+      "dpd30_plus_pct": 2.0855,
+      "d180_plus": 28485,
+      "d180_plus_pct": 0.5191,
+      "default_event": 29868,
+      "default_event_pct": 0.5374,
+      "performing_pct": 96.6666
+    },
+    {
+      "year": 2017,
+      "loan_months": 5848871,
+      "known_status": 5791494,
+      "dpd30_plus": 114006,
+      "dpd30_plus_pct": 1.9685,
+      "d180_plus": 21602,
+      "d180_plus_pct": 0.373,
+      "default_event": 22566,
+      "default_event_pct": 0.3858,
+      "performing_pct": 97.0698
+    },
+    {
+      "year": 2018,
+      "loan_months": 6100496,
+      "known_status": 6047256,
+      "dpd30_plus": 109356,
+      "dpd30_plus_pct": 1.8084,
+      "d180_plus": 18790,
+      "d180_plus_pct": 0.3107,
+      "default_event": 19612,
+      "default_event_pct": 0.3215,
+      "performing_pct": 97.3347
+    },
+    {
+      "year": 2019,
+      "loan_months": 6303614,
+      "known_status": 6233296,
+      "dpd30_plus": 103109,
+      "dpd30_plus_pct": 1.6542,
+      "d180_plus": 14962,
+      "d180_plus_pct": 0.24,
+      "default_event": 15504,
+      "default_event_pct": 0.246,
+      "performing_pct": 97.2426
+    },
+    {
+      "year": 2020,
+      "loan_months": 6711752,
+      "known_status": 6691214,
+      "dpd30_plus": 240378,
+      "dpd30_plus_pct": 3.5924,
+      "d180_plus": 48922,
+      "d180_plus_pct": 0.7311,
+      "default_event": 49018,
+      "default_event_pct": 0.7303,
+      "performing_pct": 94.1458
+    },
+    {
+      "year": 2021,
+      "loan_months": 7213557,
+      "known_status": 7213557,
+      "dpd30_plus": 181547,
+      "dpd30_plus_pct": 2.5167,
+      "d180_plus": 95050,
+      "d180_plus_pct": 1.3177,
+      "default_event": 95290,
+      "default_event_pct": 1.321,
+      "performing_pct": 95.3776
+    },
+    {
+      "year": 2022,
+      "loan_months": 7474242,
+      "known_status": 7474242,
+      "dpd30_plus": 118509,
+      "dpd30_plus_pct": 1.5856,
+      "d180_plus": 36072,
+      "d180_plus_pct": 0.4826,
+      "default_event": 36243,
+      "default_event_pct": 0.4849,
+      "performing_pct": 97.5999
+    },
+    {
+      "year": 2023,
+      "loan_months": 7518158,
+      "known_status": 7518158,
+      "dpd30_plus": 110898,
+      "dpd30_plus_pct": 1.4751,
+      "d180_plus": 20727,
+      "d180_plus_pct": 0.2757,
+      "default_event": 20768,
+      "default_event_pct": 0.2762,
+      "performing_pct": 98.0465
+    },
+    {
+      "year": 2024,
+      "loan_months": 7527636,
+      "known_status": 7527636,
+      "dpd30_plus": 116836,
+      "dpd30_plus_pct": 1.5521,
+      "d180_plus": 18648,
+      "d180_plus_pct": 0.2477,
+      "default_event": 18762,
+      "default_event_pct": 0.2492,
+      "performing_pct": 97.923
+    }
+  ],
+  "vintage_default_by_origination_year": [
+    {
+      "origination_year": 1999,
+      "n_loans": 6461,
+      "n_ever_default": 146,
+      "lifetime_default_pct": 2.2597
+    },
+    {
+      "origination_year": 2000,
+      "n_loans": 50751,
+      "n_ever_default": 1127,
+      "lifetime_default_pct": 2.2206
+    },
+    {
+      "origination_year": 2001,
+      "n_loans": 134997,
+      "n_ever_default": 2720,
+      "lifetime_default_pct": 2.0149
+    },
+    {
+      "origination_year": 2002,
+      "n_loans": 154400,
+      "n_ever_default": 3448,
+      "lifetime_default_pct": 2.2332
+    },
+    {
+      "origination_year": 2003,
+      "n_loans": 204103,
+      "n_ever_default": 6498,
+      "lifetime_default_pct": 3.1837
+    },
+    {
+      "origination_year": 2004,
+      "n_loans": 69787,
+      "n_ever_default": 4070,
+      "lifetime_default_pct": 5.832
+    },
+    {
+      "origination_year": 2005,
+      "n_loans": 57860,
+      "n_ever_default": 5526,
+      "lifetime_default_pct": 9.5506
+    },
+    {
+      "origination_year": 2006,
+      "n_loans": 43386,
+      "n_ever_default": 5449,
+      "lifetime_default_pct": 12.5594
+    },
+    {
+      "origination_year": 2007,
+      "n_loans": 49896,
+      "n_ever_default": 7152,
+      "lifetime_default_pct": 14.3338
+    },
+    {
+      "origination_year": 2008,
+      "n_loans": 59792,
+      "n_ever_default": 5192,
+      "lifetime_default_pct": 8.6834
+    },
+    {
+      "origination_year": 2009,
+      "n_loans": 94219,
+      "n_ever_default": 1777,
+      "lifetime_default_pct": 1.886
+    },
+    {
+      "origination_year": 2010,
+      "n_loans": 77639,
+      "n_ever_default": 923,
+      "lifetime_default_pct": 1.1888
+    },
+    {
+      "origination_year": 2011,
+      "n_loans": 66156,
+      "n_ever_default": 875,
+      "lifetime_default_pct": 1.3226
+    },
+    {
+      "origination_year": 2012,
+      "n_loans": 107583,
+      "n_ever_default": 1261,
+      "lifetime_default_pct": 1.1721
+    },
+    {
+      "origination_year": 2013,
+      "n_loans": 88718,
+      "n_ever_default": 1404,
+      "lifetime_default_pct": 1.5825
+    },
+    {
+      "origination_year": 2014,
+      "n_loans": 57997,
+      "n_ever_default": 1244,
+      "lifetime_default_pct": 2.1449
+    },
+    {
+      "origination_year": 2015,
+      "n_loans": 74455,
+      "n_ever_default": 1665,
+      "lifetime_default_pct": 2.2363
+    },
+    {
+      "origination_year": 2016,
+      "n_loans": 94305,
+      "n_ever_default": 2519,
+      "lifetime_default_pct": 2.6711
+    },
+    {
+      "origination_year": 2017,
+      "n_loans": 80367,
+      "n_ever_default": 2782,
+      "lifetime_default_pct": 3.4616
+    },
+    {
+      "origination_year": 2018,
+      "n_loans": 71357,
+      "n_ever_default": 2882,
+      "lifetime_default_pct": 4.0388
+    },
+    {
+      "origination_year": 2019,
+      "n_loans": 88522,
+      "n_ever_default": 3015,
+      "lifetime_default_pct": 3.4059
+    },
+    {
+      "origination_year": 2020,
+      "n_loans": 199827,
+      "n_ever_default": 2115,
+      "lifetime_default_pct": 1.0584
+    },
+    {
+      "origination_year": 2021,
+      "n_loans": 185673,
+      "n_ever_default": 1386,
+      "lifetime_default_pct": 0.7465
+    },
+    {
+      "origination_year": 2022,
+      "n_loans": 71668,
+      "n_ever_default": 700,
+      "lifetime_default_pct": 0.9767
+    },
+    {
+      "origination_year": 2023,
+      "n_loans": 38481,
+      "n_ever_default": 114,
+      "lifetime_default_pct": 0.2963
+    },
+    {
+      "origination_year": 2024,
+      "n_loans": 35882,
+      "n_ever_default": 4,
+      "lifetime_default_pct": 0.0111
+    }
+  ]
+}

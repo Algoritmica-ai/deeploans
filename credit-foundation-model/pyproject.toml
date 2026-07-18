@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "credit_fm"
+version = "1.1.0.dev0"
+description = "Open-source framework for training credit foundation models"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Apache-2.0" }
+authors = [
+  { name = "finevals.ai" },
+]
+keywords = ["credit-risk", "foundation-model", "tabular", "sequence-model", "mlm"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Financial and Insurance Industry",
+  "Intended Audience :: Science/Research",
+  "License :: OSI Approved :: Apache Software License",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+# Core = what `import credit_fm` + the stock pipeline scripts actually import — nothing more.
+# (v1.1 G5.1: transformers/peft/wandb/matplotlib/lightgbm/tqdm removed — none is imported
+# anywhere in src/ or scripts/; LoRA is hand-rolled in inference/scoring.py.)
+dependencies = [
+  "torch>=2.2",
+  "numpy",
+  "pandas",
+  "pyarrow",
+  "pyyaml",
+  "fsspec",
+  "scikit-learn",
+]
+
+[project.optional-dependencies]
+gcs = ["gcsfs"]                            # gs:// storage backend (reference corpus lives on GCS)
+baselines = ["xgboost"]                    # tabular baseline + embeddings-downstream scripts
+logging = ["wandb", "tensorboard"]         # optional metrics-logger backends (DL-009: opt-in only)
+serving = ["fastapi", "uvicorn"]           # the serving example (reference_implementations/*/serve.py)
+dev = ["pytest", "pytest-cov", "ruff", "fastapi", "httpx"]   # fastapi+httpx: serve.py tests
+nemo = ["nemo-toolkit"]
+
+[project.urls]
+Homepage = "https://github.com/sriramarun/credit-foundation-model"
+Documentation = "https://github.com/sriramarun/credit-foundation-model/tree/main/docs"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

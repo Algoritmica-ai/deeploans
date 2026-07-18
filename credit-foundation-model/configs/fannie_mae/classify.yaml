@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# Classify panel columns -> generate the tokenizer field schema (reproducibly).
+#
+#   python scripts/classify_schema.py -c configs/fannie_mae/classify.yaml            # report only
+#   python scripts/classify_schema.py -c configs/fannie_mae/classify.yaml \
+#       --out configs/fannie_mae/tokenizer.yaml --drop '[days_past_due]'
+
+include: common.yaml
+
+input: ${paths.processed}/train.parquet   # TRAIN split only — cardinality stats stay train-only
+id_col: loan_id
+time_col: reporting_date
+
+drop: []                 # review-redundant columns to drop (suggestions printed on each run)
+out: null                # path for the generated schema YAML (null = report only)
