@@ -1,0 +1,16 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# Gate-G1 XGBoost baseline run. The asset task definition (obs date, gate, label,
+# leakage/exclude lists) stays in its own YAML: `task_config`.
+#
+#   python scripts/train_baseline.py -c configs/fannie_mae/baseline_run.yaml
+#   python scripts/train_baseline.py -c configs/fannie_mae/baseline_run.yaml \
+#       --task_config configs/dutch_mortgages/baseline.yaml --data_dir data/processed
+
+include: common.yaml
+
+task_config: configs/fannie_mae/baseline.yaml
+data_dir: ${paths.processed}
+book: data/raw/loan_book.parquet    # loan_book with the eval-only segment latent (Dutch)
+report: reports/baseline_report.md
