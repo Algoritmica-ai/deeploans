@@ -70,7 +70,7 @@ class _FakeAdapter:
 
 
 def _quarters(n_loans: int = 6) -> dict[str, pd.DataFrame]:
-    """4 quarters; every loan reports every quarter (so loans overlap across shards, like Fannie)."""
+    """4 quarters; every loan reports every quarter (so loans overlap across shards, like Mortgage)."""
     out = {}
     for qi, q in enumerate(["2016Q1", "2016Q2", "2016Q3", "2016Q4"]):
         out[q] = pd.DataFrame({
@@ -183,7 +183,7 @@ def test_default_tag_sanitizes_basename():
 # ------------------------------------------------------------------ script-run regression
 def test_ingest_script_subprocess_resolves_the_adapter(tmp_path):
     """Run `python scripts/ingest.py` EXACTLY as the container does (subprocess from the repo
-    root, real fannie_mae adapter). Regression for the 15 Jul field failure: script-run puts
+    root, real mortgage_performance adapter). Regression for the 15 Jul field failure: script-run puts
     scripts/ on sys.path instead of the repo root, so the lazy reference_implementations import
     raised ModuleNotFoundError and get_adapter reported 'no adapter registered' — in-process
     tests never saw it because pytest has the root on sys.path."""
@@ -203,7 +203,7 @@ def test_ingest_script_subprocess_resolves_the_adapter(tmp_path):
         srcs.append(str(p))
     cfg = tmp_path / "ingest_test.yaml"
     cfg.write_text(
-        "dataset: configs/fannie_mae/dataset.yaml\n"          # the real contract + adapter name
+        "dataset: configs/mortgage_performance/dataset.yaml\n"          # the real contract + adapter name
         f"sources: {{files: [{srcs[0]}, {srcs[1]}], root: null, reporting: null}}\n"
         f"out: {tmp_path / 'out'}\ncombined_name: panel.parquet\n"
         "sample_pct: 100\nworkers: 1\nsharded: true\ncombine: false\nkey: null\n")
@@ -218,12 +218,12 @@ def test_ingest_script_subprocess_resolves_the_adapter(tmp_path):
     assert storage.read_parquet(str(shard_dir))["loan_id"].nunique() == 10
 
 
-def test_fannie_source_tag_extracts_quarter():
-    fan = _load("reference_implementations/fannie_mae/adapter.py", "fannie_adapter_g31")
+def test_mortgage_source_tag_extracts_quarter():
+    fan = _load("reference_implementations/mortgage_performance/adapter.py", "mortgage_adapter_g31")
     from credit_fm.data.dataset_config import DatasetConfig
-    cfg = DatasetConfig(name="fannie_mae", adapter="fannie_mae", id_col="loan_id",
+    cfg = DatasetConfig(name="mortgage_performance", adapter="mortgage_performance", id_col="loan_id",
                         time_col="reporting_date", origination_col="origination_date",
                         origination_derived=False)
-    ad = fan.FannieMaeAdapter(cfg, stage={})
+    ad = fan.MortgagePerformanceAdapter(cfg, stage={})
     assert ad.source_tag("gs://b/root/reporting_year=2016/reporting_quarter=Q1") == "2016Q1"
     assert ad.source_tag("gs://b/files/extract 2020.parquet") == "extract-2020"

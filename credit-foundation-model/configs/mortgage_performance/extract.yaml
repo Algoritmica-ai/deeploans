@@ -1,0 +1,28 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# Extract per-loan [USR] embeddings at an observation cutoff (leakage-gated).
+#
+#   python scripts/extract_embeddings.py -c configs/mortgage_performance/extract.yaml
+#   python scripts/extract_embeddings.py -c configs/mortgage_performance/extract.yaml --limit 1000
+
+include: common.yaml
+
+checkpoint: ${paths.runs}/m3_full.pt
+panel: ${paths.processed}/train.parquet   # test.parquet is 2017-only originations
+
+observe:
+  cutoff: "2016-12-31"     # history <= cutoff only (no leakage)
+  gate_col: is_performing  # keep loans performing at cutoff (predict NEW defaults); null = no gate
+
+carry: [origination_date]  # panel cols carried onto the embedding rows
+batch_size: 256
+workers: 32                # parallel observation encoding (was the 5.5h serial stall)
+engine: cpu                # cpu | vector | gpu (RAPIDS cuDF/CuPy)
+limit: null
+
+runtime:
+  device: null
+  bf16: true
+
+out: ${paths.embeddings}/m3_dec2016_train.parquet

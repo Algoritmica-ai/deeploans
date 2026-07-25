@@ -35,7 +35,7 @@ CELLS = [
     md(r"""
 # 05 · Bring Your Own Dataset — onboarding a new asset in 5 steps
 
-The framework is **asset-blind**: nothing in `credit_fm` knows about Fannie Mae or Dutch
+The framework is **asset-blind**: nothing in `credit_fm` knows about mortgage performance data or Dutch
 mortgages (that's enforced by a test, `tests/test_asset_blind.py`). A new dataset plugs in through
 **one contract file** (`dataset.yaml`) and — only if your raw data needs custom derivations — one
 small adapter class. Every pipeline stage then runs unchanged.
@@ -68,9 +68,9 @@ import yaml
 
 # find the repo root (walk up until we see configs/)
 ROOT = Path.cwd()
-while not (ROOT / "configs" / "fannie_mae").exists() and ROOT != ROOT.parent:
+while not (ROOT / "configs" / "mortgage_performance").exists() and ROOT != ROOT.parent:
     ROOT = ROOT.parent
-assert (ROOT / "configs" / "fannie_mae").exists(), "run inside the credit-foundation-model repo"
+assert (ROOT / "configs" / "mortgage_performance").exists(), "run inside the credit-foundation-model repo"
 if str(ROOT / "src") not in sys.path:
     sys.path.insert(0, str(ROOT / "src"))
 
@@ -101,9 +101,9 @@ The contract is small. Your panel must be **one row per entity per period** with
 * your **label ingredients**: a boolean *event* column (did the bad thing happen this month?)
   and a *gate* column (is the entity healthy right now?).
 
-If your raw source needs parsing/derivations to get there (like Fannie's `MMYYYY` dates and
+If your raw source needs parsing/derivations to get there (like the source's `MMYYYY` dates and
 delinquency codes), that logic goes into a `DatasetAdapter` under `reference_implementations/` —
-see `reference_implementations/fannie_mae/adapter.py` for the worked example. Our toy asset is
+see `reference_implementations/mortgage_performance/adapter.py` for the worked example. Our toy asset is
 synthesized directly in contract shape:
 """),
     code(r"""
@@ -246,7 +246,7 @@ print(" ", " ".join(tok.tokens(panel[panel['loan_id'] == 'AUTO0000'])[:18]), "..
 
 ```bash
 # 0. (only if your raw source needs derivations) write reference_implementations/<asset>/adapter.py
-#    with @register_adapter("<asset>") — see reference_implementations/fannie_mae/adapter.py
+#    with @register_adapter("<asset>") — see reference_implementations/mortgage_performance/adapter.py
 
 # 1+2. write configs/<asset>/dataset.yaml  (+ an ingest recipe if using an adapter)
 python scripts/ingest.py -c configs/<asset>/ingest.yaml            # adapter assets only

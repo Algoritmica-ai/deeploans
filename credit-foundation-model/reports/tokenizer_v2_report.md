@@ -1,6 +1,6 @@
-# Fannie Mae — KVT Tokenizer Report (M1)
+# Mortgage Performance — KVT Tokenizer Report (M1)
 
-Fitted on `gs://sriram-credit-fm-data/output/processed/fannie_mae/run_2000_2022/train.parquet` (30,000,000 rows). Schema `configs/fannie_mae/tokenizer.yaml`; saved to `configs/fannie_mae/tokenizer_v2.json`.
+Fitted on `gs://sriram-credit-fm-data/output/processed/mortgage_performance/run_2000_2022/train.parquet` (30,000,000 rows). Schema `configs/mortgage_performance/tokenizer.yaml`; saved to `configs/mortgage_performance/tokenizer_v2.json`.
 
 ## Vocabulary
 

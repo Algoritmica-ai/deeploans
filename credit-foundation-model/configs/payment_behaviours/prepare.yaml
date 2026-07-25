@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# Customer-disjoint train/val/test split (DL-007/008 machinery, degenerate-temporal case).
+# origination_date is the same pseudo-date for every customer, so the positional partition
+# sorted by (origination_date, loan_id) orders by the sha-256 customer id — i.e. an
+# effectively random, ENTITY-DISJOINT split. There is no calendar out-of-time on this asset.
+#
+#   python scripts/prepare_data.py -c configs/payment_behaviours/prepare.yaml
+#   python scripts/validate_splits.py --dir /workspace/data/payment_behaviours/processed/run_pb_v1
+
+include: common.yaml
+
+input: ${paths.raw}/panel.parquet
+id_col: loan_id
+origination_col: origination_date
+reporting_col: reporting_date
+
+out_dir: ${paths.processed}
+fractions: [0.8, 0.1, 0.1]          # train, val, test (sum to 1.0)
+
+stream: false                       # 25M rows fit in RAM comfortably
+buckets: 64
+batch_rows: 2000000

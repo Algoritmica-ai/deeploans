@@ -43,7 +43,7 @@ val/test/full leaks distribution into the tokenizer. Build the split first
 (`scripts/prepare_data.py`), then `scripts/train_tokenizer.py` writes `configs/<asset>/tokenizer.json`
 (config + bin edges + categories + calendar + vocab) plus a QA report (roundtrip %, OOV %, length).
 
-**Mortgage reference corpus (Fannie Mae), fit on the full 2000–2022 train split:** **552 tokens**
+**Mortgage reference corpus (mortgage performance data), fit on the full 2000–2022 train split:** **552 tokens**
 — 9 special + 431 `field=value` + 18 `t=` + 94 `cal=` (one per year-quarter across 25 years).
 100% lossless roundtrip, 0% OOV. On the full multi-year corpus loans hit the `max_events=60` cap
 (~1000 tokens) → size the model context at 1024. (An earlier 440-token vocab fit on the

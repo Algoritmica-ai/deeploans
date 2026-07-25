@@ -29,8 +29,8 @@ By Part 15 you will have watched it go from a CSV row to a calibrated probabilit
 | 2 | [02_big_picture.md](02_big_picture.md) | The 11-stage pipeline and why it's modular |
 | 3 | [03_project_structure.md](03_project_structure.md) | Every folder, what belongs where |
 | 4 | [04_end_to_end_data_flow.md](04_end_to_end_data_flow.md) | One loan's journey, dataframe by dataframe |
-| 5 | [05_dataset.md](05_dataset.md) | Fannie Mae data, defaults, prepayment, zero-balance codes |
-| 6 | [06_ingestion.md](06_ingestion.md) | `ingest.py` + the Fannie adapter, line of business logic |
+| 5 | [05_dataset.md](05_dataset.md) | mortgage performance data, defaults, prepayment, zero-balance codes |
+| 6 | [06_ingestion.md](06_ingestion.md) | `ingest.py` + the Mortgage adapter, line of business logic |
 | 7 | [07_validation.md](07_validation.md) | Why every stage has an auditor, every check explained |
 | 8 | [08_data_preparation.md](08_data_preparation.md) | Splits, leakage, labels, class imbalance |
 | 9 | [09_tokenization.md](09_tokenization.md) | Turning a spreadsheet into a language |

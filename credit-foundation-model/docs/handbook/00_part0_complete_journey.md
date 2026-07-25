@@ -8,7 +8,7 @@
 
 ```
         ┌───────────────────────────────────────────────────────────────────┐
-        │                    RAW FANNIE MAE DATA                            │
+        │                    RAW MORTGAGE DATA                              │
         │   25 years · millions of loans · one row per loan per month       │
         └────────────────────────────────┬──────────────────────────────────┘
                                          ▼

@@ -9,12 +9,12 @@ cutoff** and writes a JSON calibrator that ``score_portfolio.py --calibrator`` a
 Workflow::
 
     # 1. score the portfolio at the CALIBRATION cutoff (past; outcomes exist; NOT a test cutoff)
-    python scripts/score_portfolio.py -c configs/fannie_mae/scoring.yaml \
+    python scripts/score_portfolio.py -c configs/mortgage_performance/scoring.yaml \
         --cutoff 2021-12-31 --out gs://.../calibration_scores.parquet
     # 2. fit the calibrator on those scores + realized outcomes
-    python scripts/calibrate.py -c configs/fannie_mae/calibrate.yaml
+    python scripts/calibrate.py -c configs/mortgage_performance/calibrate.yaml
     # 3. score for real, calibrated
-    python scripts/score_portfolio.py -c configs/fannie_mae/scoring.yaml \
+    python scripts/score_portfolio.py -c configs/mortgage_performance/scoring.yaml \
         --calibrator gs://.../calibrator.json
 
 **Embargo guard**: the recipe lists the protocol's ``test_cutoffs``; this script REFUSES to fit
@@ -53,7 +53,7 @@ def forward_labels(scores: pd.DataFrame, panel: pd.DataFrame, *, id_col: str, ti
 
 
 def main() -> None:
-    cfg = parse_cli(__doc__, default_config="configs/fannie_mae/calibrate.yaml")
+    cfg = parse_cli(__doc__, default_config="configs/mortgage_performance/calibrate.yaml")
     print(f"config: {cfg.config_path}\n"
           f"{summarize(cfg, 'scores', 'labeled_panel', 'method', 'horizon_months', 'test_cutoffs', 'out')}",
           flush=True)
@@ -103,7 +103,7 @@ def main() -> None:
     storage.ensure_auth(cfg.out, cfg.key)
     save_calibrator(cal, cfg.out)
     print(f"wrote calibrator -> {cfg.out}\n"
-          f"apply it:  python scripts/score_portfolio.py -c configs/fannie_mae/scoring.yaml "
+          f"apply it:  python scripts/score_portfolio.py -c configs/mortgage_performance/scoring.yaml "
           f"--calibrator {cfg.out}")
 
 

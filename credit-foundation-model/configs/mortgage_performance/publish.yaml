@@ -1,0 +1,13 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# Package the M5 checkpoint into a publishable model directory (safetensors + config + card).
+#
+#   python scripts/publish_model.py -c configs/mortgage_performance/publish.yaml
+
+include: common.yaml
+
+checkpoint: ${paths.runs}/m5_full.pt
+tokenizer: configs/mortgage_performance/tokenizer.json
+model_card: docs/model_cards/mortgage_performance.md
+out: models/mortgage_performance_credit_fm_m5

@@ -1,0 +1,93 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# Dataset contract — single-family mortgage performance (v1.1 G1).
+# THE single onboarding artifact for this asset: the column contract, the declarative task
+# labels, and the machine-enforced leakage/exclude lists. Consumers read it via
+# credit_fm.data.dataset_config.load_dataset_config; nothing re-declares these.
+# (baseline.yaml's lists are kept in sync by tests/test_dataset_config.py until all
+# consumers migrate — this file is canonical.)
+
+dataset:
+  name: mortgage_performance
+  adapter: mortgage_performance              # reference_implementations/mortgage_performance/adapter.py
+  id_col: loan_id                  # numeric-looking strings — ALWAYS handled as str
+  time_col: reporting_date         # ISO 'YYYY-MM-DD' month-end string (derived in ingest)
+  origination_col: origination_date  # ISO string (derived in ingest) — the temporal-split key
+
+labels:                            # declarative task targets (v1.1 G2 consumes these)
+  default_12m:
+    type: forward_event            # did event_col fire within horizon after the cutoff?
+    event_col: default_event       # bool: dlq >= 6 (D180) OR credit-event zero-balance code
+    horizon_months: 12
+    gate_col: is_performing        # observe only loans performing at the cutoff
+  prepay_12m:
+    type: forward_event
+    event_col: prepay_event        # bool: zero_balance_code == '01' (prepaid/matured)
+    horizon_months: 12
+    gate_col: is_performing
+
+schema: configs/mortgage_performance/tokenizer.yaml   # tokenizer field schema (43 curated fields)
+
+exclude:                           # structural non-features: ids / metadata / raw dates / geo / text
+  - reference_pool_id
+  - monthly_reporting_period       # raw MMYYYY string, superseded by derived reporting_date
+  - origination_date               # parsed datetime — the split key, not a feature
+  - first_payment_date
+  - maturity_date
+  - seller_name
+  - servicer_name
+  - master_servicer
+  - deal_name
+  - loan_payment_history           # 24-month delinquency-code string (non-tabular)
+  - metropolitan_statistical_area  # high-cardinality geo
+  - zip_code_short                 # high-cardinality geo
+  - interest_only_first_principal_and_interest_payment_date
+  - next_interest_rate_adjustment_date
+  - next_payment_change_date
+
+leakage:                           # outcome / contemporaneous-termination / post-default servicing
+  - current_loan_delinquency_status
+  - dlq_num
+  - zero_balance_code
+  - zero_balance_effective_date
+  - zero_balance_code_change_date
+  - default_event                  # the label itself
+  - prepay_event
+  - is_performing
+  - modification_flag
+  - foreclosure_date
+  - disposition_date
+  - last_paid_installment_date
+  - repurchase_date
+  - upb_at_the_time_of_removal
+  - foreclosure_costs
+  - property_preservation_and_repair_costs
+  - asset_recovery_costs
+  - miscellaneous_holding_expenses_and_credits
+  - associated_taxes_for_holding_property
+  - net_sales_proceeds
+  - credit_enhancement_proceeds
+  - repurchase_make_whole_proceeds
+  - repurchase_make_whole_proceeds_flag
+  - other_foreclosure_proceeds
+  - modification_related_non_interest_bearing_upb
+  - principal_forgiveness_amount
+  - foreclosure_principal_write_off_amount
+  - delinquent_accrued_interest
+  - current_period_modification_loss_amount
+  - cumulative_modification_loss_amount
+  - current_period_credit_event_net_gain_or_loss
+  - cumulative_credit_event_net_gain_or_loss
+  - servicing_activity_indicator
+  - borrower_assistance_plan
+  - total_deferral_amount
+  - payment_deferral_modification_event_indicator
+  - alternative_delinquency_resolution
+  - alternative_delinquency_resolution_count
+  - original_list_start_date       # REO listing fields — only populated heading to disposition
+  - original_list_price
+  - current_list_start_date
+  - current_list_price
+  - loan_holdback_indicator
+  - loan_holdback_effective_date

@@ -1,15 +1,15 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 finevals.ai and contributors.
-"""Generate ``notebooks/00_data_bible.ipynb`` — the Fannie Mae dataset 'bible'.
+"""Generate ``notebooks/00_data_bible.ipynb`` — the mortgage performance dataset 'bible'.
 
 Kept as a builder (not a hand-written .ipynb) so the notebook is regenerated deterministically and
 reviewed as plain Python. Run from anywhere::
 
     python notebooks/build_data_bible.py
 
-The notebook itself reads ``reports/fannie_dataset_profile.json`` (produced by
-``scripts/profile_fannie_dataset.py``); glossary + include/exclude lists are derived live from
-``reference_implementations/fannie_mae/fannie_glossary.py`` and ``configs/fannie_mae/``.
+The notebook itself reads ``reports/mortgage_dataset_profile.json`` (produced by
+``scripts/profile_mortgage_dataset.py``); glossary + include/exclude lists are derived live from
+``reference_implementations/mortgage_performance/mortgage_glossary.py`` and ``configs/mortgage_performance/``.
 """
 
 from __future__ import annotations
@@ -32,7 +32,7 @@ def code(text: str) -> nbf.NotebookNode:
 
 CELLS = [
     md(r"""
-# The Fannie Mae Loan-Performance Data Bible
+# The mortgage performance data Loan-Performance Data Bible
 
 **One notebook that documents the entire dataset**: every column's meaning, which columns the model
 is allowed to see (and which are held out as leakage), and the headline risk signal — the
@@ -42,14 +42,14 @@ It reads a pre-computed statistics artifact so it renders instantly; regenerate 
 
 ```bash
 # representative 4% panel (fast; the deterministic hash sample is unbiased for rates)
-python scripts/profile_fannie_dataset.py \
-    --panel gs://sriram-credit-fm-data/output/raw/fannie_mae/panel_2000_2024.parquet \
-    --out reports/fannie_dataset_profile.json
+python scripts/profile_mortgage_dataset.py \
+    --panel gs://sriram-credit-fm-data/output/raw/mortgage_performance/panel_2000_2024.parquet \
+    --out reports/mortgage_dataset_profile.json
 
 # OR the TRUE whole loan book, straight from the raw source
-python scripts/profile_fannie_dataset.py \
-    --raw-root gs://sriram-credit-fm-data/fannie_by_reporting \
-    --out reports/fannie_dataset_profile.json --no-vintage
+python scripts/profile_mortgage_dataset.py \
+    --raw-root gs://sriram-credit-fm-data/raw_by_reporting \
+    --out reports/mortgage_dataset_profile.json --no-vintage
 ```
 
 **Contents**
@@ -77,27 +77,27 @@ pd.set_option("display.max_colwidth", 100)
 
 # find the repo root (walk up until we see configs/)
 ROOT = Path.cwd()
-while not (ROOT / "configs" / "fannie_mae").exists() and ROOT != ROOT.parent:
+while not (ROOT / "configs" / "mortgage_performance").exists() and ROOT != ROOT.parent:
     ROOT = ROOT.parent
-assert (ROOT / "configs" / "fannie_mae").exists(), "run inside the credit-foundation-model repo"
+assert (ROOT / "configs" / "mortgage_performance").exists(), "run inside the credit-foundation-model repo"
 
 # import the glossary module directly (avoids importing credit_fm/__init__, which pulls in torch)
 _gspec = importlib.util.spec_from_file_location(
-    "fannie_glossary", ROOT / "reference_implementations" / "fannie_mae" / "fannie_glossary.py")
+    "mortgage_glossary", ROOT / "reference_implementations" / "mortgage_performance" / "mortgage_glossary.py")
 G = importlib.util.module_from_spec(_gspec)
 _gspec.loader.exec_module(G)
 
 # resolve the ingested-panel output path from the recipe that produced it (config is the truth)
-_common = yaml.safe_load((ROOT / "configs" / "fannie_mae" / "common.yaml").read_text())
-_ingest = yaml.safe_load((ROOT / "configs" / "fannie_mae" / "ingest_2000_2024.yaml").read_text())
+_common = yaml.safe_load((ROOT / "configs" / "mortgage_performance" / "common.yaml").read_text())
+_ingest = yaml.safe_load((ROOT / "configs" / "mortgage_performance" / "ingest_2000_2024.yaml").read_text())
 _raw_dir = _common["paths"]["raw"].replace("${gcs_root}", _common["gcs_root"])
 PANEL_PATH = f"{_raw_dir}/{_ingest['combined_name']}"
 
-# Load the pre-computed statistics profile. The full profile (`fannie_dataset_profile.json`, with
+# Load the pre-computed statistics profile. The full profile (`mortgage_dataset_profile.json`, with
 # per-column stats) drives every section; if it is absent we fall back to the lightweight
 # `delinquency_4pct.json` so the overview + delinquency sections still render (only the per-column
 # stats in section 5 need the full profile).
-FULL_PROFILE = ROOT / "reports" / "fannie_dataset_profile.json"
+FULL_PROFILE = ROOT / "reports" / "mortgage_dataset_profile.json"
 DLQ_PROFILE = ROOT / "reports" / "delinquency_4pct.json"
 if FULL_PROFILE.exists():
     PROFILE = json.loads(FULL_PROFILE.read_text())
@@ -110,7 +110,7 @@ else:
     PROFILE_SRC = None
 HAS_COLUMN_STATS = bool(PROFILE and PROFILE.get("columns"))
 print("glossary fields:", len(G.ALL_FIELDS), "| profile:",
-      PROFILE_SRC or "MISSING (run scripts/profile_fannie_dataset.py — see section 4d for commands)")
+      PROFILE_SRC or "MISSING (run scripts/profile_mortgage_dataset.py — see section 4d for commands)")
 """),
     code(r"""
 print(f"panel path : {PANEL_PATH}")
@@ -133,7 +133,7 @@ else:
 ## 2. Column glossary
 
 Every field in the dataset, condensed from the official *Single-Family Loan Performance Dataset and
-Credit Risk Transfer — Glossary and File Layout* (© 2026 Fannie Mae). `position` is the 1-based
+Credit Risk Transfer — Glossary and File Layout* (© 2026 mortgage performance data). `position` is the 1-based
 field position in the published layout; the last 6 rows (`position = derived`) are columns our
 ingest step adds so the rest of the pipeline stays asset-generic.
 """),
@@ -162,8 +162,8 @@ glossary_frame(G.DERIVED_FIELDS)
     md(r"""
 ## 3. Columns *included* in training vs *excluded* / *leakage*
 
-The included/excluded split is **derived live** from `configs/fannie_mae/raw_schema.yaml` (all 113
-source fields) and `configs/fannie_mae/baseline.yaml` (the `exclude` / `leakage` lists + the
+The included/excluded split is **derived live** from `configs/mortgage_performance/raw_schema.yaml` (all 113
+source fields) and `configs/mortgage_performance/baseline.yaml` (the `exclude` / `leakage` lists + the
 id/time/label/gate roles), so this table can never drift from the config the model actually uses.
 
 ### The golden rule
@@ -206,8 +206,8 @@ def load_yaml(path):
     import yaml
     return yaml.safe_load(Path(path).read_text())
 
-schema = load_yaml(ROOT / "configs" / "fannie_mae" / "raw_schema.yaml")
-base = load_yaml(ROOT / "configs" / "fannie_mae" / "baseline.yaml")
+schema = load_yaml(ROOT / "configs" / "mortgage_performance" / "raw_schema.yaml")
+base = load_yaml(ROOT / "configs" / "mortgage_performance" / "baseline.yaml")
 
 all_cols = [c["name"] for c in schema["columns"]]
 exclude = set(base.get("exclude", []))
@@ -274,7 +274,7 @@ it. Six groups:
    principal forgiveness, modification/credit-event losses, `borrower_assistance_plan`, deferrals,
    and alternative delinquency resolutions: you only get these once you're *already* missing payments.
 5. **REO listing** (`original_list_*`, `current_list_*`) — the property is being sold post-foreclosure.
-6. **Loan holdback** (`loan_holdback_indicator` + date) — a distress hold Fannie places on loans
+6. **Loan holdback** (`loan_holdback_indicator` + date) — a distress hold The source places on loans
    about to hit a credit event.
 
 **The subtle bit:** `current_loan_delinquency_status` is banned but `current_actual_upb` and
@@ -336,10 +336,10 @@ if HAS_COLUMN_STATS:
     print("MATCH ✓ — the real panel schema matches this contract" if not missing and not extra
           else f"MISMATCH — missing from file: {missing or '{}'}  |  extra in file: {extra or '{}'}")
 else:
-    print("Load the FULL profile (reports/fannie_dataset_profile.json) to verify these columns "
+    print("Load the FULL profile (reports/mortgage_dataset_profile.json) to verify these columns "
           "against the real file — the profiler records the actual panel schema when it runs.\\n"
-          "Generate it with:  python scripts/profile_fannie_dataset.py "
-          "--panel " + PANEL_PATH + " --out reports/fannie_dataset_profile.json")
+          "Generate it with:  python scripts/profile_mortgage_dataset.py "
+          "--panel " + PANEL_PATH + " --out reports/mortgage_dataset_profile.json")
 """),
 
     # ---------------------------------------------------------------- delinquency by year
@@ -360,7 +360,7 @@ if PROFILE and PROFILE["delinquency_by_reporting_year"]:
     display(dlq)
 else:
     dlq = None
-    print("No profile — generate reports/fannie_dataset_profile.json first.")
+    print("No profile — generate reports/mortgage_dataset_profile.json first.")
 """),
     code(r"""
 if dlq is not None:
@@ -406,13 +406,13 @@ then re-run this notebook:
 
 ```bash
 # 4% sample (your pretraining panel)
-python scripts/profile_fannie_dataset.py \
-    --panel gs://sriram-credit-fm-data/output/raw/fannie_mae/panel_2000_2024.parquet \
+python scripts/profile_mortgage_dataset.py \
+    --panel gs://sriram-credit-fm-data/output/raw/mortgage_performance/panel_2000_2024.parquet \
     --out reports/delinquency_4pct.json --delinquency-only
 
 # 100% whole loan book, straight from the raw source
-python scripts/profile_fannie_dataset.py \
-    --raw-root gs://sriram-credit-fm-data/fannie_by_reporting \
+python scripts/profile_mortgage_dataset.py \
+    --raw-root gs://sriram-credit-fm-data/raw_by_reporting \
     --out reports/delinquency_100pct.json --delinquency-only --no-vintage --no-loan-count
 ```
 
@@ -470,7 +470,7 @@ if yt is not None:
     md(r"""
 ## 5. Per-column statistics
 
-Computed by `scripts/profile_fannie_dataset.py` in a single memory-bounded streaming pass over the
+Computed by `scripts/profile_mortgage_dataset.py` in a single memory-bounded streaming pass over the
 dataset. Numeric columns report min/mean/std and quantiles (quantiles from a 200k reservoir sample);
 categorical columns report their top values; distinct counts are exact up to a 200k cap.
 
@@ -478,9 +478,9 @@ categorical columns report their top values; distinct counts are exact up to a 2
 cells below are empty, generate it once (a few minutes on the 4% panel) and re-run this notebook:
 
 ```bash
-python scripts/profile_fannie_dataset.py \
-    --panel gs://sriram-credit-fm-data/output/raw/fannie_mae/panel_2000_2024.parquet \
-    --out reports/fannie_dataset_profile.json
+python scripts/profile_mortgage_dataset.py \
+    --panel gs://sriram-credit-fm-data/output/raw/mortgage_performance/panel_2000_2024.parquet \
+    --out reports/mortgage_dataset_profile.json
 ```
 """),
     code(r"""
@@ -533,28 +533,28 @@ if PROFILE and PROFILE["columns"]:
     md(r"""
 ## 6. How to (re)produce this data — ingest
 
-The panel this bible documents is written by **stage 1, `ingest_fannie_mae.py`**: it reads the raw
+The panel this bible documents is written by **stage 1, `ingest_mortgage_performance.py`**: it reads the raw
 Hive-partitioned source, derives the modelling columns (`reporting_date`, `origination_date`,
 `default_event`, `is_performing`, …), optionally loan-samples, and writes one combined panel.
 
 ```bash
 # the 10% panel used for the scaling run (a deterministic loan-hash sample)
-python scripts/ingest_fannie_mae.py -c configs/fannie_mae/ingest_2000_2024.yaml \
+python scripts/ingest_mortgage_performance.py -c configs/mortgage_performance/ingest_2000_2024.yaml \
     --sample_pct 10 --combined_name panel_2000_2024_10pct.parquet
 
 # the default 4% reference panel
-python scripts/ingest_fannie_mae.py -c configs/fannie_mae/ingest_2000_2024.yaml
+python scripts/ingest_mortgage_performance.py -c configs/mortgage_performance/ingest_2000_2024.yaml
 
 # always audit the result (re-derives the labels + checks the sample rate)
 python scripts/validate_ingest.py \
-    --panel gs://sriram-credit-fm-data/output/raw/fannie_mae/panel_2000_2024_10pct.parquet \
+    --panel gs://sriram-credit-fm-data/output/raw/mortgage_performance/panel_2000_2024_10pct.parquet \
     --sample-pct 10
 ```
 
 `--sample_pct` sets the loan-hash sample (4% is proven representative in section 4d; a bigger sample
 just adds loans, it doesn't shift the rates). `--combined_name` names the output file so a new
 sample never overwrites the old one. Then regenerate this notebook's stats artifact with the
-`profile_fannie_dataset.py` command from the top of the notebook. Pipeline position:
+`profile_mortgage_dataset.py` command from the top of the notebook. Pipeline position:
 
 ```
 [ INGEST ] → prepare_data (split) → train_tokenizer → encode → pretrain
@@ -572,7 +572,7 @@ sample never overwrites the old one. Then regenerate this notebook's stats artif
   {02, 03, 09, 15}`. `is_performing` gates the task to loans current at the observation date so the
   model predicts **new** defaults, not ones already in progress.
 * **Leakage discipline.** Section 3c columns are never features. Splits are **by `loan_id`** (never
-  by row) and temporal by **origination date** — see `docs/data/fannie_mae.md` and the decision log.
+  by row) and temporal by **origination date** — see `docs/data/mortgage_performance.md` and the decision log.
 * **Unknown delinquency.** `current_loan_delinquency_status = 'XX'` (or blank after removal) becomes
   `dlq_num = <NA>`; every downstream consumer resolves it with `.fillna(False)`.
 * **Field availability drifts over time.** Some fields are populated only after certain releases

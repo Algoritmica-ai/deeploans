@@ -7,11 +7,11 @@ followed (where it matters) by a **validator** that audits what the box produced
 
 ```
                        ┌──────────────────────────────────────────────────────┐
-                       │              RAW DATA  (Fannie Mae, GCS)              │
+                       │              RAW DATA  (mortgage performance data, GCS)              │
                        │  hive dirs: reporting_year=2016/reporting_quarter=Q1  │
                        └────────────────────────┬─────────────────────────────┘
                                                 ▼
-      ┌──────────────┐   ingest.py + FannieMaeAdapter: parse dates, derive labels,
+      ┌──────────────┐   ingest.py + MortgagePerformanceAdapter: parse dates, derive labels,
       │ 1. INGEST    │   hash-sample loans, write one shard per quarter (resumable)
       └──────┬───────┘        artifact: panel/  (part-2016Q1.parquet …)
              ▼

@@ -15,7 +15,7 @@ parquets, or the G3.2 streamed ``<split>/bucket-*/`` directories — auto-detect
   E) manifest agreement — counts and origination ranges in ``splits.meta.json`` match the files;
   F) ``reporting_max`` (if it was set) is respected — no row past the cap in any split.
 
-    python scripts/validate_splits.py --dir gs://.../output/processed/fannie_mae/run_2000_2024
+    python scripts/validate_splits.py --dir gs://.../output/processed/mortgage_performance/run_2000_2024
     python scripts/validate_splits.py --dir data/processed
 """
 
@@ -86,7 +86,7 @@ def main() -> int:
     frames = {}
     for s in SPLITS:
         frames[s] = _read(_split_source(args.dir, s), columns=cols)
-    # normalise ids to str everywhere — Fannie loan_ids are numeric-looking, and CSV round-trips
+    # normalise ids to str everywhere — mortgage loan_ids are numeric-looking, and CSV round-trips
     # coerce them to int, which would spuriously mismatch the parquet's string ids
     loans = {s: set(frames[s][id_col].astype(str).unique()) for s in SPLITS}
     chk("all three split parquets non-empty", all(len(frames[s]) for s in SPLITS),

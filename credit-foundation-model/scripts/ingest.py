@@ -3,10 +3,10 @@
 """Ingest a dataset via its adapter — sharded, resumable, asset-blind (v1.1 G1.4 + G3.1).
 
 Reads the recipe's ``dataset:`` pointer, resolves the asset's
-:class:`~credit_fm.data.adapter.DatasetAdapter` (e.g. ``reference_implementations/fannie_mae``),
+:class:`~credit_fm.data.adapter.DatasetAdapter` (e.g. ``reference_implementations/mortgage_performance``),
 and writes the contract-conforming panel. Two modes:
 
-* **sharded (default, G3.1)** — one ``part-<tag>.parquet`` per source (for Fannie, per reporting
+* **sharded (default, G3.1)** — one ``part-<tag>.parquet`` per source (for Mortgage, per reporting
   quarter), written *as each source completes*, with a ``_meta-<tag>.json`` sidecar written
   strictly AFTER its shard. Rerunning the same command **skips completed sources** (sidecar
   present), so a hard kill — OOM, preemption, dropped SSH — costs only the in-flight sources:
@@ -20,12 +20,12 @@ and writes the contract-conforming panel. Two modes:
 ``combine: true`` additionally concatenates the shards into ``<combined_name>`` (v1.0-compatible
 single file). That loads the whole panel in RAM — fine for sampled runs, never the 100% corpus.
 
-Config-driven (recipe: ``configs/fannie_mae/ingest.yaml``)::
+Config-driven (recipe: ``configs/mortgage_performance/ingest.yaml``)::
 
-    python scripts/ingest.py -c configs/fannie_mae/ingest_2000_2024.yaml
+    python scripts/ingest.py -c configs/mortgage_performance/ingest_2000_2024.yaml
     # killed mid-run? just rerun — completed quarters are skipped:
-    python scripts/ingest.py -c configs/fannie_mae/ingest_2000_2024.yaml
-    python scripts/ingest.py -c configs/fannie_mae/ingest_2000_2024.yaml \
+    python scripts/ingest.py -c configs/mortgage_performance/ingest_2000_2024.yaml
+    python scripts/ingest.py -c configs/mortgage_performance/ingest_2000_2024.yaml \
         --sample_pct 100 --combined_name panel_2000_2024_100pct.parquet
 """
 
@@ -119,7 +119,7 @@ def ingest_sharded(adapter, shard_dir: str, *, workers: int = 8, log=print) -> d
 
 
 def main() -> None:
-    cfg = parse_cli(__doc__, default_config="configs/fannie_mae/ingest.yaml")
+    cfg = parse_cli(__doc__, default_config="configs/mortgage_performance/ingest.yaml")
     print(f"config: {cfg.config_path}\n"
           f"{summarize(cfg, 'dataset', 'sources', 'out', 'sample_pct', 'workers', 'sharded', 'combine')}",
           flush=True)
@@ -144,7 +144,7 @@ def main() -> None:
               f"reporting {panel[ds.time_col].min()} -> {panel[ds.time_col].max()}, "
               f"origination {panel[ds.origination_col].min()} -> {panel[ds.origination_col].max()}")
         print(f"sources: {len(adapter.sources())} (adapter: {ds.adapter})")
-        print("Next: python scripts/prepare_data.py -c configs/fannie_mae/prepare.yaml")
+        print("Next: python scripts/prepare_data.py -c configs/mortgage_performance/prepare.yaml")
         return
 
     shard_dir = storage.join(out, cfg.combined_name.rsplit(".", 1)[0])
@@ -165,7 +165,7 @@ def main() -> None:
         storage.write_parquet(panel, panel_path)
         print(f"combined -> {panel_path}: {len(panel):,} rows, "
               f"{panel[ds.id_col].nunique():,} loans")
-    print(f"Next: python scripts/prepare_data.py -c configs/fannie_mae/prepare.yaml "
+    print(f"Next: python scripts/prepare_data.py -c configs/mortgage_performance/prepare.yaml "
           f"--input {shard_dir}")
 
 

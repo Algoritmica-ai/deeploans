@@ -16,23 +16,23 @@ or manifest. The config *is* the experiment record (Part 18 builds on exactly th
 **1. Inheritance — `include:`** (defaults live in one place)
 
 ```yaml
-# configs/fannie_mae/encode.yaml
+# configs/mortgage_performance/encode.yaml
 include: common.yaml          # deep-merged; THIS file's keys win; a list of includes is allowed
 split: train
 input: ${paths.processed}/${split}.parquet
 ```
 
 Deep-merge means nested dicts merge key-by-key — override `model.dim` without restating
-`model.n_heads`. Every Fannie recipe includes `common.yaml`, which defines paths **once**:
+`model.n_heads`. Every mortgage recipe includes `common.yaml`, which defines paths **once**:
 
 ```yaml
-# configs/fannie_mae/common.yaml (the hub)
+# configs/mortgage_performance/common.yaml (the hub)
 run_name: run_2016_2017
 gcs_root: gs://sriram-credit-fm-data
-dataset: configs/fannie_mae/dataset.yaml      tokenizer: configs/fannie_mae/tokenizer.json
+dataset: configs/mortgage_performance/dataset.yaml      tokenizer: configs/mortgage_performance/tokenizer.json
 paths:
-  processed: ${gcs_root}/output/processed/fannie_mae/${run_name}
-  encoded:   ${gcs_root}/output/encoded/fannie_mae/${run_name}
+  processed: ${gcs_root}/output/processed/mortgage_performance/${run_name}
+  encoded:   ${gcs_root}/output/encoded/mortgage_performance/${run_name}
   runs:      ${gcs_root}/runs
 seed: 42
 ```
@@ -46,7 +46,7 @@ found` — fail-fast, never a silent empty string.
 **3. CLI overrides — dotted paths**: everything after `-c` is parsed as overrides:
 
 ```bash
-python scripts/pretrain.py -c configs/fannie_mae/pretrain_100m.yaml \
+python scripts/pretrain.py -c configs/mortgage_performance/pretrain_100m.yaml \
     --run_name run_2000_2022_10pct --schedule.steps 2000 --data.limit null --runtime.bf16
 ```
 
@@ -66,7 +66,7 @@ Interpolation-after-overrides is the killer feature: `--run_name run_2000_2024` 
 ```
 1. include:  pretrain.yaml pulls common.yaml (run_name: run_2016_2017, paths…)
 2. override: run_name ← run_2000_2024                        (CLI beats include)
-3. interp:   paths.encoded → gs://…/encoded/fannie_mae/run_2000_2024
+3. interp:   paths.encoded → gs://…/encoded/mortgage_performance/run_2000_2024
 4. interp:   data.train_dir = ${paths.encoded}/train → gs://…/run_2000_2024/train
 ```
 

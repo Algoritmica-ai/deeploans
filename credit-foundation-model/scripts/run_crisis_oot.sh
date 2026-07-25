@@ -20,9 +20,9 @@ LOG="runs_crisis_$(date +%Y%m%d_%H%M%S).log"
 exec > >(tee -a "$LOG") 2>&1
 
 ROOT="${CREDIT_FM_BUCKET:-gs://sriram-credit-fm-data}"   # override: export CREDIT_FM_BUCKET=gs://<yours>
-PANEL="$ROOT/output/raw/fannie_mae/panel_2000_2024.parquet"
-PROC="$ROOT/output/processed/fannie_mae/run_2000_2007"
-ENC="$ROOT/output/encoded/fannie_mae/run_2000_2007"
+PANEL="$ROOT/output/raw/mortgage_performance/panel_2000_2024.parquet"
+PROC="$ROOT/output/processed/mortgage_performance/run_2000_2007"
+ENC="$ROOT/output/encoded/mortgage_performance/run_2000_2007"
 CKPT="$ROOT/runs/m_crisis_blind.pt"
 RUN_NAME="run_2000_2007"
 PRETRAIN_BATCH=48          # <=2007 loans are long (~587 tok/loan) -> smaller batch than the 128 default
@@ -46,7 +46,7 @@ if gsutil ls "$PROC/train.parquet" >/dev/null 2>&1; then
     echo "[1] split exists at $PROC — skipping"
 else
     echo "[1] split <=2007 corpus -> $PROC   ($(date))"
-    python scripts/prepare_data.py -c configs/fannie_mae/prepare.yaml \
+    python scripts/prepare_data.py -c configs/mortgage_performance/prepare.yaml \
         --input "$PANEL" --run_name "$RUN_NAME" --reporting_max 2007-12-31
     echo "[2] validate split"
     python scripts/validate_splits.py --dir "$PROC"
@@ -57,25 +57,25 @@ if gsutil ls "$ENC/train/manifest.json" >/dev/null 2>&1 && gsutil ls "$ENC/val/m
     echo "[3] encoded shards exist at $ENC — skipping"
 else
     echo "[3] encode train + val shards   ($(date))"
-    python scripts/encode_dataset.py -c configs/fannie_mae/encode.yaml --run_name "$RUN_NAME" --split train --workers 32
-    python scripts/encode_dataset.py -c configs/fannie_mae/encode.yaml --run_name "$RUN_NAME" --split val   --workers 32
+    python scripts/encode_dataset.py -c configs/mortgage_performance/encode.yaml --run_name "$RUN_NAME" --split train --workers 32
+    python scripts/encode_dataset.py -c configs/mortgage_performance/encode.yaml --run_name "$RUN_NAME" --split val   --workers 32
 fi
 
 # --- 4. pretrain the crisis-blind backbone (26M, same recipe; smaller batch for long loans) ------
 echo "[4] pretrain crisis-blind backbone -> $CKPT  (batch $PRETRAIN_BATCH)   ($(date))"
-python scripts/pretrain.py -c configs/fannie_mae/pretrain.yaml \
+python scripts/pretrain.py -c configs/mortgage_performance/pretrain.yaml \
     --run_name "$RUN_NAME" --checkpoint.out "$CKPT" --data.batch_size "$PRETRAIN_BATCH"
 
 # --- 5. calendar-OOT fine-tune on the crisis window (full mode) ----------------------------------
 echo "[5] fine-tune crisis-OOT (full)   ($(date))"
-python scripts/finetune.py -c configs/fannie_mae/finetune_crisis.yaml --mode full \
-    --report reports/fannie_oot_crisis_ft_full.md
+python scripts/finetune.py -c configs/mortgage_performance/finetune_crisis.yaml --mode full \
+    --report reports/mortgage_oot_crisis_ft_full.md
 
 # --- 6. compare ----------------------------------------------------------------------------------
 echo "================================================================"
 echo " CRISIS-OOT DONE — $(date)"
-echo " XGBoost crisis bar:   ROC 0.757 / PR 0.024  (reports/fannie_oot_crisis.md)"
-echo " FM crisis-blind:      see reports/fannie_oot_crisis_ft_full.md + the '=== Fine-tune ===' block above"
+echo " XGBoost crisis bar:   ROC 0.757 / PR 0.024  (reports/mortgage_oot_crisis.md)"
+echo " FM crisis-blind:      see reports/mortgage_oot_crisis_ft_full.md + the '=== Fine-tune ===' block above"
 echo " If FM > 0.757, the sequence FM generalizes to the UNSEEN 2008 crisis — the strongest claim."
 echo " (Caveat: cal= tokens for 2008-2011 are near-untrained in a <=2007 backbone; see finetune_crisis.yaml.)"
 echo "================================================================"

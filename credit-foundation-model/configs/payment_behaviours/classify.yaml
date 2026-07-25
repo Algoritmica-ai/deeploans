@@ -1,0 +1,19 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# Classify panel columns -> generate the tokenizer field schema (reproducibly).
+# The contract's leakage/exclude lists are enforced BEFORE classification (v1.1 G1.3),
+# so only loan_id / reporting_date / dpd survive to the schema on this asset.
+#
+#   python scripts/classify_schema.py -c configs/payment_behaviours/classify.yaml   # report only
+#   python scripts/classify_schema.py -c configs/payment_behaviours/classify.yaml \
+#       --out configs/payment_behaviours/tokenizer.yaml
+
+include: common.yaml
+
+input: ${paths.processed}/train.parquet   # TRAIN split only — stats stay train-only (DL-008)
+id_col: loan_id
+time_col: reporting_date
+
+drop: []
+out: null                # path for the generated schema YAML (null = report only)

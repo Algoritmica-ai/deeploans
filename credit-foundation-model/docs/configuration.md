@@ -16,7 +16,7 @@ The engine lives in [`src/credit_fm/utils/config.py`](../src/credit_fm/utils/con
 A recipe can start from one or more base files:
 
 ```yaml
-# configs/fannie_mae/encode.yaml
+# configs/mortgage_performance/encode.yaml
 include: common.yaml        # path relative to THIS file; a list is allowed
 split: train
 input: ${paths.processed}/${split}.parquet
@@ -29,15 +29,15 @@ only what the stage needs.
 
 ## 2. `${a.b}` — interpolation
 
-Any string may reference another key by dotted path. `configs/fannie_mae/common.yaml` defines
+Any string may reference another key by dotted path. `configs/mortgage_performance/common.yaml` defines
 paths **once**:
 
 ```yaml
 run_name: run_2016_2017
 gcs_root: gs://sriram-credit-fm-data
 paths:
-  processed: ${gcs_root}/output/processed/fannie_mae/${run_name}
-  encoded:   ${gcs_root}/output/encoded/fannie_mae/${run_name}
+  processed: ${gcs_root}/output/processed/mortgage_performance/${run_name}
+  encoded:   ${gcs_root}/output/encoded/mortgage_performance/${run_name}
 ```
 
 Two forms:
@@ -55,7 +55,7 @@ iterates until nothing changes (up to 10 passes). A reference to a missing key r
 Everything after `-c recipe.yaml` is parsed as `--key.path value` overrides:
 
 ```bash
-python scripts/pretrain.py -c configs/fannie_mae/pretrain.yaml \
+python scripts/pretrain.py -c configs/mortgage_performance/pretrain.yaml \
     --model.dim 512 --schedule.steps 2000 --data.limit null --runtime.bf16
 ```
 
@@ -75,10 +75,10 @@ re-points everything derived from it.
 
 ### Worked example — what `${paths.encoded}/train` means
 
-`configs/fannie_mae/pretrain.yaml` says `train_dir: ${paths.encoded}/train`. Running
+`configs/mortgage_performance/pretrain.yaml` says `train_dir: ${paths.encoded}/train`. Running
 
 ```bash
-python scripts/pretrain.py -c configs/fannie_mae/pretrain.yaml --run_name run_2000_2024
+python scripts/pretrain.py -c configs/mortgage_performance/pretrain.yaml --run_name run_2000_2024
 ```
 
 resolves in four steps:
@@ -86,10 +86,10 @@ resolves in four steps:
 1. **Include** — `pretrain.yaml` pulls `common.yaml`, so the config now holds `run_name`,
    `gcs_root`, and the `paths:` block, with `run_name: run_2016_2017` from the base file.
 2. **Override** — the CLI sets `run_name: run_2000_2024` (beats the include).
-3. **Interpolate, pass 1** — `paths.encoded` = `${gcs_root}/output/encoded/fannie_mae/${run_name}`
-   → `gs://sriram-credit-fm-data/output/encoded/fannie_mae/run_2000_2024`.
+3. **Interpolate, pass 1** — `paths.encoded` = `${gcs_root}/output/encoded/mortgage_performance/${run_name}`
+   → `gs://sriram-credit-fm-data/output/encoded/mortgage_performance/run_2000_2024`.
 4. **Interpolate, pass 2** — `train_dir` = `${paths.encoded}/train`
-   → `gs://sriram-credit-fm-data/output/encoded/fannie_mae/run_2000_2024/train`.
+   → `gs://sriram-credit-fm-data/output/encoded/mortgage_performance/run_2000_2024/train`.
 
 One flag re-pointed the entire pipeline at a different data run. That is the intended workflow:
 **paths are defined once in `common.yaml`; stages reference them; `--run_name` switches runs.**
@@ -99,7 +99,7 @@ One flag re-pointed the entire pipeline at a different data run. That is the int
 Scripts call `parse_cli()` and get a `Config` — a dict with attribute access:
 
 ```python
-cfg = parse_cli(__doc__, default_config="configs/fannie_mae/pretrain.yaml")
+cfg = parse_cli(__doc__, default_config="configs/mortgage_performance/pretrain.yaml")
 cfg.model.dim                 # attribute access; missing keys raise with the available keys
 cfg.get_path("schedule.grad_accum", 1)   # dotted lookup with a default (for optional keys)
 cfg.to_dict()                 # plain nested dict — stored in every checkpoint/manifest (lineage)

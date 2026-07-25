@@ -115,7 +115,7 @@ def _unify_fragment_schemas(dataset):
     """Union of all fragments' schemas, promoting ``null``-typed columns to their real type.
 
     A per-source shard where a column is ENTIRELY missing (e.g. REO/modification fields in
-    year-2000 Fannie quarters) stores that column as arrow ``null``; later shards store strings.
+    year-2000 source quarters) stores that column as arrow ``null``; later shards store strings.
     A directory scan then fails with ``Unsupported cast from string to null`` because pyarrow
     adopts the first fragment's schema. This builds the union: first non-null type wins per
     column, so all-null columns are read as their real dtype (values stay NA).

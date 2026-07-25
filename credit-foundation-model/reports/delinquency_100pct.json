@@ -1,5 +1,5 @@
 {
-  "source": "gs://sriram-credit-fm-data/fannie_by_reporting",
+  "source": "gs://sriram-credit-fm-data/raw_by_reporting",
   "source_kind": "raw",
   "delinquency_only": true,
   "generated_utc": "2026-07-08T13:58:22+00:00",

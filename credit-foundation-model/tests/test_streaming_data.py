@@ -40,11 +40,11 @@ def _run(script: str, *args) -> subprocess.CompletedProcess:
 
 
 def _synth_panel(n_loans: int = 240, months: int = 5) -> pd.DataFrame:
-    """Loans spread over origination years, several monthly rows each — Fannie-shaped."""
+    """Loans spread over origination years, several monthly rows each — source-shaped."""
     rng = np.random.default_rng(7)
     rows = []
     for i in range(n_loans):
-        lid = f"{100003700000 + i}"                               # numeric-string ids, like Fannie
+        lid = f"{100003700000 + i}"                               # numeric-string ids, like Mortgage
         oy = 2000 + (i % 20)
         for m in range(months):
             rows.append((lid, f"{oy}-01-31", f"2021-{m + 1:02d}-28",

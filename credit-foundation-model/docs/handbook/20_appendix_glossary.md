@@ -180,7 +180,7 @@ in §5.5. ⚠ Forgetting `str.zfill(2)` — "1" and "01" are the same code.
 default (repossess-and-hold = REO; sell short = accept less than owed). All are credit events
 here; their date/cost columns are leakage features.
 
-**Servicer / GSE / Fannie Mae** — Simple: who collects payments / government-sponsored
+**Servicer / GSE / mortgage performance data** — Simple: who collects payments / government-sponsored
 enterprises that buy+securitize mortgages / the GSE whose public performance data we train on.
 
 **PD / LGD / exposure** — Simple: probability of default / loss-given-default (share lost when

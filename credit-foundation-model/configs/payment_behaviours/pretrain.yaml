@@ -1,0 +1,56 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# MLM pretraining recipe — payment-behaviours corpus (~25M invoices, ~75-100M tokens).
+# The corpus is ~1% of the mortgage 10% sample, so the model is sized down accordingly
+# (Chinchilla-honest, DL-015): ~5M params at dim=192.
+#
+#   Full run:  python scripts/pretrain.py -c configs/payment_behaviours/pretrain.yaml
+#   Toy run:   python scripts/pretrain.py -c configs/payment_behaviours/pretrain.yaml \
+#                  --data.limit 1000 --schedule.steps 100 --checkpoint.out runs/pb_toy.pt
+
+include: common.yaml
+
+data:
+  train_dir: ${paths.encoded}/train
+  val_dir: ${paths.encoded}/val
+  batch_size: 256          # sequences are short (median 8 invoices; p95 ~243)
+  num_workers: 4
+  limit: null
+
+model:
+  dim: 192                 # head_dim 24 with 8 heads
+  n_heads: 8
+  profile_layers: 2        # profile branch is near-empty on this asset (no static fields)
+  event_layers: 3
+  history_layers: 4
+  dropout: 0.1
+
+optimizer:
+  lr: 3.0e-4
+  weight_decay: 0.01
+  warmup: 300
+  grad_clip: 1.0
+
+schedule:
+  steps: 6000
+  log_every: 50
+  val_every: 250           # best-val checkpoint restored at the end
+
+runtime:
+  device: null
+  bf16: true
+
+checkpoint:
+  out: ${paths.runs}/pb_base.pt
+  every: 500
+  keep: 2
+
+logging:
+  backend: jsonl
+  dir: ${data_root}/runs/logs
+  project: credit-fm
+  run_name: null
+  mode: offline
+
+resume: null               # a killed run restarts with:  --resume auto

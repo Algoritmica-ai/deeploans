@@ -17,10 +17,10 @@ The winner is decided on the held-out set: if *embeddings* (or *combined*) beats
 adds signal beyond the raw as-of-cutoff features. (For a calendar-OOT verdict vs the 0.757/0.784
 bars, run this on a multi-year panel with a train-years/test-years split — see the runbook.)
 
-Config-driven (recipe: ``configs/fannie_mae/evaluate.yaml``)::
+Config-driven (recipe: ``configs/mortgage_performance/evaluate.yaml``)::
 
-    python scripts/evaluate_downstream.py -c configs/fannie_mae/evaluate.yaml
-    python scripts/evaluate_downstream.py -c configs/fannie_mae/evaluate.yaml --task.horizon_months 6
+    python scripts/evaluate_downstream.py -c configs/mortgage_performance/evaluate.yaml
+    python scripts/evaluate_downstream.py -c configs/mortgage_performance/evaluate.yaml --task.horizon_months 6
 """
 
 from __future__ import annotations
@@ -74,7 +74,7 @@ def _score(model, Xtr, ytr, Xte, yte):
 
 
 def main() -> None:
-    cfg = parse_cli(__doc__, default_config="configs/fannie_mae/evaluate.yaml")
+    cfg = parse_cli(__doc__, default_config="configs/mortgage_performance/evaluate.yaml")
     print(f"config: {cfg.config_path}\n"
           f"{summarize(cfg, 'embeddings', 'panel', 'task', 'split', 'xgb_device', 'report')}",
           flush=True)
@@ -150,7 +150,7 @@ def main() -> None:
         rep = Path(cfg.report)
         rep.parent.mkdir(parents=True, exist_ok=True)
         lines = [
-            "# Fannie Mae — FM Downstream Eval (loan-holdout probe)", "",
+            "# Mortgage Performance — FM Downstream Eval (loan-holdout probe)", "",
             f"Observed at **{cutoff}**, label = default within **{horizon} months** "
             f"after. {len(df):,} performing loans; loan-disjoint "
             f"{int(cfg.split.test_frac*100)}% held out. "

@@ -1,0 +1,48 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# Fine-tune: will a currently-current (<=30 dpd) customer exceed 30 dpd within the next
+# 3 invoices? Cutoffs are PSEUDO-dates (base 2000-01 + invoice index), so "later cutoffs"
+# mean deeper payment histories, not later calendar time — the honest split here is the
+# customer-disjoint hash split that finetune enforces across overlapping eras.
+# Cutoff positions chosen to cover the length distribution (median 8, p95 ~243 invoices):
+# train at invoice 3/6/12/24/48; test at invoice 9/36.
+#
+#   python scripts/finetune.py -c configs/payment_behaviours/finetune_late30.yaml --mode full
+
+include: common.yaml
+
+checkpoint: ${paths.runs}/pb_base.pt
+panel: ${paths.raw}/panel.parquet
+save: ${paths.runs}/pb_late30_ft.pt
+
+task:
+  train_cutoffs: ["2000-04-30", "2000-07-31", "2001-01-31", "2002-01-31", "2004-01-31"]
+  test_cutoffs: ["2000-10-31", "2003-01-31"]
+  label: late30_3m           # declarative task from dataset.yaml labels: (v1.1 G2.1)
+
+mode: full                 # frozen | lora | full
+lora:
+  rank: 8
+  alpha: 16
+
+train:
+  epochs: 3
+  batch_size: 128          # short sequences — much larger batch than the mortgage runs
+  lr: null
+  weight_decay: 0.01
+  grad_clip: 1.0
+  neg_per_pos: 4           # event rate is far higher than mortgage default — mild rebalance
+  pos_weight_cap: 100
+
+split:
+  test_frac: 0.3           # fallback only; the cutoff split governs
+
+runtime:
+  device: null
+  bf16: true
+
+workers: 16
+engine: vector
+features_bar: null         # honest baseline TBD on this asset (rolling-stats XGBoost)
+report: reports/pb_late30_ft_full.md

@@ -17,8 +17,8 @@ HF-loadable safetensors; ours needs the ``credit_fm`` package to instantiate the
 three-branch architecture, so we ship weights + config + a load example rather than an
 ``AutoModel`` shim.
 
-    python scripts/publish_model.py -c configs/fannie_mae/publish.yaml
-    python scripts/publish_model.py -c configs/fannie_mae/publish.yaml --out models/fannie_mae_m5
+    python scripts/publish_model.py -c configs/mortgage_performance/publish.yaml
+    python scripts/publish_model.py -c configs/mortgage_performance/publish.yaml --out models/mortgage_performance_m5
 """
 
 from __future__ import annotations
@@ -57,7 +57,7 @@ print(f"loaded {model.num_parameters()/1e6:.1f}M-param credit FM; encode loans w
 
 
 def main() -> None:
-    cfg = parse_cli(__doc__, default_config="configs/fannie_mae/publish.yaml")
+    cfg = parse_cli(__doc__, default_config="configs/mortgage_performance/publish.yaml")
     print(f"config: {cfg.config_path}\n{summarize(cfg, 'checkpoint', 'tokenizer', 'model_card', 'out')}",
           flush=True)
 
@@ -102,7 +102,7 @@ def main() -> None:
     for p in sorted(out.iterdir()):
         print(f"  {p.name}  ({p.stat().st_size/1e6:.1f} MB)", flush=True)
     print("\nnext — publish one of:", flush=True)
-    print(f"  HF Hub:  huggingface-cli upload <org>/credit-fm-fannie-m5 {out} .", flush=True)
+    print(f"  HF Hub:  huggingface-cli upload <org>/credit-fm-mortgage-m5 {out} .", flush=True)
     print(f"  Git LFS: git lfs track '{out}/*.safetensors' && git add {out} && git commit", flush=True)
 
 

@@ -1,0 +1,29 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# ★ G2.2 — a SECOND prediction task with ZERO new code: prepayment within 12 months, calendar-OOT.
+# The entire task definition is `label: prepay_12m`, resolved from dataset.yaml's labels: block.
+# Everything else (protocol, checkpoint, imbalance handling) is inherited from the default recipe.
+#
+#   python scripts/finetune.py -c configs/mortgage_performance/finetune_prepay_oot.yaml --mode full \
+#       --report reports/ft_prepay_oot_full.md
+#
+# Notes vs the default task: prepay is COMMON (~10-30%/yr depending on the rate regime), not rare —
+# so neg_per_pos downsampling is unnecessary; base rates differ wildly across regimes (2020-21 refi
+# wave vs 2022-23 rate shock), which makes the OOT test genuinely hard. No features bar exists yet
+# (the XGB prepay baseline hasn't been built) — this run establishes the FM number first.
+
+include: finetune_oot.yaml
+
+task:
+  train_cutoffs: ["2016-12-31", "2017-12-31", "2018-12-31", "2019-12-31", "2020-12-31", "2021-12-31"]
+  test_cutoffs: ["2022-12-31", "2023-12-31"]
+  label: prepay_12m          # ← the whole task change (declared in dataset.yaml labels:)
+
+train:
+  neg_per_pos: 0             # prepay isn't rare — train on the natural balance
+  pos_weight_cap: 5
+
+save: null                   # experiment, not a deployable; pass --save to persist
+report: reports/ft_prepay_oot.md
+features_bar: null           # no XGB prepay bar yet — FM number comes first

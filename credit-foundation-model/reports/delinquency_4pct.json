@@ -1,5 +1,5 @@
 {
-  "source": "gs://sriram-credit-fm-data/output/raw/fannie_mae/panel_2000_2024.parquet",
+  "source": "gs://sriram-credit-fm-data/output/raw/mortgage_performance/panel_2000_2024.parquet",
   "source_kind": "panel",
   "delinquency_only": true,
   "generated_utc": "2026-07-08T11:12:16+00:00",

@@ -16,7 +16,7 @@ dependencies (addresses data-residency requirements).
   plain-JSON calibrator; `score_portfolio --calibrator` adds a calibrated `pd` column
   (rankings unchanged); `validate_scores` check I gates calibration honesty (Brier +
   calibration-in-the-large).
-- **Serving example (v1.1 G6.2)** — `reference_implementations/fannie_mae/serve.py`: a FastAPI
+- **Serving example (v1.1 G6.2)** — `reference_implementations/mortgage_performance/serve.py`: a FastAPI
   app (`pip install "credit_fm[serving]"`) that loads checkpoint + tokenizer + calibrator once
   and answers `POST /score`; it reuses `credit_fm.inference` end-to-end, so an HTTP score
   equals the batch score (tested). Explicitly an example — no auth/TLS/scaling.

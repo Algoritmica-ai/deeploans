@@ -51,7 +51,7 @@ class DatasetAdapter(Protocol):
 
 
 def register_adapter(name: str):
-    """Class decorator: ``@register_adapter("fannie_mae")`` adds the class to the registry."""
+    """Class decorator: ``@register_adapter("mortgage_performance")`` adds the class to the registry."""
     def wrap(cls: type) -> type:
         REGISTRY[name] = cls
         return cls

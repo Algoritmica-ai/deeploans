@@ -1,10 +1,10 @@
 # Part 5 — The Dataset
 
-## 5.1 The Fannie Mae Single-Family Loan Performance dataset
+## 5.1 The single-family mortgage performance dataset
 
-**Plain English:** Fannie Mae is a US government-sponsored company that buys mortgages from banks.
-Since it owns millions of them, it publishes (anonymized) how every one of those loans behaved,
-month by month, since the year 2000. It is the closest thing to a public "flight recorder" of the
+**Plain English:** the reference corpus is a large public dataset of US single-family mortgages.
+A government-sponsored mortgage buyer owns millions of these loans and publishes (anonymized) how
+every one of them behaved, month by month, since the year 2000. It is the closest thing to a public "flight recorder" of the
 US mortgage market — including the 2008 crash and COVID.
 
 **The numbers:** ~25 years (2000–2024), tens of millions of fixed-rate loans, **~3.3 billion
@@ -16,7 +16,7 @@ the 10% sample used for the headline ≈ 400M; the streaming path (Part 17) unlo
 *panel-shaped* (exactly the sequence structure a foundation model needs).
 
 The full column-by-column reference lives in `notebooks/00_data_bible.ipynb` and
-`reference_implementations/fannie_mae/fannie_glossary.py`. Here are the concepts you must own.
+`reference_implementations/mortgage_performance/mortgage_glossary.py`. Here are the concepts you must own.
 
 ## 5.2 Panel data and loan snapshots
 
@@ -56,7 +56,7 @@ origination      ┌────────────────────
 ```
 
 The raw files are **hive-partitioned by reporting period**:
-`fannie_by_reporting/reporting_year=2020/reporting_quarter=Q2/…parquet`. **Hive partitioning**
+`raw_by_reporting/reporting_year=2020/reporting_quarter=Q2/…parquet`. **Hive partitioning**
 just means the directory *names* carry column values, so a reader can skip irrelevant quarters
 without opening files. Consequence: one loan's rows are scattered across ~all quarters of its
 life — which is why the split/encode stages must regroup by loan (Part 17's bucketing).
@@ -83,7 +83,7 @@ convention that ~180 days ("D180") marks a **default event**.
 ## 5.5 Zero-Balance Codes — how loans die
 
 When a loan's balance hits zero, `zero_balance_code` says why. The adapter maps them
-(`reference_implementations/fannie_mae/adapter.py`):
+(`reference_implementations/mortgage_performance/adapter.py`):
 
 | ZBC | Meaning | Our interpretation |
 |---|---|---|
@@ -146,7 +146,7 @@ the truncation and the gate; the G2 label layer generalizes gates beyond boolean
 status itself, all zero-balance/foreclosure/disposition fields, loss and modification amounts,
 REO listing prices… Everything that *is* the outcome or is only populated on the road to it.
 Part 8 explains the machinery that keeps them out; the canonical list is
-`configs/fannie_mae/dataset.yaml`.
+`configs/mortgage_performance/dataset.yaml`.
 
 ## 5.8 How rare is default? (the class-imbalance headline)
 
@@ -163,7 +163,7 @@ no origination column — it's *derived* as `reporting − seasoning`, DL-007) t
 scripts. Purpose: (a) prove the framework is YAML-only for a wildly different schema, and (b) a
 controlled ceiling experiment — the panel hides a `_segment` variable that generates behavior,
 so we can measure how much of the recoverable signal the model finds. Its numbers are never
-compared with Fannie's (synthetic panels flatter every model).
+compared with the source's (synthetic panels flatter every model).
 
 ### Things to remember
 

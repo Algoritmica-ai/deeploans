@@ -79,9 +79,9 @@ def test_missing_file_raises_filenotfound(tmp_path):
         load_dataset_config(tmp_path / "nope.yaml")
 
 
-def test_committed_fannie_contract_is_valid():
-    ds = load_dataset_config(REPO / "configs/fannie_mae/dataset.yaml")
-    assert ds.adapter == "fannie_mae" and not ds.origination_derived
+def test_committed_mortgage_contract_is_valid():
+    ds = load_dataset_config(REPO / "configs/mortgage_performance/dataset.yaml")
+    assert ds.adapter == "mortgage_performance" and not ds.origination_derived
     assert {"default_12m", "prepay_12m"} == set(ds.labels)
     assert ds.labels["default_12m"].gate_col == "is_performing"
     assert "current_loan_delinquency_status" in ds.leakage
@@ -95,7 +95,7 @@ def test_committed_dutch_contract_is_valid():
     assert spec.event_value == "Y" and "Performing" in spec.gate_values
 
 
-@pytest.mark.parametrize("asset", ["fannie_mae", "dutch_mortgages"])
+@pytest.mark.parametrize("asset", ["mortgage_performance", "dutch_mortgages"])
 def test_drift_guard_baseline_lists_match_dataset_contract(asset):
     """baseline.yaml's legacy lists must equal dataset.yaml's until consumers migrate (G2.1)."""
     ds = load_dataset_config(REPO / f"configs/{asset}/dataset.yaml")

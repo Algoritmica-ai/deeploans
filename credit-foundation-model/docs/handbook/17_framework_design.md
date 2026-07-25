@@ -5,7 +5,7 @@
 
 ## 17.1 Why "becoming a framework" was a deliberate project
 
-v1.0 proved the science on Fannie Mae — but the code *knew* it was Fannie: column names in
+v1.0 proved the science on Mortgage Performance — but the code *knew* it was Mortgage: column names in
 scripts, one hardcoded label, RAM-bound data handling, single-GPU training, results only
 reproducible on one box. The v1.1 program extracted six seams, each shipped as an independently
 tested brick. The test of success: **onboarding a new dataset or task touches YAML, not
@@ -24,7 +24,7 @@ label's event/gate column MUST be in the leakage list" checked at load time.
 DatasetAdapter protocol:  sources() · load_panel()          (+ optional, for resumable ingest:
                                                               load_source(src) · source_tag(src))
    ├─ GenericParquetAdapter    your panel already conforms → ZERO code onboarding
-   └─ @register_adapter("fannie_mae") FannieMaeAdapter      lives in reference_implementations/,
+   └─ @register_adapter("mortgage_performance") MortgagePerformanceAdapter      lives in reference_implementations/,
                                                             resolved LAZILY BY NAME — src/ never
                                                             imports asset code
 ```

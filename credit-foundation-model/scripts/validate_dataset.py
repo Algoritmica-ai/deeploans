@@ -15,7 +15,7 @@ code-level layer is ``tests/test_validate_dataset.py``). Checks:
 
 Usage::
 
-    python scripts/validate_dataset.py --dataset configs/fannie_mae/dataset.yaml \
+    python scripts/validate_dataset.py --dataset configs/mortgage_performance/dataset.yaml \
         --panel gs://.../panel_2000_2024_10pct.parquet --sample-rows 2000000
     python scripts/validate_dataset.py --dataset configs/toy/dataset.yaml --panel toy.parquet
 

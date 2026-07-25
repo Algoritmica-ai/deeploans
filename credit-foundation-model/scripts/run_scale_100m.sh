@@ -22,11 +22,11 @@ exec > >(tee -a "$LOG") 2>&1
 export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True   # (pretrain.py also sets this; belt-and-suspenders)
 
 ROOT="${CREDIT_FM_BUCKET:-gs://sriram-credit-fm-data}"   # override: export CREDIT_FM_BUCKET=gs://<yours>
-RAW="$ROOT/output/raw/fannie_mae"
+RAW="$ROOT/output/raw/mortgage_performance"
 PANEL10="$RAW/panel_2000_2024_10pct.parquet"
 RUN_NAME="run_2000_2022_10pct"
-PROC="$ROOT/output/processed/fannie_mae/$RUN_NAME"
-ENC="$ROOT/output/encoded/fannie_mae/$RUN_NAME"
+PROC="$ROOT/output/processed/mortgage_performance/$RUN_NAME"
+ENC="$ROOT/output/encoded/mortgage_performance/$RUN_NAME"
 CKPT="$ROOT/runs/m_100m.pt"
 FT="$ROOT/runs/m_100m_ft.pt"
 
@@ -44,7 +44,7 @@ if gsutil ls "$PANEL10" >/dev/null 2>&1; then
     echo "[1] 10% panel exists at $PANEL10 — skipping ingest"
 else
     echo "[1] ingest 10% -> $PANEL10   ($(date))"
-    python scripts/ingest_fannie_mae.py -c configs/fannie_mae/ingest_2000_2024.yaml \
+    python scripts/ingest_mortgage_performance.py -c configs/mortgage_performance/ingest_2000_2024.yaml \
         --sample_pct 10 --combined_name panel_2000_2024_10pct.parquet
     python scripts/validate_ingest.py --panel "$PANEL10" --sample-pct 10
 fi
@@ -54,7 +54,7 @@ if gsutil ls "$PROC/train.parquet" >/dev/null 2>&1; then
     echo "[2] split exists at $PROC — skipping"
 else
     echo "[2] split <=2022 corpus -> $PROC   ($(date))"
-    python scripts/prepare_data.py -c configs/fannie_mae/prepare.yaml \
+    python scripts/prepare_data.py -c configs/mortgage_performance/prepare.yaml \
         --input "$PANEL10" --run_name "$RUN_NAME" --reporting_max 2022-12-31
     python scripts/validate_splits.py --dir "$PROC"
 fi
@@ -64,17 +64,17 @@ if gsutil ls "$ENC/train/manifest.json" >/dev/null 2>&1 && gsutil ls "$ENC/val/m
     echo "[3] encoded shards exist at $ENC — skipping"
 else
     echo "[3] encode train + val shards   ($(date))"
-    python scripts/encode_dataset.py -c configs/fannie_mae/encode.yaml --run_name "$RUN_NAME" --split train --workers 64
-    python scripts/encode_dataset.py -c configs/fannie_mae/encode.yaml --run_name "$RUN_NAME" --split val   --workers 64
+    python scripts/encode_dataset.py -c configs/mortgage_performance/encode.yaml --run_name "$RUN_NAME" --split train --workers 64
+    python scripts/encode_dataset.py -c configs/mortgage_performance/encode.yaml --run_name "$RUN_NAME" --split val   --workers 64
 fi
 
 # --- 4. pretrain the 100M model (FlashAttention enables batch 256) ---------------------------------
 echo "[4] pretrain 100M -> $CKPT   ($(date))"
-python scripts/pretrain.py -c configs/fannie_mae/pretrain_100m.yaml --run_name "$RUN_NAME"
+python scripts/pretrain.py -c configs/mortgage_performance/pretrain_100m.yaml --run_name "$RUN_NAME"
 
 # --- 5. calendar-OOT fine-tune with the 100M checkpoint (full mode; observe the 10% panel) --------
 echo "[5] OOT fine-tune (full) with the 100M checkpoint   ($(date))"
-python scripts/finetune.py -c configs/fannie_mae/finetune_oot.yaml --mode full \
+python scripts/finetune.py -c configs/mortgage_performance/finetune_oot.yaml --mode full \
     --checkpoint "$CKPT" --panel "$PANEL10" --save "$FT" \
     --report reports/m_100m_oot_ft_full.md
 

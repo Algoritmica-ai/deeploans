@@ -63,7 +63,7 @@ def test_conforming_panel_passes(tmp_path):
 
 def test_negative_control_int_ids_fail(tmp_path):
     panel = _panel()
-    panel["loan_id"] = [1, 1, 2, 2]                      # the Fannie CSV-round-trip trap
+    panel["loan_id"] = [1, 1, 2, 2]                      # the Mortgage CSV-round-trip trap
     proc = _run(tmp_path, panel)
     assert proc.returncode == 1
     assert "FAIL  B: id column is string-typed" in proc.stdout

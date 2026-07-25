@@ -8,7 +8,7 @@ you read a story — beginning, middle, plot twists — and then asks it: *"how 
 **Technically:** an open-source (Apache 2.0) framework, the Python package `credit_fm`, for
 training **credit foundation models**: encoder-only transformers pretrained with masked-language
 modelling on tabular credit *panel data* (one row per loan per month), plus a complete reference
-implementation on the public Fannie Mae mortgage dataset (~3.3 billion loan-months, 2000–2024).
+implementation on the public mortgage performance data mortgage dataset (~3.3 billion loan-months, 2000–2024).
 
 It is two things at once:
 

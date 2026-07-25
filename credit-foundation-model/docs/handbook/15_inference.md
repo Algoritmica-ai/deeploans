@@ -5,7 +5,7 @@
 
 > Files: `src/credit_fm/inference/scoring.py`, `calibration.py` · scripts
 > `extract_embeddings.py`, `score_portfolio.py`, `calibrate.py` ·
-> `reference_implementations/fannie_mae/serve.py`.
+> `reference_implementations/mortgage_performance/serve.py`.
 
 ## 15.1 Checkpoints and `.pt` files
 

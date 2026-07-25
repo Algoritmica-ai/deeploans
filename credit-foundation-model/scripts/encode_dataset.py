@@ -14,13 +14,13 @@ sits in RAM — that's what makes the 100% corpus encodable on one box. Shards a
 ``shard-<bucket>-<i>.parquet``; the manifest is identical in shape either way, so pretraining
 does not change. A single parquet input is the unchanged v1.0 path.
 
-Config-driven (recipe: ``configs/fannie_mae/encode.yaml``)::
+Config-driven (recipe: ``configs/mortgage_performance/encode.yaml``)::
 
-    python scripts/encode_dataset.py -c configs/fannie_mae/encode.yaml            # train split
-    python scripts/encode_dataset.py -c configs/fannie_mae/encode.yaml --split val
-    python scripts/encode_dataset.py -c configs/fannie_mae/encode.yaml --workers 8
+    python scripts/encode_dataset.py -c configs/mortgage_performance/encode.yaml            # train split
+    python scripts/encode_dataset.py -c configs/mortgage_performance/encode.yaml --split val
+    python scripts/encode_dataset.py -c configs/mortgage_performance/encode.yaml --workers 8
     # streamed split (input is a dir): same command — bucket layout is auto-detected
-    python scripts/encode_dataset.py -c configs/fannie_mae/encode.yaml \
+    python scripts/encode_dataset.py -c configs/mortgage_performance/encode.yaml \
         --input gs://.../processed/.../train
 """
 
@@ -57,7 +57,7 @@ def _encode_panel_to(tok, cfg, panel, name_prefix: str):
 
 
 def main() -> None:
-    cfg = parse_cli(__doc__, default_config="configs/fannie_mae/encode.yaml")
+    cfg = parse_cli(__doc__, default_config="configs/mortgage_performance/encode.yaml")
     print(f"config: {cfg.config_path}\n"
           f"{summarize(cfg, 'split', 'input', 'output', 'shard_size', 'workers', 'engine')}",
           flush=True)

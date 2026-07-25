@@ -9,9 +9,9 @@ package) plus reference implementations, by **finevals.ai**. Compute: 8× H100 b
 since v1.1 G4b: `PYTHONPATH=src python -m torch.distributed.run --standalone --nproc_per_node 8 …`,
 never bare `torchrun`).
 
-**Reference corpus: Fannie Mae Single-Family Loan Performance** (real-world US fixed-rate
+**Reference corpus: single-family mortgage performance** (real-world US fixed-rate
 mortgages, 2000–2024, ~3.3B loan-month rows; pretraining uses validated 4% / 10% loan-hash
-samples) — see `docs/data/fannie_mae.md` + `notebooks/00_data_bible.ipynb`. The **Dutch
+samples) — see `docs/data/mortgage_performance.md` + `notebooks/00_data_bible.ipynb`. The **Dutch
 mortgages** synthetic panel is the controlled **validation/ablation** set (it carries the
 hidden `_segment` ceiling proof).
 
@@ -41,10 +41,10 @@ prepare_data · classify_schema · train_tokenizer · encode_dataset · pretrain
 extract_embeddings · evaluate_downstream · finetune · score_portfolio · calibrate ·
 train_baseline · build_oot_baseline · publish_model · profile/compare ·
 validate_{ingest,splits,dataset,scores} (artifact auditors) · run_*.sh · setup_container.sh
-configs/ fannie_mae/ (reference) · dutch_mortgages/ (validation) — common.yaml + stage recipes
+configs/ mortgage_performance/ (reference) · dutch_mortgages/ (validation) — common.yaml + stage recipes
 notebooks/ 00_data_bible · 01_data_splits · 02_schema_classification · 03_tokenizer_training · 04_encode · 05_new_dataset (+ build_*.py generators —
 edit the builder, never the .ipynb)
-reference_implementations/ fannie_mae/ (adapter · glossary · serve.py FastAPI example ·
+reference_implementations/ mortgage_performance/ (adapter · glossary · serve.py FastAPI example ·
 runbook README) · dutch_mortgages/
 models/ packaged checkpoints · reports/ canonical run reports
 docs/ handbook/ (26-part teach-from-zero reference) · architecture · configuration ·
@@ -79,7 +79,7 @@ tests/ unit + artifact-validator tests
 
 ## Data (none committed — all gitignored)
 - **Mortgage reference:** GCS `gs://sriram-credit-fm-data` — raw Hive-partitioned source →
-  `scripts/ingest.py -c configs/fannie_mae/ingest_2000_2024.yaml` writes the sharded panel
+  `scripts/ingest.py -c configs/mortgage_performance/ingest_2000_2024.yaml` writes the sharded panel
   with derived `origination_date`, `reporting_date`, `default_event` (D180 or Zero-Balance
   credit event), `prepay_event`, `is_performing`. Auth via `GOOGLE_APPLICATION_CREDENTIALS`
   (`/workspace/.gcloud/credit-fm-sa.json`) + `gcsfs` — note: the container's Arrow build has
@@ -89,7 +89,7 @@ tests/ unit + artifact-validator tests
   the split derives origination = `reporting_date − seasoning_months` (DL-007).
 - **Latents (eval-only):** `data/raw/loan_book.parquet` has `_segment` etc. — **NEVER model
   features**; ceiling validation only.
-- **Splits:** `prepare_data.py -c configs/fannie_mae/prepare.yaml` →
+- **Splits:** `prepare_data.py -c configs/mortgage_performance/prepare.yaml` →
   `{train,val,test}.parquet + splits.csv + splits.meta.json`; reference splits: `run_2000_2024`
   (4%) and `run_2000_2022_10pct` (10% — the headline lineage), both reporting_max 2022-12-31.
   Always validate with `validate_splits.py`.
@@ -100,8 +100,8 @@ tests/ unit + artifact-validator tests
   docstrings. Every file: SPDX header + `Copyright (c) 2026 finevals.ai`.
 - **Leakage rules** (critical for credit): split by `loan_id` (never row); temporal by
   origination; vocab/bins fit on `train` only (DL-008); evaluation is calendar-OOT with
-  loan-disjoint + embargo guards. Fannie leakage = current delinquency / zero-balance /
-  foreclosure-disposition / loss columns (see `configs/fannie_mae/baseline.yaml`); Dutch
+  loan-disjoint + embargo guards. source leakage = current delinquency / zero-balance /
+  foreclosure-disposition / loss columns (see `configs/mortgage_performance/baseline.yaml`); Dutch
   leakage = the 8 contemporaneous-state columns. The honest baseline drops them and gates to
   performing-at-observation.
 - **Two-layer validation per stage:** unit tests (logic, synthetic) + an artifact validator
@@ -109,7 +109,7 @@ tests/ unit + artifact-validator tests
   corrupted input (negative control).
 - **Schema configs:** `classify_schema.py` enforces the dataset contract's leakage/exclude
   lists (`configs/<asset>/dataset.yaml`) BEFORE classification (v1.1 G1.3, verified on the real
-  254M-row split). The Fannie `tokenizer.yaml` keeps a **documented** review layer on top:
+  254M-row split). The Mortgage `tokenizer.yaml` keeps a **documented** review layer on top:
   slice-superset fields, semantic role overrides (`original_ltv`/`dti` are structurally dynamic
   in the raw data), and the human-set bins/anchors. Tasks are declarative too (v1.1 G2.1):
   `dataset.yaml labels:` + `task.label` in finetune recipes.
@@ -133,7 +133,7 @@ is the planning source of truth.
   silently dropped the entire `src/credit_fm/data/` module from commits.
 - The container's Arrow build lacks GCS: `pd.read_parquet("gs://…")` raises
   `ArrowNotImplementedError` — read via gcsfs (see `validate_splits.py`).
-- Fannie loan_ids are numeric-looking strings: a CSV round-trip coerces them to int — always
+- mortgage loan_ids are numeric-looking strings: a CSV round-trip coerces them to int — always
   compare ids as `str`.
 - The synthetic Dutch panel is rule-based, so baselines run high; report the honest (gated,
   no-leakage) number and the segment-ceiling context, not the inflated one.

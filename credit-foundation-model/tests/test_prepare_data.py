@@ -92,7 +92,7 @@ def _synth_panel(path: Path, n_loans: int = 300, months: int = 6) -> pd.DataFram
     rng = np.random.default_rng(3)
     rows = []
     for i in range(n_loans):
-        lid = f"{100003700000 + i}"                                # numeric-string ids, like Fannie
+        lid = f"{100003700000 + i}"                                # numeric-string ids, like Mortgage
         oy = 2000 + (i % 20)                                       # spread origination 2000..2019
         for m in range(months):
             rows.append((lid, f"{oy}-01-31", f"{2021}-{m + 1:02d}-28", rng.integers(0, 3)))

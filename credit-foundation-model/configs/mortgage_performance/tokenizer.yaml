@@ -1,0 +1,86 @@
+# KVT tokenizer config — single-family mortgage. Read by KVTTokenizer + scripts/train_tokenizer.py.
+# Fields are routed to a branch: PROFILE = static origination facts (emitted once per loan);
+# EVENT = per-month dynamic facts (emitted per monthly row). `time_field` (loan_age) is the
+# discrete time coordinate token (`t=<bin>`) at the head of each event block.
+#
+# Excludes ARM/IO-only fields (null for a fixed-rate book) and all leakage/exclude columns from
+# configs/mortgage_performance/baseline.yaml. Bins/categories are fit on TRAIN only (scripts/train_tokenizer.py).
+id_col: loan_id
+time_col: reporting_date
+time_field: loan_age
+
+n_bins: 16
+max_categories: 256
+max_events: 60          # keep the most recent N monthly snapshots per loan
+
+# Absolute-time / macro-regime token per event (cal=<YYYYQ#>) so the History encoder can tell
+# 2005 from 2008. Real macro series (HPI / prevailing rate / unemployment), once joined into the
+# panel, just go in event.numeric / event.categorical below — same fairness applies to the baseline.
+calendar: yearquarter
+
+# Per-field bin-granularity overrides (default n_bins above) — more resolution for high-signal fields.
+bins:
+  original_ltv: 24
+  original_cltv: 24
+  dti: 24
+  original_interest_rate: 24
+  current_interest_rate: 24
+  borrower_credit_score_at_origination: 24
+  current_classic_fico: 24
+
+# Force a bin boundary exactly at known regulatory cliffs (so 79.9 vs 80.1 isn't blurred).
+anchors:
+  original_ltv: [80, 90, 95, 97]
+  original_cltv: [80, 90, 95, 97]
+  dti: [36, 43, 45]
+
+profile:
+  numeric:
+    - original_interest_rate
+    - original_upb
+    - upb_at_issuance
+    - original_loan_term
+    - original_ltv
+    - original_cltv
+    - number_of_borrowers
+    - number_of_units
+    - dti
+    - borrower_credit_score_at_origination
+    - co_borrower_credit_score_at_origination
+    - borrower_credit_score_at_issuance
+    - co_borrower_credit_score_at_issuance
+    - origination_classic_fico
+    - issuance_classic_fico
+    - mortgage_insurance_percentage
+  categorical:
+    - channel
+    - first_time_home_buyer_indicator
+    - loan_purpose
+    - property_type
+    - occupancy_status
+    - property_state
+    - amortization_type
+    - prepayment_penalty_indicator
+    - interest_only_loan_indicator
+    - mortgage_insurance_type
+    - relocation_mortgage_indicator
+    - high_balance_loan_indicator
+    - high_loan_to_value_hltv_refinance_option_indicator
+    - special_eligibility_program
+    - property_valuation_method
+
+event:
+  numeric:
+    - current_interest_rate
+    - current_actual_upb
+    - interest_bearing_upb
+    - remaining_months_to_legal_maturity
+    - remaining_months_to_maturity
+    - scheduled_principal_current
+    - total_principal_current
+    - unscheduled_principal_current
+    - borrower_credit_score_current
+    - co_borrower_credit_score_current
+    - current_classic_fico
+  categorical:
+    - mortgage_insurance_cancellation_indicator

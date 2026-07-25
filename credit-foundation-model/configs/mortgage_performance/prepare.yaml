@@ -1,0 +1,26 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# Loan-stratified temporal train/val/test split (DL-007/008).
+#
+#   python scripts/prepare_data.py -c configs/mortgage_performance/prepare.yaml
+#   # Dutch panel (no origination column -> derive):
+#   python scripts/prepare_data.py -c configs/mortgage_performance/prepare.yaml \
+#       --input data/raw/all_cutoffs.parquet --origination_col null --out_dir data/processed
+
+include: common.yaml
+
+input: ${paths.raw}/panel.parquet
+id_col: loan_id
+origination_col: origination_date   # null = derive from reporting_col - seasoning_col
+reporting_col: reporting_date
+seasoning_col: seasoning_months
+
+out_dir: ${paths.processed}
+fractions: [0.8, 0.1, 0.1]          # train, val, test (sum to 1.0)
+
+stream: false                       # true = two-pass streaming split (G3.2): never loads the
+                                    # panel; writes <out>/<split>/bucket-<k>/ dirs of whole loans
+buckets: 64                         # loan-hash buckets per split (stream mode); size so one
+                                    # bucket (~rows/buckets) fits RAM for the encode stage
+batch_rows: 2000000                 # rows per streamed batch (both passes)

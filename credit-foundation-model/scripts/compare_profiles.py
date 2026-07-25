@@ -4,13 +4,13 @@
 
 Confirms the deterministic 4% loan-hash sample is a faithful stand-in for the whole loan book: it
 lines up the ``delinquency_by_reporting_year`` (and vintage) tables from two
-``profile_fannie_dataset.py`` JSON artifacts, reports the per-year gap in percentage points and in
+``profile_mortgage_dataset.py`` JSON artifacts, reports the per-year gap in percentage points and in
 relative terms, and prints a representativeness verdict.
 
     # A = the 4% panel, B = the whole raw book (delinquency-only is enough and fast)
-    python scripts/profile_fannie_dataset.py --panel gs://.../panel_2000_2024.parquet \
+    python scripts/profile_mortgage_dataset.py --panel gs://.../panel_2000_2024.parquet \
         --out reports/profile_4pct.json --delinquency-only --no-loan-count
-    python scripts/profile_fannie_dataset.py --raw-root gs://.../fannie_by_reporting \
+    python scripts/profile_mortgage_dataset.py --raw-root gs://.../raw_by_reporting \
         --out reports/profile_100pct.json --delinquency-only --no-vintage --no-loan-count
     python scripts/compare_profiles.py --a reports/profile_4pct.json --b reports/profile_100pct.json \
         --label-a "4% sample" --label-b "100% book" --out reports/delinquency_4pct_vs_100pct.json

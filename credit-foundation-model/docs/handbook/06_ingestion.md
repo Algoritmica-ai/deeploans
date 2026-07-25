@@ -3,9 +3,9 @@
 > **You are here:**  raw ─▶ [INGEST] ─▶ validate ─▶ split ─▶ tokenize ─▶ encode ─▶ pretrain ─▶ fine-tune ─▶ score ─▶ calibrate ─▶ serve
 
 
-> Files: `scripts/ingest.py` (asset-blind driver) · `reference_implementations/fannie_mae/adapter.py`
-> (all Fannie knowledge) · recipe `configs/fannie_mae/ingest_2000_2024.yaml`.
-> Historical note: this stage began life as a single `scripts/ingest_fannie_mae.py`; v1.1 split it
+> Files: `scripts/ingest.py` (asset-blind driver) · `reference_implementations/mortgage_performance/adapter.py`
+> (all Mortgage knowledge) · recipe `configs/mortgage_performance/ingest_2000_2024.yaml`.
+> Historical note: this stage began life as a single `scripts/ingest_mortgage_performance.py`; v1.1 split it
 > into driver + adapter (a thin compatibility shim keeps the old command working).
 
 ## 6.1 Purpose
@@ -16,7 +16,7 @@ columns — written **shard-by-shard so a killed run resumes**, and optionally d
 deterministic N% of loans.
 
 ```
-INPUT   gs://…/fannie_by_reporting/reporting_year=YYYY/reporting_quarter=Q#/*.parquet  (~4B rows raw)
+INPUT   gs://…/raw_by_reporting/reporting_year=YYYY/reporting_quarter=Q#/*.parquet  (~4B rows raw)
 CONFIG  sources (root + quarter list) · sample_pct · workers · sharded/combine · out
 OUTPUT  <out>/panel_2000_2024/part-<YYYYQ#>.parquet   one per quarter
         <out>/panel_2000_2024/_meta-<YYYYQ#>.json     completion sidecars (the resume mechanism)
@@ -26,7 +26,7 @@ OUTPUT  <out>/panel_2000_2024/part-<YYYYQ#>.parquet   one per quarter
 ## 6.2 The split of responsibilities (why two files)
 
 ```
-scripts/ingest.py (driver — knows NOTHING about Fannie)      reference_implementations/fannie_mae/adapter.py
+scripts/ingest.py (driver — knows NOTHING about Mortgage)      reference_implementations/mortgage_performance/adapter.py
 ─ reads the recipe + dataset.yaml contract                    ─ knows the hive layout
 ─ resolves the adapter by name from the registry              ─ knows MMYYYY dates, ZBC codes, D180
 ─ orchestrates: pending sources → thread pool → shards        ─ derives the contract columns
@@ -58,7 +58,7 @@ point `prepare_data` at it), falls back to the legacy whole-panel single-file pa
 `sharded: false`, and with `combine: true` additionally concatenates shards into the v1.0 single
 file (RAM-bound — never at 100%).
 
-## 6.4 The adapter's functions (`FannieMaeAdapter`)
+## 6.4 The adapter's functions (`MortgagePerformanceAdapter`)
 
 **`_iso_month_end(series)`** — `"042020"` → `"2020-04-30"`.
 - *Why month-end strings, not timestamps:* ISO strings sort chronologically, survive parquet
@@ -94,7 +94,7 @@ keep = pd.util.hash_pandas_object(df["loan_id"], index=False) % 100 < sample_pct
 ## 6.5 Example run
 
 ```bash
-python scripts/ingest.py -c configs/fannie_mae/ingest_2000_2024.yaml \
+python scripts/ingest.py -c configs/mortgage_performance/ingest_2000_2024.yaml \
     --sample_pct 10 --combined_name panel_2000_2024_10pct.parquet
 # ...
 #   skip part-2000Q1.parquet (already complete)          ← resumed run
@@ -111,7 +111,7 @@ reports in many quarters, so loan counts don't add.
 
 | Symptom | Cause → fix |
 |---|---|
-| `Missing expected Fannie columns [...]` | Source isn't the published layout (wrong root / mirror with renamed cols) → check `sources.root`, inspect one file's columns |
+| `Missing expected source columns [...]` | Source isn't the published layout (wrong root / mirror with renamed cols) → check `sources.root`, inspect one file's columns |
 | `ArrowNotImplementedError` reading `gs://` | Container's pyarrow has no native GCS → always go through `storage.read_parquet` (gcsfs), never `pd.read_parquet("gs://…")` directly |
 | Hangs then dies hours in with SSL/OAuth errors | Transient cloud failures → `storage.retry()` already handles the known markers; if a new marker appears, add it to `_TRANSIENT_MARKERS` |
 | Rerun re-reads a quarter you thought was done | Its sidecar is missing — the previous run died mid-write there. That's the mechanism working, not a bug |
@@ -125,7 +125,7 @@ more workers helps until the NIC saturates (~8 on the reference box). Memory hig
 
 ### Things to remember
 
-1. The driver (`ingest.py`) is asset-blind; every Fannie quirk lives in `FannieMaeAdapter._derive`.
+1. The driver (`ingest.py`) is asset-blind; every source quirk lives in `MortgagePerformanceAdapter._derive`.
 2. Sidecar-written-after-shard IS the resume mechanism: rerun the same command, finished quarters skip.
 3. Loan-hash sampling keeps whole loans, deterministically, across every quarter.
 4. loan_ids stay strings; `default_event`/`is_performing` are nullable booleans → consumers `.fillna(False)`.
