@@ -150,7 +150,7 @@ def main() -> None:
         rep = Path(cfg.report)
         rep.parent.mkdir(parents=True, exist_ok=True)
         lines = [
-            "# the publisher — FM Downstream Eval (loan-holdout probe)", "",
+            "# Mortgage Performance — FM Downstream Eval (loan-holdout probe)", "",
             f"Observed at **{cutoff}**, label = default within **{horizon} months** "
             f"after. {len(df):,} performing loans; loan-disjoint "
             f"{int(cfg.split.test_frac*100)}% held out. "

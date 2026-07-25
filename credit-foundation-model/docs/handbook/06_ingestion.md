@@ -4,7 +4,7 @@
 
 
 > Files: `scripts/ingest.py` (asset-blind driver) · `reference_implementations/mortgage_performance/adapter.py`
-> (all the publisher knowledge) · recipe `configs/mortgage_performance/ingest_2000_2024.yaml`.
+> (all Mortgage knowledge) · recipe `configs/mortgage_performance/ingest_2000_2024.yaml`.
 > Historical note: this stage began life as a single `scripts/ingest_mortgage_performance.py`; v1.1 split it
 > into driver + adapter (a thin compatibility shim keeps the old command working).
 
@@ -26,7 +26,7 @@ OUTPUT  <out>/panel_2000_2024/part-<YYYYQ#>.parquet   one per quarter
 ## 6.2 The split of responsibilities (why two files)
 
 ```
-scripts/ingest.py (driver — knows NOTHING about the publisher)      reference_implementations/mortgage_performance/adapter.py
+scripts/ingest.py (driver — knows NOTHING about Mortgage)      reference_implementations/mortgage_performance/adapter.py
 ─ reads the recipe + dataset.yaml contract                    ─ knows the hive layout
 ─ resolves the adapter by name from the registry              ─ knows MMYYYY dates, ZBC codes, D180
 ─ orchestrates: pending sources → thread pool → shards        ─ derives the contract columns
@@ -111,7 +111,7 @@ reports in many quarters, so loan counts don't add.
 
 | Symptom | Cause → fix |
 |---|---|
-| `Missing expected the publisher columns [...]` | Source isn't the published layout (wrong root / mirror with renamed cols) → check `sources.root`, inspect one file's columns |
+| `Missing expected source columns [...]` | Source isn't the published layout (wrong root / mirror with renamed cols) → check `sources.root`, inspect one file's columns |
 | `ArrowNotImplementedError` reading `gs://` | Container's pyarrow has no native GCS → always go through `storage.read_parquet` (gcsfs), never `pd.read_parquet("gs://…")` directly |
 | Hangs then dies hours in with SSL/OAuth errors | Transient cloud failures → `storage.retry()` already handles the known markers; if a new marker appears, add it to `_TRANSIENT_MARKERS` |
 | Rerun re-reads a quarter you thought was done | Its sidecar is missing — the previous run died mid-write there. That's the mechanism working, not a bug |
@@ -125,7 +125,7 @@ more workers helps until the NIC saturates (~8 on the reference box). Memory hig
 
 ### Things to remember
 
-1. The driver (`ingest.py`) is asset-blind; every the publisher quirk lives in `MortgagePerformanceAdapter._derive`.
+1. The driver (`ingest.py`) is asset-blind; every source quirk lives in `MortgagePerformanceAdapter._derive`.
 2. Sidecar-written-after-shard IS the resume mechanism: rerun the same command, finished quarters skip.
 3. Loan-hash sampling keeps whole loans, deterministically, across every quarter.
 4. loan_ids stay strings; `default_event`/`is_performing` are nullable booleans → consumers `.fillna(False)`.

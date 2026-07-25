@@ -9,7 +9,7 @@ reviewed as plain Python. Run from anywhere::
 
 The notebook explains ``scripts/classify_schema.py`` (stage 3) — how the panel's columns are sorted
 into features vs drops, static (profile) vs dynamic (event), and numeric vs categorical — and renders
-the resulting the publisher field schema from ``configs/mortgage_performance/tokenizer.yaml``. All from committed
+the resulting source field schema from ``configs/mortgage_performance/tokenizer.yaml``. All from committed
 configs; no GCS.
 """
 
@@ -49,7 +49,7 @@ DL-008) — the same discipline as fitting the vocabulary.
 2. Role — static (profile) vs dynamic (event)
 3. Type — numeric / categorical / flag / temporal / constant
 4. Dropping — constant &amp; redundant (safe) vs functional-dependency (review)
-5. The resulting the publisher field schema
+5. The resulting source field schema
 6. How to run it
 7. Notes &amp; caveats
 """),
@@ -114,7 +114,7 @@ The test is simple and structural: **group the panel by `loan_id`; if a column h
 every loan, it's static; if it changes across a loan's months, it's dynamic.** (Computed on a random
 sample of loans for speed — it's a structural property, so a sample is enough.)
 
-| Role | Meaning | Branch | the publisher examples |
+| Role | Meaning | Branch | mortgage examples |
 |---|---|---|---|
 | **static** | fixed at origination, repeats every month | **PROFILE** (emitted once per loan) | `original_ltv`, `dti`, `fico`, `loan_purpose`, `property_state` |
 | **dynamic** | changes month to month | **EVENT** (emitted per monthly row) | `current_interest_rate`, `current_actual_upb`, `loan_age`, `remaining_months_to_maturity` |
@@ -164,7 +164,7 @@ where it's safe, human-in-the-loop where judgment matters.
 
     # ---------------------------------------------------------------- resulting schema
     md(r"""
-## 5. The resulting the publisher field schema
+## 5. The resulting source field schema
 
 Below is the field schema this stage feeds the tokenizer (`configs/mortgage_performance/tokenizer.yaml`):
 every kept field, its branch (profile/event) and type (numeric/categorical). Note the counts — the
@@ -191,7 +191,7 @@ FIELDS
 import matplotlib.pyplot as plt
 pivot = FIELDS.groupby(["branch", "type"]).size().unstack(fill_value=0)
 ax = pivot.plot(kind="bar", figsize=(8, 4))
-ax.set_title("the publisher field schema — fields per branch × type")
+ax.set_title("source field schema — fields per branch × type")
 ax.set_xlabel("branch")
 ax.set_ylabel("fields")
 ax.tick_params(axis="x", rotation=0)
@@ -207,7 +207,7 @@ plt.show()
 longer "trust the curation" — it's enforced by code and covered by a test
 (`tests/test_classify_schema.py`).
 
-The the publisher `tokenizer.yaml` above is still **curated on top of** the classifier's output, but for
+The Mortgage `tokenizer.yaml` above is still **curated on top of** the classifier's output, but for
 reasons that are *deliberate*, not gaps — and every difference is enumerable (run
 `classify_schema --out /tmp/regen.yaml` and diff):
 
@@ -267,7 +267,7 @@ stats never see val/test (DL-008) — and the `dataset:` contract for the banned
 * **Static/dynamic drives the architecture.** The profile/event split here is exactly what the
   three-branch model consumes — profile fields feed the Profile encoder (once), event fields feed the
   Event encoder (per month).
-* **Curated ≠ hand-waved.** The the publisher schema is reviewed, but the leakage-free guarantee is now
+* **Curated ≠ hand-waved.** The source schema is reviewed, but the leakage-free guarantee is now
   *enforced by code* (step 0, verified above), and the remaining curation is enumerable (diff the
   regenerated schema against the committed one). The next notebook (`03`) fits the KVT vocabulary on
   this schema and shows a loan turned into tokens.

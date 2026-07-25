@@ -39,7 +39,7 @@ gcs = ["gcsfs"]                            # gs:// storage backend (reference co
 baselines = ["xgboost"]                    # tabular baseline + embeddings-downstream scripts
 logging = ["wandb", "tensorboard"]         # optional metrics-logger backends (DL-009: opt-in only)
 serving = ["fastapi", "uvicorn"]           # the serving example (reference_implementations/*/serve.py)
-dev = ["pytest", "pytest-cov", "ruff", "fastapi", "httpx"]   # fastapi+httpx: serve.py tests
+dev = ["pytest", "pytest-cov", "ruff==0.15.15", "fastapi", "httpx"]   # fastapi+httpx: serve.py tests
 nemo = ["nemo-toolkit"]
 
 [project.urls]

@@ -86,7 +86,7 @@ def main() -> int:
     frames = {}
     for s in SPLITS:
         frames[s] = _read(_split_source(args.dir, s), columns=cols)
-    # normalise ids to str everywhere — the publisher loan_ids are numeric-looking, and CSV round-trips
+    # normalise ids to str everywhere — mortgage loan_ids are numeric-looking, and CSV round-trips
     # coerce them to int, which would spuriously mismatch the parquet's string ids
     loans = {s: set(frames[s][id_col].astype(str).unique()) for s in SPLITS}
     chk("all three split parquets non-empty", all(len(frames[s]) for s in SPLITS),

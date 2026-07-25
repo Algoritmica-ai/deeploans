@@ -1,4 +1,4 @@
-# Raw the publisher source-file layout (gs://.../parquet/<acqQ>.parquet columns column000..column112).
+# Raw raw source-file layout (gs://.../parquet/<acqQ>.parquet columns column000..column112).
 # Generated from the mortgage-mae-etl schema; used by scripts/build_oot_baseline.py to
 # rename+cast the raw columns. index = 0-based source column number.
 columns:

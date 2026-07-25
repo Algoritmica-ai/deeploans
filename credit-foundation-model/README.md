@@ -77,7 +77,7 @@ monthly events ─▶ Event Encoder (5L) ───┘
 ## Data
 
 The **reference corpus** is the public
-[the publisher Single-Family Loan Performance dataset](https://publisher.example/credit-risk-transfer/single-family-credit-risk-transfer/mortgage-mae-single-family-loan-performance-data)
+single-family mortgage performance dataset
 — ~25 years of US fixed-rate mortgages (2000–2024, ~3.3B loan-month rows; pretraining uses a
 validated 4% loan-hash sample). A synthetic Dutch RMBS panel (ESMA Annex 2) serves as a
 controlled validation/ablation set.

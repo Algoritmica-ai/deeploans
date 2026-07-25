@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Algoritmica GmbH and contributors.
-"""Tests for the the publisher dataset glossary + profiler (scripts/profile_mortgage_dataset.py).
+"""Tests for the Mortgage dataset glossary + profiler (scripts/profile_mortgage_dataset.py).
 
 Two layers, matching the repo convention:
   * glossary logic — every published field is documented, positions are consistent with the schema;

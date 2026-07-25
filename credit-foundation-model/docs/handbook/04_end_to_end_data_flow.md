@@ -26,7 +26,7 @@ raw quarterly rows ─▶ [ingest] contract panel ─▶ [validate] ─▶ [spli
 
 ## 4.1 Raw data: what arrives
 
-the publisher publishes performance data by **reporting period**. Our loan's rows are scattered
+The source publishes performance data by **reporting period**. Our loan's rows are scattered
 across ~22 quarterly hive partitions (`reporting_year=2020/reporting_quarter=Q2/…`). Raw
 columns use the published names; dates are `MMYYYY` strings; codes are cryptic:
 
@@ -43,7 +43,7 @@ history spans many files.
 ## 4.2 Ingest: raw → contract panel
 
 `scripts/ingest.py` (asset-blind driver) calls `MortgagePerformanceAdapter.load_source()` per quarter,
-which runs `_derive()` — the only place the publisher's quirks are known:
+which runs `_derive()` — the only place the source's quirks are known:
 
 ```
 BEFORE (raw, 1 row)                       AFTER (contract panel, same row)

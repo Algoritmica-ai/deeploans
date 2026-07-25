@@ -1,6 +1,6 @@
-# Baseline task config — the publisher Single-Family Loan Performance (PRIMARY, real-world).
+# Baseline task config — single-family mortgage performance (PRIMARY, real-world).
 # Asset-specific knobs live here so scripts/train_baseline.py stays generic.
-# Column names are the REAL published the publisher schema (113 fields, verified against the data);
+# Column names are the REAL published source schema (113 fields, verified against the data);
 # label/gate columns are derived in scripts/ingest_mortgage_performance.py. See docs/data/mortgage_performance.md.
 id_col: loan_id
 time_col: reporting_date
@@ -14,7 +14,7 @@ gate_col: is_performing            # "currently performing" filter (predict NEW 
 gate_values: [true]
 
 caveat: >-
-  Real-world the publisher loan performance — default rates and lift reflect an actual portfolio
+  Real-world mortgage loan performance — default rates and lift reflect an actual portfolio
   (no synthetic inflation). Numbers depend on the ingested reporting span and observation date.
 
 exclude:                           # ids / metadata / raw dates / high-card geo / non-tabular
@@ -80,5 +80,5 @@ leakage:                           # outcome / contemporaneous-termination / pos
   - loan_holdback_indicator
   - loan_holdback_effective_date
 
-# NOTE: the publisher is real data with NO synthetic hidden-segment latent — the _segment ceiling
+# NOTE: This is real data with NO synthetic hidden-segment latent — the _segment ceiling
 # validation is Dutch-only. Omit segment_col here.

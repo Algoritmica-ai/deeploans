@@ -1,10 +1,10 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Algoritmica GmbH and contributors.
-"""the publisher dataset adapter — column derivations + parallel source reading (v1.1 G1.4).
+"""Mortgage-performance dataset adapter — column derivations + parallel source reading (v1.1 G1.4).
 
 Everything source-specific about ingest lives HERE (moved out of ``scripts/ingest_mortgage_performance.py``
 so the core package and stock scripts stay asset-blind). The published schema is the 113-field
-the publisher layout with snake_case names; sources are Hive-partitioned by reporting period::
+source layout with snake_case names; sources are Hive-partitioned by reporting period::
 
     raw_by_reporting/reporting_year=<YYYY>/reporting_quarter=<Q#>/from_<acqQ>_*.parquet
 
@@ -47,7 +47,7 @@ REQUIRED = [COL_ID, COL_REPORTING, COL_ORIG, COL_DLQ, COL_ZBC]
 
 
 def _iso_month_end(s: pd.Series) -> pd.Series:
-    """the publisher dates are MMYYYY strings (e.g. '012016'); return ISO 'YYYY-MM-DD' month-end strings.
+    """Mortgage dates are MMYYYY strings (e.g. '012016'); return ISO 'YYYY-MM-DD' month-end strings.
 
     The pipeline convention is an ISO-date *string* time column (chronologically sortable, and
     what ``train_baseline`` / ``prepare_data`` compare against) — not a timestamp.
@@ -64,7 +64,7 @@ def _derive(df: pd.DataFrame) -> pd.DataFrame:
     missing = [c for c in REQUIRED if c not in df.columns]
     if missing:
         raise SystemExit(
-            f"Missing expected the publisher columns {missing}. Got {len(df.columns)} cols; "
+            f"Missing expected source columns {missing}. Got {len(df.columns)} cols; "
             f"first 30: {sorted(df.columns)[:30]}")
 
     df = df.rename(columns={COL_ID: "loan_id"})
@@ -91,7 +91,7 @@ def _hive_path(root: str, reporting: str) -> str:
 
 @register_adapter("mortgage_performance")
 class MortgagePerformanceAdapter:
-    """DatasetAdapter for the the publisher source (see module docstring).
+    """DatasetAdapter for the raw source (see module docstring).
 
     ``stage`` is the ingest stage config (a mapping) carrying ``sources.files`` OR
     ``sources.root`` + ``sources.reporting``, plus ``sample_pct`` / ``workers`` / ``key``.

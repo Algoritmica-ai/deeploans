@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Algoritmica GmbH and contributors.
-"""DEPRECATED shim — the the publisher ingest moved behind the dataset-adapter interface (v1.1 G1.4).
+"""DEPRECATED shim — the Mortgage ingest moved behind the dataset-adapter interface (v1.1 G1.4).
 
 The derivation logic now lives in ``reference_implementations/mortgage_performance/adapter.py`` and the
 asset-blind driver is ``scripts/ingest.py``. This shim forwards so existing commands and run

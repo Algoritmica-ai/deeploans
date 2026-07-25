@@ -95,7 +95,7 @@ def main() -> None:
     n_pf = len(schema["profile"]["numeric"]) + len(schema["profile"]["categorical"])
     n_ev = len(schema["event"]["numeric"]) + len(schema["event"]["categorical"])
     lines = [
-        "# the publisher — KVT Tokenizer Report (M1)", "",
+        "# Mortgage Performance — KVT Tokenizer Report (M1)", "",
         f"Fitted on `{cfg.train}` ({len(fit_df):,} rows). Schema `{cfg.schema}`; "
         f"saved to `{cfg.out}`.", "",
         "## Vocabulary", "",

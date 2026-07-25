@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Algoritmica GmbH and contributors.
-"""Field-by-field glossary for the the publisher Single-Family Loan Performance dataset.
+"""Field-by-field glossary for the single-family mortgage performance dataset.
 
 Condensed from the official *Single-Family Loan Performance Dataset and Credit Risk Transfer —
-Glossary and File Layout* (© 2026 the publisher, revised 5/26/2026). Keys are the snake_case column
+Glossary and File Layout* (© 2026 mortgage performance data, revised 5/26/2026). Keys are the snake_case column
 names used in this repo (see ``configs/mortgage_performance/raw_schema.yaml``); the ``position`` matches the
 1-based Field Position in the official layout.
 
@@ -24,7 +24,7 @@ RAW_FIELDS: dict[str, tuple[int, str, str, str, str | None]] = {
         "A unique identifier for the reference pool.", None),
     "loan_identifier": (2, "Loan Identifier", "str",
         "A unique identifier for the mortgage loan (does not correspond to loan identifiers in "
-        "other the publisher disclosures). Renamed to loan_id in this repo.", None),
+        "other mortgage performance data disclosures). Renamed to loan_id in this repo.", None),
     "monthly_reporting_period": (3, "Monthly Reporting Period", "date(MMYYYY)",
         "The month/year of the servicer's cut-off period for the loan information (the observation "
         "month of each row).", None),
@@ -32,12 +32,12 @@ RAW_FIELDS: dict[str, tuple[int, str, str, str, str | None]] = {
         "The origination channel used by the party that delivered the loan to the issuer.",
         "R = Retail; C = Correspondent; B = Broker"),
     "seller_name": (5, "Seller Name", "str",
-        "The entity that delivered the mortgage loan to the publisher. Sellers under ~1% of volume "
+        "The entity that delivered the mortgage loan to mortgage performance data. Sellers under ~1% of volume "
         "are shown as 'Other'.", None),
     "servicer_name": (6, "Servicer Name", "str",
         "The entity that serves as the primary servicer of the loan. Blank before Dec-2001; small "
         "servicers shown as 'Other'.", None),
-    "master_servicer": (7, "Master Servicer", "str", "the publisher.", None),
+    "master_servicer": (7, "Master Servicer", "str", "mortgage performance data.", None),
     "original_interest_rate": (8, "Original Interest Rate", "float",
         "The original interest rate on the loan as identified in the original mortgage note.", None),
     "current_interest_rate": (9, "Current Interest Rate", "float",
@@ -164,7 +164,7 @@ RAW_FIELDS: dict[str, tuple[int, str, str, str, str | None]] = {
     "foreclosure_date": (52, "Foreclosure Date", "date(MMYYYY)",
         "Date the legal action of foreclosure completed. Outcome — leakage.", None),
     "disposition_date": (53, "Disposition Date", "date(MMYYYY)",
-        "Date the publisher's interest in the property ends. Outcome — leakage.", None),
+        "Date mortgage performance data's interest in the property ends. Outcome — leakage.", None),
     "foreclosure_costs": (54, "Foreclosure Costs", "float",
         "Expenses to obtain title, value, and maintain the property. Post-disposition — leakage.",
         None),
@@ -240,7 +240,7 @@ RAW_FIELDS: dict[str, tuple[int, str, str, str, str | None]] = {
         "Most recent date a loan-status change resulted in a Zero Balance Code change. Leakage.",
         None),
     "loan_holdback_indicator": (83, "Loan Holdback Indicator", "str",
-        "Whether the loan is temporarily on 'hold' while the publisher evaluates a unique situation. "
+        "Whether the loan is temporarily on 'hold' while mortgage performance data evaluates a unique situation. "
         "Excluded.", "Y = Yes (current); N = No (previously held); Null = not classified"),
     "loan_holdback_effective_date": (84, "Loan Holdback Effective Date", "date(MMYYYY)",
         "Date of the latest Loan Holdback indicator change. Excluded.", None),
@@ -294,12 +294,12 @@ RAW_FIELDS: dict[str, tuple[int, str, str, str, str | None]] = {
         "7 = Not Applicable; 9 = Not Available"),
     "high_loan_to_value_hltv_refinance_option_indicator": (103,
         "High LTV (HLTV) Refinance Option Indicator", "str",
-        "Whether an eligible loan is refinanced under the publisher's HLTV refinance option.",
+        "Whether an eligible loan is refinanced under mortgage performance data's HLTV refinance option.",
         "Y = Yes; N = No"),
     "deal_name": (104, "Deal Name", "str",
         "The title of the series issuance. Identifier metadata — excluded.", None),
     "repurchase_make_whole_proceeds_flag": (105, "Repurchase Make Whole Proceeds Flag", "str",
-        "Whether the publisher received rep-and-warranty repurchase proceeds. Leakage.",
+        "Whether mortgage performance data received rep-and-warranty repurchase proceeds. Leakage.",
         "Y = Yes; N = No"),
     "alternative_delinquency_resolution": (106, "Alternative Delinquency Resolution", "str",
         "Loss-mitigation solution to resolve delinquencies while keeping the loan in the security. "

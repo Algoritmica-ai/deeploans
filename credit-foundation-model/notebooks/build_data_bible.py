@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Algoritmica GmbH and contributors.
-"""Generate ``notebooks/00_data_bible.ipynb`` — the the publisher dataset 'bible'.
+"""Generate ``notebooks/00_data_bible.ipynb`` — the mortgage performance dataset 'bible'.
 
 Kept as a builder (not a hand-written .ipynb) so the notebook is regenerated deterministically and
 reviewed as plain Python. Run from anywhere::
@@ -32,7 +32,7 @@ def code(text: str) -> nbf.NotebookNode:
 
 CELLS = [
     md(r"""
-# The the publisher Loan-Performance Data Bible
+# The mortgage performance data Loan-Performance Data Bible
 
 **One notebook that documents the entire dataset**: every column's meaning, which columns the model
 is allowed to see (and which are held out as leakage), and the headline risk signal — the
@@ -133,7 +133,7 @@ else:
 ## 2. Column glossary
 
 Every field in the dataset, condensed from the official *Single-Family Loan Performance Dataset and
-Credit Risk Transfer — Glossary and File Layout* (© 2026 the publisher). `position` is the 1-based
+Credit Risk Transfer — Glossary and File Layout* (© 2026 mortgage performance data). `position` is the 1-based
 field position in the published layout; the last 6 rows (`position = derived`) are columns our
 ingest step adds so the rest of the pipeline stays asset-generic.
 """),
@@ -274,7 +274,7 @@ it. Six groups:
    principal forgiveness, modification/credit-event losses, `borrower_assistance_plan`, deferrals,
    and alternative delinquency resolutions: you only get these once you're *already* missing payments.
 5. **REO listing** (`original_list_*`, `current_list_*`) — the property is being sold post-foreclosure.
-6. **Loan holdback** (`loan_holdback_indicator` + date) — a distress hold the publisher places on loans
+6. **Loan holdback** (`loan_holdback_indicator` + date) — a distress hold The source places on loans
    about to hit a credit event.
 
 **The subtle bit:** `current_loan_delinquency_status` is banned but `current_actual_upb` and

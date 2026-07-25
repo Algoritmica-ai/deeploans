@@ -90,7 +90,7 @@ credit-foundation-model/
 | `src/credit_fm/` | Generic, reusable, importable logic; type-hinted public APIs | **Anything asset-specific.** No "mortgage" in any name; no hardcoded columns beyond the contract's parameters; no file paths. `tests/test_asset_blind.py` fails the build otherwise |
 | `scripts/` | Thin orchestration: parse config → call `src/` → print/write artifacts | Business logic you'd want to unit-test directly (put it in `src/`, script imports it); state (scripts must be re-runnable) |
 | `configs/` | Declarative facts: paths, hyperparameters, the dataset contract | Code, secrets, absolute machine-local paths (that's what env vars `CREDIT_FM_GCS_KEY` / `CREDIT_FM_BUCKET` are for) |
-| `reference_implementations/` | Everything the raw source forces you to know (the publisher's MMYYYY dates, zero-balance codes, hive layout) | Generic logic other assets would need (promote it to `src/`) |
+| `reference_implementations/` | Everything the raw source forces you to know (the source's MMYYYY dates, zero-balance codes, hive layout) | Generic logic other assets would need (promote it to `src/`) |
 | `tests/` | Fast synthetic-data tests; script tests via subprocess; negative controls | Tests needing network/GCS/GPU without a skip guard |
 | `notebooks/` | Generated teaching artifacts | Hand edits (they're overwritten by `build_*.py`); heavy computation |
 | `docs/` | Explanations that outlive a PR | Run-by-run results (those go to `reports/`) |

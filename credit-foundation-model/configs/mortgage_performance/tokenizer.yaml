@@ -1,4 +1,4 @@
-# KVT tokenizer config — the publisher Single-Family. Read by KVTTokenizer + scripts/train_tokenizer.py.
+# KVT tokenizer config — single-family mortgage. Read by KVTTokenizer + scripts/train_tokenizer.py.
 # Fields are routed to a branch: PROFILE = static origination facts (emitted once per loan);
 # EVENT = per-month dynamic facts (emitted per monthly row). `time_field` (loan_age) is the
 # discrete time coordinate token (`t=<bin>`) at the head of each event block.

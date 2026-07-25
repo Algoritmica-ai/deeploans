@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Algoritmica GmbH and contributors.
 #
-# Ingest the publisher hive-partitioned snapshots -> derived modelling panel.
+# Ingest mortgage performance data hive-partitioned snapshots -> derived modelling panel.
 #
 #   python -u scripts/ingest_mortgage_performance.py -c configs/mortgage_performance/ingest.yaml
 #   python -u scripts/ingest_mortgage_performance.py -c configs/mortgage_performance/ingest.yaml \

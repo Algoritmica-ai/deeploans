@@ -5,7 +5,7 @@
 
 ## 17.1 Why "becoming a framework" was a deliberate project
 
-v1.0 proved the science on the publisher — but the code *knew* it was the publisher: column names in
+v1.0 proved the science on Mortgage Performance — but the code *knew* it was Mortgage: column names in
 scripts, one hardcoded label, RAM-bound data handling, single-GPU training, results only
 reproducible on one box. The v1.1 program extracted six seams, each shipped as an independently
 tested brick. The test of success: **onboarding a new dataset or task touches YAML, not

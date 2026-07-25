@@ -1,10 +1,10 @@
 # Part 5 — The Dataset
 
-## 5.1 The the publisher Single-Family Loan Performance dataset
+## 5.1 The single-family mortgage performance dataset
 
-**Plain English:** the publisher is a US government-sponsored company that buys mortgages from banks.
-Since it owns millions of them, it publishes (anonymized) how every one of those loans behaved,
-month by month, since the year 2000. It is the closest thing to a public "flight recorder" of the
+**Plain English:** the reference corpus is a large public dataset of US single-family mortgages.
+A government-sponsored mortgage buyer owns millions of these loans and publishes (anonymized) how
+every one of them behaved, month by month, since the year 2000. It is the closest thing to a public "flight recorder" of the
 US mortgage market — including the 2008 crash and COVID.
 
 **The numbers:** ~25 years (2000–2024), tens of millions of fixed-rate loans, **~3.3 billion
@@ -163,7 +163,7 @@ no origination column — it's *derived* as `reporting − seasoning`, DL-007) t
 scripts. Purpose: (a) prove the framework is YAML-only for a wildly different schema, and (b) a
 controlled ceiling experiment — the panel hides a `_segment` variable that generates behavior,
 so we can measure how much of the recoverable signal the model finds. Its numbers are never
-compared with the publisher's (synthetic panels flatter every model).
+compared with the source's (synthetic panels flatter every model).
 
 ### Things to remember
 

@@ -2,7 +2,7 @@
 # Copyright (c) 2026 Algoritmica GmbH and contributors.
 """★ Asset-blindness enforcement (v1.1 G1.4) — the framework/reference boundary as a TEST.
 
-The ``credit_fm`` package must import cleanly with ZERO asset-specific modules: no the publisher, no
+The ``credit_fm`` package must import cleanly with ZERO asset-specific modules: no Mortgage, no
 Dutch, nothing from ``reference_implementations/``. Asset code plugs in through the dataset
 contract (``dataset.yaml`` + ``DatasetAdapter``), never the other way round. If this test fails,
 someone has re-leaked an asset into the core — move it to ``reference_implementations/<asset>/``.

@@ -125,7 +125,7 @@ def test_resolve_label_spec_needs_one_of_the_two_paths():
 
 
 def test_committed_finetune_configs_resolve_from_the_contract():
-    """The migrated the publisher finetune recipes must resolve default_12m without legacy keys."""
+    """The migrated Mortgage finetune recipes must resolve default_12m without legacy keys."""
     from credit_fm.utils.config import load_config
     for recipe in ("configs/mortgage_performance/finetune.yaml", "configs/mortgage_performance/finetune_oot.yaml",
                    "configs/mortgage_performance/finetune_crisis.yaml"):
