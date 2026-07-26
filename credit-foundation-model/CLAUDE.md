@@ -9,7 +9,7 @@ package) plus reference implementations, by **Algoritmica GmbH**. Compute: 8× H
 since v1.1 G4b: `PYTHONPATH=src python -m torch.distributed.run --standalone --nproc_per_node 8 …`,
 never bare `torchrun`).
 
-**Reference corpus: the publisher Single-Family Loan Performance** (real-world US fixed-rate
+**Reference corpus: single-family mortgage performance** (real-world US fixed-rate
 mortgages, 2000–2024, ~3.3B loan-month rows; pretraining uses validated 4% / 10% loan-hash
 samples) — see `docs/data/mortgage_performance.md` + `notebooks/00_data_bible.ipynb`. The **Dutch
 mortgages** synthetic panel is the controlled **validation/ablation** set (it carries the
@@ -100,7 +100,7 @@ tests/ unit + artifact-validator tests
   docstrings. Every file: SPDX header + `Copyright (c) 2026 Algoritmica GmbH`.
 - **Leakage rules** (critical for credit): split by `loan_id` (never row); temporal by
   origination; vocab/bins fit on `train` only (DL-008); evaluation is calendar-OOT with
-  loan-disjoint + embargo guards. the publisher leakage = current delinquency / zero-balance /
+  loan-disjoint + embargo guards. source leakage = current delinquency / zero-balance /
   foreclosure-disposition / loss columns (see `configs/mortgage_performance/baseline.yaml`); Dutch
   leakage = the 8 contemporaneous-state columns. The honest baseline drops them and gates to
   performing-at-observation.
@@ -109,7 +109,7 @@ tests/ unit + artifact-validator tests
   corrupted input (negative control).
 - **Schema configs:** `classify_schema.py` enforces the dataset contract's leakage/exclude
   lists (`configs/<asset>/dataset.yaml`) BEFORE classification (v1.1 G1.3, verified on the real
-  254M-row split). The the publisher `tokenizer.yaml` keeps a **documented** review layer on top:
+  254M-row split). The Mortgage `tokenizer.yaml` keeps a **documented** review layer on top:
   slice-superset fields, semantic role overrides (`original_ltv`/`dti` are structurally dynamic
   in the raw data), and the human-set bins/anchors. Tasks are declarative too (v1.1 G2.1):
   `dataset.yaml labels:` + `task.label` in finetune recipes.
@@ -133,7 +133,7 @@ is the planning source of truth.
   silently dropped the entire `src/credit_fm/data/` module from commits.
 - The container's Arrow build lacks GCS: `pd.read_parquet("gs://…")` raises
   `ArrowNotImplementedError` — read via gcsfs (see `validate_splits.py`).
-- the publisher loan_ids are numeric-looking strings: a CSV round-trip coerces them to int — always
+- mortgage loan_ids are numeric-looking strings: a CSV round-trip coerces them to int — always
   compare ids as `str`.
 - The synthetic Dutch panel is rule-based, so baselines run high; report the honest (gated,
   no-leakage) number and the segment-ceiling context, not the inflated one.

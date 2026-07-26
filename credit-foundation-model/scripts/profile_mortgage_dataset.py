@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Algoritmica GmbH and contributors.
-"""Profile the whole the publisher dataset — per-column statistics + delinquency rate by year.
+"""Profile the whole mortgage performance dataset — per-column statistics + delinquency rate by year.
 
 Streams a parquet dataset (a single file, a directory, or the Hive-partitioned raw source) in
 memory-bounded batches and writes a JSON profile consumed by ``notebooks/06_mortgage_data_bible.ipynb``.

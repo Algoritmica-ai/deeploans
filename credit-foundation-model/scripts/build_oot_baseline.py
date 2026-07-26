@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Algoritmica GmbH and contributors.
-"""Out-of-time (calendar-split) Gate-G1 baseline for the publisher.
+"""Out-of-time (calendar-split) Gate-G1 baseline for mortgage performance data.
 
 Unlike ``train_baseline.py`` (single observation cutoff, vintage split), this builds a
 **multi-cutoff, out-of-time** baseline that uses the full history:
@@ -305,7 +305,7 @@ def main() -> None:
         te = rows[-1]
         per_year = (part["test"].groupby("obs_year").y.agg(["size", "mean"]))
         lines = [
-            "# the publisher — Out-of-Time Gate-G1 Baseline", "",
+            "# Mortgage Performance — Out-of-Time Gate-G1 Baseline", "",
             f"Calendar split — **train {eff_train_years[0]}–{eff_train_years[-1]}**, "
             f"**test {args.test_years}** (val = 10% of train loans). {args.sample_pct}% loan sample; "
             f"{args.horizon_months}-month default horizon; {len(clean_features)} no-leakage features. "

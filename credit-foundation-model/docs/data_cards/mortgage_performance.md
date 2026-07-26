@@ -1,17 +1,17 @@
-# Data Card — the publisher Single-Family Loan Performance (credit_fm reference)
+# Data Card — single-family mortgage performance (credit_fm reference)
 
-*Apache-2.0 framework · data is public, redistributed under the publisher's terms · card v1, 4 Jul 2026*
+*Apache-2.0 framework · data is public, redistributed under mortgage performance data's terms · card v1, 4 Jul 2026*
 
 ## Summary
 
 Real-world US single-family (1–4 unit) fixed-rate mortgage servicing records used to pretrain and
-evaluate the the publisher reference credit foundation model. Monthly loan-level performance from
+evaluate the mortgage-performance reference credit foundation model. Monthly loan-level performance from
 origination through termination or the data cut.
 
 ## Source and provenance
 
-- **Publisher:** the publisher — Single-Family Loan Performance Data (publicly released for credit-risk
-  transparency). Access via the publisher's data portal under their terms of use.
+- **Publisher:** Mortgage Performance — Single-Family Loan Performance Data (publicly released for credit-risk
+  transparency). Access via mortgage performance data's data portal under their terms of use.
 - **Coverage used:** 2000Q1–2024Q4 (25 years).
 - **Ingestion:** `scripts/ingest_mortgage_performance.py` reads the published quarterly parquet snapshots,
   renames to a canonical schema, and derives the modelling columns. No raw data is committed to the
@@ -41,7 +41,7 @@ origination through termination or the data cut.
 ## Labels
 
 - `default_event` = loan reaches **180+ days delinquent (D180)** OR terminates as a credit-loss
-  event (foreclosure, short sale, REO/deed-in-lieu, note sale). Derived at ingest from the publisher's
+  event (foreclosure, short sale, REO/deed-in-lieu, note sale). Derived at ingest from the source's
   recorded delinquency status and zero-balance codes.
 - `is_performing`, `prepay_event` derived similarly. Labels are recorded real-world outcomes, not
   human annotations. Downstream label = default within 12 months of an observation cutoff.
@@ -73,7 +73,7 @@ unseen/missing). Encoding is deterministic and reproducible via
 
 ## Privacy and sensitive attributes
 
-- the publisher's public files are already de-identified (no borrower names, addresses, or SSNs);
+- mortgage performance data's public files are already de-identified (no borrower names, addresses, or SSNs);
   the finest geography is state (`property_state`) and a truncated ZIP prefix (excluded as
   high-cardinality). No direct protected-class attributes are present.
 - **However**, geography and other features can act as **proxies** for protected classes. Any
@@ -81,7 +81,7 @@ unseen/missing). Encoding is deterministic and reproducible via
 
 ## Licensing and access
 
-- The data is the publisher's, provided under their terms of use; users must obtain it from the publisher
+- The data is mortgage performance data's, provided under their terms of use; users must obtain it from Mortgage
   Mae directly. This repository redistributes **no raw data** — only code, fitted tokenizer
   artifacts (aggregate statistics, no individual records), and evaluation reports.
 
@@ -96,5 +96,5 @@ unseen/missing). Encoding is deterministic and reproducible via
 ## Maintenance
 
 - Regenerate via `scripts/ingest.py -c configs/mortgage_performance/ingest_2000_2024.yaml` then
-  `prepare_data.py`. New the publisher releases extend the reporting range; re-fit the tokenizer on the
+  `prepare_data.py`. New The source releases extend the reporting range; re-fit the tokenizer on the
   new train split (DL-008) if the vintage span changes materially.

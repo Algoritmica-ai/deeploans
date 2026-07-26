@@ -35,7 +35,7 @@ CELLS = [
     md(r"""
 # 05 · Bring Your Own Dataset — onboarding a new asset in 5 steps
 
-The framework is **asset-blind**: nothing in `credit_fm` knows about the publisher or Dutch
+The framework is **asset-blind**: nothing in `credit_fm` knows about mortgage performance data or Dutch
 mortgages (that's enforced by a test, `tests/test_asset_blind.py`). A new dataset plugs in through
 **one contract file** (`dataset.yaml`) and — only if your raw data needs custom derivations — one
 small adapter class. Every pipeline stage then runs unchanged.
@@ -101,7 +101,7 @@ The contract is small. Your panel must be **one row per entity per period** with
 * your **label ingredients**: a boolean *event* column (did the bad thing happen this month?)
   and a *gate* column (is the entity healthy right now?).
 
-If your raw source needs parsing/derivations to get there (like the publisher's `MMYYYY` dates and
+If your raw source needs parsing/derivations to get there (like the source's `MMYYYY` dates and
 delinquency codes), that logic goes into a `DatasetAdapter` under `reference_implementations/` —
 see `reference_implementations/mortgage_performance/adapter.py` for the worked example. Our toy asset is
 synthesized directly in contract shape:

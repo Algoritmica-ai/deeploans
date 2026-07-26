@@ -70,7 +70,7 @@ class _FakeAdapter:
 
 
 def _quarters(n_loans: int = 6) -> dict[str, pd.DataFrame]:
-    """4 quarters; every loan reports every quarter (so loans overlap across shards, like the publisher)."""
+    """4 quarters; every loan reports every quarter (so loans overlap across shards, like Mortgage)."""
     out = {}
     for qi, q in enumerate(["2016Q1", "2016Q2", "2016Q3", "2016Q4"]):
         out[q] = pd.DataFrame({

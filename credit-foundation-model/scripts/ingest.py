@@ -6,7 +6,7 @@ Reads the recipe's ``dataset:`` pointer, resolves the asset's
 :class:`~credit_fm.data.adapter.DatasetAdapter` (e.g. ``reference_implementations/mortgage_performance``),
 and writes the contract-conforming panel. Two modes:
 
-* **sharded (default, G3.1)** — one ``part-<tag>.parquet`` per source (for the publisher, per reporting
+* **sharded (default, G3.1)** — one ``part-<tag>.parquet`` per source (for Mortgage, per reporting
   quarter), written *as each source completes*, with a ``_meta-<tag>.json`` sidecar written
   strictly AFTER its shard. Rerunning the same command **skips completed sources** (sidecar
   present), so a hard kill — OOM, preemption, dropped SSH — costs only the in-flight sources:

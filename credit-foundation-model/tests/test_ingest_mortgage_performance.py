@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Algoritmica GmbH and contributors.
-"""Unit tests for the the publisher ingest derivation logic (scripts/ingest_mortgage_performance.py).
+"""Unit tests for the Mortgage ingest derivation logic (scripts/ingest_mortgage_performance.py).
 
 These prove the column derivations are correct on hand-crafted rows covering every case:
 current/late/default/credit-event/prepay/unknown-delinquency, date parsing, the code-set matching,
@@ -37,7 +37,7 @@ def test_iso_month_end_blank_and_bad_become_na():
 
 # ------------------------------------------------------------------ derivation
 def _raw():
-    """One row per case. Raw the publisher column names; MMYYYY dates; string codes."""
+    """One row per case. Raw source column names; MMYYYY dates; string codes."""
     rows = [
         # (dlq, zbc, note)                                     expected default/perf/prepay
         ("0",  "",   "current performing"),                    # perf
@@ -106,7 +106,7 @@ def test_mutual_exclusivity_invariant():
 
 
 def test_derive_requires_the_five_columns():
-    with pytest.raises(SystemExit, match="Missing expected the publisher columns"):
+    with pytest.raises(SystemExit, match="Missing expected source columns"):
         ing._derive(pd.DataFrame({"loan_identifier": ["L0"]}))
 
 

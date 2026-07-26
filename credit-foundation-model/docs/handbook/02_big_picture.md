@@ -7,7 +7,7 @@ followed (where it matters) by a **validator** that audits what the box produced
 
 ```
                        ┌──────────────────────────────────────────────────────┐
-                       │              RAW DATA  (the publisher, GCS)              │
+                       │              RAW DATA  (mortgage performance data, GCS)              │
                        │  hive dirs: reporting_year=2016/reporting_quarter=Q1  │
                        └────────────────────────┬─────────────────────────────┘
                                                 ▼

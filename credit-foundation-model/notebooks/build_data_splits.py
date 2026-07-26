@@ -90,7 +90,7 @@ Four steps:
    `2022-12-31`), every row *after* that date is dropped — this keeps the pretraining corpus blind
    to the future out-of-time (OOT) test era.
 2. **Find one origination date per loan.** Two modes: use the real `origination_date` column
-   (the publisher), or *derive* `reporting_date − seasoning_months` (the Dutch panel, which has no
+   (Mortgage), or *derive* `reporting_date − seasoning_months` (the Dutch panel, which has no
    origination column).
 3. **Assign each loan to a split.** Sort loans by `(origination_date, loan_id)` and cut
    **positionally** — earliest 80% → train, next 10% → val, latest 10% → test.

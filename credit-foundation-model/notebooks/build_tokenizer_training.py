@@ -160,7 +160,7 @@ never invent a new one (that keeps the frozen vocab closed).
 **Anchors — the regulatory-cliff fix.** Credit has hard thresholds: LTV **80** (PMI), **90/95/97**;
 DTI **43/45** (QM). A pure quantile bin might blur `79.9` and `80.1` into one bucket, throwing away a
 sharp signal an XGBoost split gets for free. `anchors:` **forces a bin boundary** exactly at those
-cutpoints. the publisher's anchors:
+cutpoints. the source's anchors:
 """),
     code(r"""
 print("Per-field bin overrides (more resolution for high-signal fields):")

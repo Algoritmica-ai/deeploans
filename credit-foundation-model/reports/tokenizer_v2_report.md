@@ -1,4 +1,4 @@
-# the publisher — KVT Tokenizer Report (M1)
+# Mortgage Performance — KVT Tokenizer Report (M1)
 
 Fitted on `gs://sriram-credit-fm-data/output/processed/mortgage_performance/run_2000_2022/train.parquet` (30,000,000 rows). Schema `configs/mortgage_performance/tokenizer.yaml`; saved to `configs/mortgage_performance/tokenizer_v2.json`.
 

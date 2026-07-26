@@ -23,7 +23,7 @@ input: ${paths.processed}/${split}.parquet
 ```
 
 Deep-merge means nested dicts merge key-by-key — override `model.dim` without restating
-`model.n_heads`. Every the publisher recipe includes `common.yaml`, which defines paths **once**:
+`model.n_heads`. Every mortgage recipe includes `common.yaml`, which defines paths **once**:
 
 ```yaml
 # configs/mortgage_performance/common.yaml (the hub)

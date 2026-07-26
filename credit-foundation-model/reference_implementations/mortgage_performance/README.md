@@ -1,7 +1,7 @@
-# Reference implementation — the publisher Single-Family (mortgages)
+# Reference implementation — single-family mortgages
 
 The framework's reference corpus: ~25 years of real-world US fixed-rate mortgages (public
-the publisher Single-Family Loan Performance data). See
+single-family mortgage performance data). See
 [`docs/data/mortgage_performance.md`](../../docs/data/mortgage_performance.md) for the schema, label
 (D180 / Zero-Balance credit event), and leakage discipline, and
 [`notebooks/00_data_bible.ipynb`](../../notebooks/00_data_bible.ipynb) for the full

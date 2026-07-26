@@ -1,7 +1,7 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 Algoritmica GmbH and contributors.
 #
-# Dataset contract — the publisher Single-Family Loan Performance (v1.1 G1).
+# Dataset contract — single-family mortgage performance (v1.1 G1).
 # THE single onboarding artifact for this asset: the column contract, the declarative task
 # labels, and the machine-enforced leakage/exclude lists. Consumers read it via
 # credit_fm.data.dataset_config.load_dataset_config; nothing re-declares these.

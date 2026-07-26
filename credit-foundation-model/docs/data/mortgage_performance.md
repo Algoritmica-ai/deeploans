@@ -1,4 +1,4 @@
-# the publisher Single-Family Loan Performance — data notes
+# single-family mortgage performance — data notes
 
 **Primary pretraining corpus.** Real-world US single-family **fixed-rate** mortgages, ~25 years,
 in the GCS bucket `gs://sriram-credit-fm-data`, **Hive-partitioned by reporting period**:
@@ -7,7 +7,7 @@ in the GCS bucket `gs://sriram-credit-fm-data`, **Hive-partitioned by reporting 
 
 i.e. partitioned by the *observation* quarter; within each partition, files are sharded by
 acquisition cohort (`from_2000Q1` = loans originated ~2000Q1). One file holds the monthly rows
-(3 per loan) for one (reporting-quarter, cohort) slice. Schema = the published the publisher *Single-
+(3 per loan) for one (reporting-quarter, cohort) slice. Schema = the published Mortgage *Single-
 Family Loan Performance* layout, **113 snake_case columns** (verified against the data:
 `loan_identifier`, `monthly_reporting_period`, `origination_date`,
 `current_loan_delinquency_status`, `zero_balance_code`, …; dates are `MMYYYY` strings).
@@ -39,7 +39,7 @@ Family Loan Performance* layout, **113 snake_case columns** (verified against th
 ## Label (derived in `scripts/ingest_mortgage_performance.py`)
 - **`default_event`** = `Current Loan Delinquency Status` reaches **D180** (≥ 6 months delinquent)
   **OR** `Zero Balance Code` ∈ {02 third-party sale, 03 short sale, 09 REO/deed-in-lieu,
-  15 note sale} — the standard the publisher credit-event definition.
+  15 note sale} — the standard Mortgage credit-event definition.
 - **`prepay_event`** = `Zero Balance Code` == 01 (prepaid / matured).
 - **`is_performing`** = current (dlq 0) and not yet terminated — the performing-at-observation gate.
 

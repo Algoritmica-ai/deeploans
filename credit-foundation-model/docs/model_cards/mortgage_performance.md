@@ -1,4 +1,4 @@
-# Model Card — Credit Foundation Model (the publisher reference, M5)
+# Model Card — Credit Foundation Model (mortgage-performance reference, M5)
 
 *Algoritmica GmbH · Apache-2.0 · card v2, 16 Jul 2026 (adds the 100M/10% headline model)*
 
@@ -41,7 +41,7 @@
 
 ## Training data
 
-- **Source:** the publisher Single-Family Loan Performance Data (public), 2000Q1–2024Q4.
+- **Source:** Single-family mortgage performance data (public), 2000Q1–2024Q4.
 - **Sample:** 4% of loans (deterministic hash on loan id) → ~2.26M loans, 125M monthly rows.
 - **Pretraining corpus:** capped at reporting date Dec-2022 (so the model never sees the
   2023–2024 evaluation period) → 1.75M train loans, ~1.2B tokens.
@@ -102,7 +102,7 @@ snapshot. (Full technical report: `docs/technical_report.md`.)
 - The OOT baseline used a 20% sample and the FM a 4% sample (representative, not identical loans);
   effect sizes are far larger than plausible sampling noise but an identical-loan rerun would
   tighten confidence intervals (~1,000–5,800 test positives; ROC margin ≈ ±0.01).
-- Validated on the publisher only. The 2008–2010 crisis regime (hardest shift) is not yet tested.
+- Validated on mortgage performance data only. The 2008–2010 crisis regime (hardest shift) is not yet tested.
 - At 25.7M parameters the model is Chinchilla-matched to ~0.5B tokens; larger models on the full
   dataset are untested headroom.
 
@@ -118,4 +118,4 @@ provides.
 
 - Checkpoint config, tokenizer, resolved run config, git commit, and source data checksums are
   stored with every artifact. Reproduction commands: `docs/technical_report.md` §10.
-- Framework: `credit_fm` (Apache-2.0). Data: the publisher Single-Family Loan Performance Data.
+- Framework: `credit_fm` (Apache-2.0). Data: single-family mortgage performance data.
