@@ -1,0 +1,20 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# Fit the KVT tokenizer on TRAIN + write the token QA report.
+# After generating the schema (classify.yaml --out …), add the documented review layer the
+# same way the source schema does — anchored dpd bins at the business cliffs:
+#
+#   anchors:
+#     dpd: [1, 8, 31, 61, 91]
+#
+#   python scripts/train_tokenizer.py -c configs/payment_behaviours/tokenizer_fit.yaml
+
+include: common.yaml
+
+train: ${paths.processed}/train.parquet
+out: configs/payment_behaviours/tokenizer.json
+report: reports/payment_behaviours_tokenizer_report.md
+
+qa_loans: 2000           # customers sampled for the QA report
+max_fit_rows: null

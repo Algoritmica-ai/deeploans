@@ -94,7 +94,7 @@ vocab size, and the shard list.
 ### 4.3 Flat `(B, L)` layout (DL-014)
 A hierarchical model could use a nested `(B, events, tokens)` batch, but we keep a **flat `(B, L)`**
 sequence plus `event_index`, and let the Event encoder pool per month using that index. Less
-padding (Fannie loans vary a lot in length), and the shard already carries the indices. The
+padding (mortgage loans vary a lot in length), and the shard already carries the indices. The
 varlen/packed alternative (`PackedCollator`) is deferred to M3 for throughput.
 
 ### 4.4 Masking policy
@@ -148,7 +148,7 @@ Selected positions are corrupted BERT-style (80% `[MASK]` / 10% random / 10% unc
 model never assumes a slot is literally `[MASK]`. Specials are never masked. `labels` hold the
 original id at masked positions and `-100` (ignore) elsewhere.
 
-## 7. Worked example — a real Fannie loan
+## 7. Worked example — a real mortgage loan
 
 Loan `103017066080` (Georgia, retail, 30-yr FRM) → **130 tokens**: `[BOS][USR]` + 31 profile
 tokens + 6 monthly event blocks (16 tokens each: `[EVT_START]` + `t` + `cal` + 11 numerics + 1

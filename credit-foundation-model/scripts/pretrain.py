@@ -7,14 +7,14 @@ Loads a frozen ``tokenizer.json`` (for ``vocab_size`` + ``n_field_types``), buil
 runs ``train_mlm``. The checkpoint stores the model config (for reload) and the full resolved
 run config (lineage).
 
-Config-driven (recipe: ``configs/fannie_mae/pretrain.yaml``)::
+Config-driven (recipe: ``configs/mortgage_performance/pretrain.yaml``)::
 
-    python scripts/pretrain.py -c configs/fannie_mae/pretrain.yaml                # single GPU
+    python scripts/pretrain.py -c configs/mortgage_performance/pretrain.yaml                # single GPU
     PYTHONPATH=src python -m torch.distributed.run --standalone --nproc_per_node 8 \
-        scripts/pretrain.py -c configs/fannie_mae/pretrain_100m.yaml             # 8-GPU DDP (G4b)
+        scripts/pretrain.py -c configs/mortgage_performance/pretrain_100m.yaml             # 8-GPU DDP (G4b)
     # NB: use `python -m torch.distributed.run`, NOT bare `torchrun` — under a venv the bare command
     # resolves to the SYSTEM install and spawns system-python workers that lack venv deps (gcsfs).
-    python scripts/pretrain.py -c configs/fannie_mae/pretrain.yaml \
+    python scripts/pretrain.py -c configs/mortgage_performance/pretrain.yaml \
         --data.limit 1000 --schedule.steps 100 --model.dim 256 \
         --checkpoint.out runs/toy.pt                                              # toy run
 """
@@ -47,7 +47,7 @@ from credit_fm.utils.reproducibility import set_seed  # noqa: E402
 
 
 def main() -> None:
-    cfg = parse_cli(__doc__, default_config="configs/fannie_mae/pretrain.yaml")
+    cfg = parse_cli(__doc__, default_config="configs/mortgage_performance/pretrain.yaml")
     info = init_distributed(cfg.get_path("runtime.device"))     # no-op single-GPU (G4b)
     device = cfg.get_path("runtime.device")
     if info.is_distributed and torch.cuda.is_available():

@@ -9,7 +9,7 @@ reproducibility/audit trail (seed, source SHA-256, loan counts, origination rang
 ``--out-dir`` (and ``--input``) are **pluggable locations**: a local path, ``gs://…``, or
 ``s3://…`` — only the URL scheme changes (see ``credit_fm.utils.storage``). So the splits can be
 written straight back into the cloud bucket under a new folder, e.g.
-``--out-dir gs://sriram-credit-fm-data/processed/fannie_mae/run_2016_2017``.
+``--out-dir gs://sriram-credit-fm-data/processed/mortgage_performance/run_2016_2017``.
 
 Origination key (what the temporal split orders by) comes from one of two modes:
   * ``--origination-col COL``  — use an explicit origination-date column directly.
@@ -24,14 +24,14 @@ bucket-by-bucket). The split *assignment* is identical to the in-RAM path (same 
 deterministic ordering); only the output layout changes — per-split **directories** instead of
 single parquets, still readable as one dataset via ``storage.read_parquet(<dir>)``.
 
-Config-driven (recipe: ``configs/fannie_mae/prepare.yaml``)::
+Config-driven (recipe: ``configs/mortgage_performance/prepare.yaml``)::
 
-    python scripts/prepare_data.py -c configs/fannie_mae/prepare.yaml
+    python scripts/prepare_data.py -c configs/mortgage_performance/prepare.yaml
     # 100% corpus from the G3.1 ingest shard dir, streamed:
-    python scripts/prepare_data.py -c configs/fannie_mae/prepare.yaml \
-        --input gs://.../raw/fannie_mae/panel_2000_2024 --stream true --buckets 256
+    python scripts/prepare_data.py -c configs/mortgage_performance/prepare.yaml \
+        --input gs://.../raw/mortgage_performance/panel_2000_2024 --stream true --buckets 256
     # Dutch panel (derive mode): null origination_col derives reporting - seasoning
-    python scripts/prepare_data.py -c configs/fannie_mae/prepare.yaml \
+    python scripts/prepare_data.py -c configs/mortgage_performance/prepare.yaml \
         --input data/raw/all_cutoffs.parquet --origination_col null --out_dir data/processed
 """
 
@@ -85,7 +85,7 @@ def _loan_origination(panel: pd.DataFrame, cfg) -> pd.Series:
 
 
 def main() -> None:
-    cfg = parse_cli(__doc__, default_config="configs/fannie_mae/prepare.yaml")
+    cfg = parse_cli(__doc__, default_config="configs/mortgage_performance/prepare.yaml")
     print(f"config: {cfg.config_path}\n"
           f"{summarize(cfg, 'input', 'origination_col', 'out_dir', 'fractions', 'seed', 'stream')}",
           flush=True)

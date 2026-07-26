@@ -77,7 +77,7 @@ monthly events ─▶ Event Encoder (5L) ───┘
 ## Data
 
 The **reference corpus** is the public
-[Fannie Mae Single-Family Loan Performance dataset](https://capitalmarkets.fanniemae.com/credit-risk-transfer/single-family-credit-risk-transfer/fannie-mae-single-family-loan-performance-data)
+single-family mortgage performance dataset
 — ~25 years of US fixed-rate mortgages (2000–2024, ~3.3B loan-month rows; pretraining uses a
 validated 4% loan-hash sample). A synthetic Dutch RMBS panel (ESMA Annex 2) serves as a
 controlled validation/ablation set.
@@ -93,7 +93,7 @@ Start with the data bible: [`notebooks/00_data_bible.ipynb`](notebooks/00_data_b
 |-----------|----------|-------------|
 | Framework (`credit_fm`) | `src/credit_fm/` | KVT tokenizer, three-branch model, data layer, training, utils |
 | Pipeline scripts | `scripts/` | one config-driven script per stage (ingest → … → finetune) + artifact validators |
-| Recipes | `configs/fannie_mae/`, `configs/dutch_mortgages/` | YAML per asset class; stage recipes + generated schemas |
+| Recipes | `configs/mortgage_performance/`, `configs/dutch_mortgages/` | YAML per asset class; stage recipes + generated schemas |
 | Notebooks | `notebooks/` | `00_data_bible` … `05_new_dataset` (builder-generated) |
 | Reference implementations | `reference_implementations/` | per-asset adapters + runbooks |
 | Docs | `docs/` | **handbook/** (teach-from-zero reference) · architecture · configuration · extending · tokenization · training · evaluation · decision log · cards |
@@ -121,25 +121,25 @@ pip install -e ".[gcs,baselines]"     # extras: [gcs] gs:// backend · [baseline
 
 # 1. ingest the raw source into a per-loan monthly panel (labels derived);
 #    sharded + resumable — a killed run reruns the same command and skips finished quarters
-python scripts/ingest.py -c configs/fannie_mae/ingest.yaml
+python scripts/ingest.py -c configs/mortgage_performance/ingest.yaml
 
 # 2. loan-stratified temporal split (+ artifact audit)
-python scripts/prepare_data.py -c configs/fannie_mae/prepare.yaml
+python scripts/prepare_data.py -c configs/mortgage_performance/prepare.yaml
 python scripts/validate_splits.py --dir <out_dir>
 
 # 3-4. field schema + fit the KVT tokenizer (train split only)
-python scripts/classify_schema.py -c configs/fannie_mae/classify.yaml
-python scripts/train_tokenizer.py -c configs/fannie_mae/tokenizer_fit.yaml
+python scripts/classify_schema.py -c configs/mortgage_performance/classify.yaml
+python scripts/train_tokenizer.py -c configs/mortgage_performance/tokenizer_fit.yaml
 
 # 5-6. encode-once shards + MLM pretraining (multi-GPU: python -m torch.distributed.run
 #       --standalone --nproc_per_node 8 scripts/pretrain.py -c <recipe>)
-python scripts/encode_dataset.py -c configs/fannie_mae/encode.yaml
-python scripts/pretrain.py -c configs/fannie_mae/pretrain.yaml
+python scripts/encode_dataset.py -c configs/mortgage_performance/encode.yaml
+python scripts/pretrain.py -c configs/mortgage_performance/pretrain.yaml
 
 # 7-8. embeddings + the out-of-time verdict
-python scripts/extract_embeddings.py -c configs/fannie_mae/extract.yaml
+python scripts/extract_embeddings.py -c configs/mortgage_performance/extract.yaml
 python scripts/build_oot_baseline.py --train-years 2016-2021 --test-years 2022-2023
-python scripts/finetune.py -c configs/fannie_mae/finetune_oot.yaml
+python scripts/finetune.py -c configs/mortgage_performance/finetune_oot.yaml
 ```
 
 ## Repository layout
@@ -148,7 +148,7 @@ See [`docs/architecture.md`](docs/architecture.md) for the full map.
 
 ```
 src/credit_fm/   tokenizer/ models/ data/ training/ utils/
-configs/         fannie_mae/ · dutch_mortgages/          (YAML recipes per asset class)
+configs/         mortgage_performance/ · dutch_mortgages/          (YAML recipes per asset class)
 scripts/         ingest · prepare · classify · tokenizer · encode · pretrain ·
                  extract · evaluate · finetune · baselines · validators · publish
 notebooks/       00_data_bible · 01_data_splits · 02_schema_classification (+ builders)

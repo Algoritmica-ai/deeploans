@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# Ingest mortgage performance data hive-partitioned snapshots -> derived modelling panel.
+#
+#   python -u scripts/ingest_mortgage_performance.py -c configs/mortgage_performance/ingest.yaml
+#   python -u scripts/ingest_mortgage_performance.py -c configs/mortgage_performance/ingest.yaml \
+#       --sources.reporting '[2016Q1, 2016Q2]' --sample_pct 100
+
+include: common.yaml
+
+sources:
+  files: null              # explicit parquet list (overrides hive mode)
+  root: ${gcs_root}/raw_by_reporting
+  reporting: [2016Q1, 2016Q2, 2016Q3, 2016Q4, 2017Q1, 2017Q2, 2017Q3, 2017Q4]
+
+out: ${paths.raw}
+combined_name: panel.parquet
+sample_pct: 10             # keep ~N% of loans (hash on loan_id)
+workers: 8                 # parallel source reads (threads)
+sharded: true              # one part-<quarter>.parquet per source, resumable (G3.1);
+                           # false = v1.0 single combined file
+combine: false             # after sharding, ALSO write <combined_name> (RAM-bound; never 100%)

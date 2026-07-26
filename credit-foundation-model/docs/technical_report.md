@@ -2,7 +2,7 @@
 
 **finevals.ai · Apache-2.0**
 Open-source framework for training credit foundation models (`credit_fm`), with a reference
-implementation on 25 years of real-world mortgage performance data (Fannie Mae Single-Family).
+implementation on 25 years of real-world mortgage performance data (single-family mortgage).
 
 *Status: draft, 13 Jul 2026. Numbers are from the M5 out-of-time program, the crisis-OOT run,
 and the E10–E12 scaling program.*
@@ -12,7 +12,7 @@ and the E10–E12 scaling program.*
 ## 1. Executive summary
 
 We built a framework for pretraining **sequence foundation models on credit-event histories**, and
-a reference model on the real-world **Fannie Mae Single-Family Loan Performance** dataset (2000–2024,
+a reference model on the real-world **single-family mortgage performance** dataset (2000–2024,
 ~2.3M sampled loans, ~1.2B tokens). The model is an encoder-only, masked-language-modelling
 transformer over key–value–time tokens, ~25.7M parameters.
 
@@ -73,7 +73,7 @@ with PRAGMA (our improvement target):
 
 ## 3. Data
 
-**Source.** Fannie Mae Single-Family Loan Performance data — real US fixed-rate mortgages, ~25 years
+**Source.** Single-family mortgage performance data — real US fixed-rate mortgages, ~25 years
 of monthly servicing records, publicly available. We ingest 2000Q1–2024Q4.
 
 **Sampling.** Loans are sampled by hashing the loan id (a **4%** representative sample: ~2.26M loans,
@@ -121,11 +121,11 @@ reconstruct hidden fields from context — forcing it to internalise how loans b
 ---
 ## 5. Training framework (the deliverable)
 The engagement's actual product is the reusable, config-driven pipeline. Every stage runs from a
-YAML recipe (`configs/fannie_mae/*.yaml`) with dotted CLI overrides, in the spirit of the NVIDIA
+YAML recipe (`configs/mortgage_performance/*.yaml`) with dotted CLI overrides, in the spirit of the NVIDIA
 blueprint's config-first workflow:
 | Stage | Script | Output |
 |---|---|---|
-| Ingest | `ingest_fannie_mae.py` | derived panel |
+| Ingest | `ingest_mortgage_performance.py` | derived panel |
 | Split | `prepare_data.py` | loan-stratified temporal train/val/test + audit manifest |
 | Classify / fit tokenizer | `classify_schema.py`, `train_tokenizer.py` | field schema + fitted KVT tokenizer |
 | Encode-once | `encode_dataset.py` | token-id shards (CPU pool / vectorized / GPU engines) |
@@ -270,7 +270,7 @@ real credit data and a true future-prediction test rather than an in-period frau
   an identical-loan rerun would tighten confidence intervals.
 - **Statistical power.** ~1,000–5,800 positives at test; ROC margin of error ≈ ±0.01. The full-model
   ROC win (+0.034) is ~3× that; the frozen result is below the bar (the expected floor).
-- **Single corpus.** Validated on Fannie Mae only; a Dutch-mortgage synthetic set is used for
+- **Single corpus.** Validated on mortgage performance data only; a Dutch-mortgage synthetic set is used for
   controlled ablation, and invoice-financing is a planned second reference.
 - **Test-population note (§7.4).** E11/E12 are evaluated on the 10% panel's test observations
   (1.78M loans) and E8/E10 on the 4% panel's (714k). Both are deterministic loan-hash samples of
@@ -285,16 +285,16 @@ real credit data and a true future-prediction test rather than an in-period frau
 ## 10. Reproducibility
 Every artifact stores the exact resolved config that produced it. The OOT verdict reproduces via:
 ```bash
-python scripts/ingest_fannie_mae.py   -c configs/fannie_mae/ingest_2000_2024.yaml
-python scripts/prepare_data.py        -c configs/fannie_mae/prepare.yaml --run_name run_2000_2022 \
+python scripts/ingest_mortgage_performance.py   -c configs/mortgage_performance/ingest_2000_2024.yaml
+python scripts/prepare_data.py        -c configs/mortgage_performance/prepare.yaml --run_name run_2000_2022 \
     --input '${paths.raw}/panel_2000_2024.parquet' --reporting_max 2022-12-31
-python scripts/train_tokenizer.py     -c configs/fannie_mae/tokenizer_fit.yaml --run_name run_2000_2022 \
-    --out configs/fannie_mae/tokenizer_v2.json
-python scripts/encode_dataset.py      -c configs/fannie_mae/encode.yaml --run_name run_2000_2022 \
-    --tokenizer configs/fannie_mae/tokenizer_v2.json --split train --engine vector
-python scripts/pretrain.py            -c configs/fannie_mae/pretrain.yaml --run_name run_2000_2022 \
-    --tokenizer configs/fannie_mae/tokenizer_v2.json --data.batch_size 32 --schedule.steps 30000
-python scripts/finetune.py            -c configs/fannie_mae/finetune_oot.yaml --mode full
+python scripts/train_tokenizer.py     -c configs/mortgage_performance/tokenizer_fit.yaml --run_name run_2000_2022 \
+    --out configs/mortgage_performance/tokenizer_v2.json
+python scripts/encode_dataset.py      -c configs/mortgage_performance/encode.yaml --run_name run_2000_2022 \
+    --tokenizer configs/mortgage_performance/tokenizer_v2.json --split train --engine vector
+python scripts/pretrain.py            -c configs/mortgage_performance/pretrain.yaml --run_name run_2000_2022 \
+    --tokenizer configs/mortgage_performance/tokenizer_v2.json --data.batch_size 32 --schedule.steps 30000
+python scripts/finetune.py            -c configs/mortgage_performance/finetune_oot.yaml --mode full
 python scripts/build_oot_baseline.py  --train-years 2016-2021 --test-years 2022-2023 --horizon-months 12
 ```
 
@@ -302,8 +302,8 @@ The crisis run reproduces via `scripts/run_crisis_oot.sh`; the scaling run (10% 
 pretrain → OOT fine-tune, resume-safe) via `scripts/run_scale_100m.sh`.
 
 Artifacts: pretrained checkpoints `runs/m5_full.pt` (25.7M) and `runs/m_100m.pt` /
-`runs/m_100m_ft.pt` (100.9M); tokenizer `configs/fannie_mae/tokenizer.json`; result reports under
-`reports/m5_oot_ft_*.md`, `reports/fannie_oot_2022_2023.md`, `reports/m_100m_oot_ft_full.md`, and
+`runs/m_100m_ft.pt` (100.9M); tokenizer `configs/mortgage_performance/tokenizer.json`; result reports under
+`reports/m5_oot_ft_*.md`, `reports/mortgage_oot_2022_2023.md`, `reports/m_100m_oot_ft_full.md`, and
 `reports/m5_on_10pct_ablation.md`.
 
 ---
@@ -333,5 +333,5 @@ Artifacts: pretrained checkpoints `runs/m5_full.pt` (25.7M) and `runs/m_100m.pt`
   LTV 80/90/95/97, DTI 36/43/45 · bins/categories fit on train only.
 - **Fine-tune:** frozen/LoRA(r8,α16)/full · neg_per_pos 20 · pos_weight cap 100 · 3 epochs ·
   best-epoch restore · loan-disjoint OOT with embargo.
-- **Data:** Fannie Mae 2000–2024 · 4% sample (2.26M loans, 1.2B tokens) and 10% sample (5.66M
+- **Data:** mortgage performance data 2000–2024 · 4% sample (2.26M loans, 1.2B tokens) and 10% sample (5.66M
   loans, 3.0B tokens) · pretrain capped Dec-2022 (Dec-2007 for the crisis run).

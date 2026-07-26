@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 finevals.ai and contributors.
-"""Serving-example tests (v1.1 G6.2) — reference_implementations/fannie_mae/serve.py.
+"""Serving-example tests (v1.1 G6.2) — reference_implementations/mortgage_performance/serve.py.
 
 The HTTP path must be the batch path: same gate, same cutoff truncation, same calibrated PDs.
 Skips cleanly when fastapi/httpx aren't installed (they're in the [serving]/[dev] extras).
@@ -27,7 +27,7 @@ from credit_fm.tokenizer import KVTTokenizer  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 _spec = importlib.util.spec_from_file_location(
-    "fannie_serve", ROOT / "reference_implementations" / "fannie_mae" / "serve.py")
+    "mortgage_serve", ROOT / "reference_implementations" / "mortgage_performance" / "serve.py")
 serve = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(serve)
 

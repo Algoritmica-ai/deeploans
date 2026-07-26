@@ -9,7 +9,7 @@
 ## T1 — Run ingestion (resumable by construction)
 
 ```bash
-python scripts/ingest.py -c configs/fannie_mae/ingest_2000_2024.yaml \
+python scripts/ingest.py -c configs/mortgage_performance/ingest_2000_2024.yaml \
     --sample_pct 10 --combined_name panel_2000_2024_10pct.parquet
 # killed? rerun the SAME command — completed quarters print "skip part-…"
 ```
@@ -24,62 +24,62 @@ python scripts/validate_ingest.py --panel <dir>/part-2016Q1.parquet --sample-pct
 ## T2 — Prepare (split) and validate
 
 ```bash
-python scripts/prepare_data.py -c configs/fannie_mae/prepare.yaml \
+python scripts/prepare_data.py -c configs/mortgage_performance/prepare.yaml \
     --input <shard-dir-or-parquet> --run_name run_2000_2022_10pct --reporting_max 2022-12-31
-python scripts/validate_splits.py --dir gs://…/processed/fannie_mae/run_2000_2022_10pct
+python scripts/validate_splits.py --dir gs://…/processed/mortgage_performance/run_2000_2022_10pct
 # bigger than RAM?  add:  --stream true --buckets 256      (same assignment, bucketed layout)
 ```
 
 ## T3 — Tokenizer + encode (only when starting a NEW lineage — the reference vocab is frozen)
 
 ```bash
-python scripts/classify_schema.py -c configs/fannie_mae/classify.yaml      # propose; human-review into tokenizer.yaml
-python scripts/train_tokenizer.py -c configs/fannie_mae/tokenizer_fit.yaml # fit on TRAIN only
-python scripts/encode_dataset.py  -c configs/fannie_mae/encode.yaml --run_name run_2000_2022_10pct --split train --workers 64
-python scripts/encode_dataset.py  -c configs/fannie_mae/encode.yaml --run_name run_2000_2022_10pct --split val   --workers 64
+python scripts/classify_schema.py -c configs/mortgage_performance/classify.yaml      # propose; human-review into tokenizer.yaml
+python scripts/train_tokenizer.py -c configs/mortgage_performance/tokenizer_fit.yaml # fit on TRAIN only
+python scripts/encode_dataset.py  -c configs/mortgage_performance/encode.yaml --run_name run_2000_2022_10pct --split train --workers 64
+python scripts/encode_dataset.py  -c configs/mortgage_performance/encode.yaml --run_name run_2000_2022_10pct --split val   --workers 64
 ```
 
 ## T4 — Pretrain (single GPU), T5 — Resume, T6 — 8-GPU DDP
 
 ```bash
 # T4: toy first — ALWAYS a scratch checkpoint path for anything experimental
-python scripts/pretrain.py -c configs/fannie_mae/pretrain.yaml \
+python scripts/pretrain.py -c configs/mortgage_performance/pretrain.yaml \
     --data.limit 2000 --schedule.steps 200 --checkpoint.out runs/toy.pt
 # real run (writes step checkpoints every 1000, keeps 2; jsonl metrics locally):
-python scripts/pretrain.py -c configs/fannie_mae/pretrain_100m.yaml \
+python scripts/pretrain.py -c configs/mortgage_performance/pretrain_100m.yaml \
     --run_name run_2000_2022_10pct --logging.backend jsonl
 
 # T5: box died at step 13,400? same command + resume:
-python scripts/pretrain.py -c configs/fannie_mae/pretrain_100m.yaml … --resume auto
+python scripts/pretrain.py -c configs/mortgage_performance/pretrain_100m.yaml … --resume auto
 #   → "resumed from …step013000.pt (continuing at 13001/20000)"
 
 # T6: all 8 GPUs — NEVER bare `torchrun` (system python loses the venv):
 PYTHONPATH=src python -m torch.distributed.run --standalone --nproc_per_node 8 \
-    scripts/pretrain.py -c configs/fannie_mae/pretrain_100m.yaml --run_name …
+    scripts/pretrain.py -c configs/mortgage_performance/pretrain_100m.yaml --run_name …
 ```
 
 ## T7 — Fine-tune (the OOT protocol), T8 — Score / calibrate / serve
 
 ```bash
-python scripts/finetune.py -c configs/fannie_mae/finetune_oot.yaml --mode full \
+python scripts/finetune.py -c configs/mortgage_performance/finetune_oot.yaml --mode full \
     --checkpoint gs://…/runs/m_100m.pt --panel <full-panel> \
     --save gs://…/runs/m_100m_ft.pt --report reports/m_100m_oot_ft_full.md
 # expect: per-cutoff obs counts → epochs with val ROC → "=== Fine-tune (full) ===  ROC-AUC …"
 
 # T8: batch score → calibrate (past, NON-test cutoff) → calibrated score → audit → serve
-python scripts/score_portfolio.py -c configs/fannie_mae/scoring.yaml --cutoff 2021-12-31 --out gs://…/cal_scores.parquet
-python scripts/calibrate.py       -c configs/fannie_mae/calibrate.yaml
-python scripts/score_portfolio.py -c configs/fannie_mae/scoring.yaml --calibrator gs://…/calibrator.json
+python scripts/score_portfolio.py -c configs/mortgage_performance/scoring.yaml --cutoff 2021-12-31 --out gs://…/cal_scores.parquet
+python scripts/calibrate.py       -c configs/mortgage_performance/calibrate.yaml
+python scripts/score_portfolio.py -c configs/mortgage_performance/scoring.yaml --calibrator gs://…/calibrator.json
 python scripts/validate_scores.py --scores <scores> --labeled-panel <panel> --min-roc 0.80
-python reference_implementations/fannie_mae/serve.py --checkpoint … --calibrator … --port 8000
+python reference_implementations/mortgage_performance/serve.py --checkpoint … --calibrator … --port 8000
 ```
 
 ## T9 — Evaluate against the bar
 
 ```bash
 python scripts/build_oot_baseline.py …        # the XGBoost bar on IDENTICAL windows
-python scripts/extract_embeddings.py -c configs/fannie_mae/extract.yaml
-python scripts/evaluate_downstream.py -c configs/fannie_mae/evaluate.yaml   # probes vs features
+python scripts/extract_embeddings.py -c configs/mortgage_performance/extract.yaml
+python scripts/evaluate_downstream.py -c configs/mortgage_performance/evaluate.yaml   # probes vs features
 ```
 
 Never quote an FM number without the matching bar from the same windows.
@@ -91,7 +91,7 @@ Never quote an FM number without the matching bar from the same windows.
 2. Conforming panel already? `adapter: generic` — **no code**, skip to 4.
 3. Else `reference_implementations/<asset>/adapter.py`: one `@register_adapter("<asset>")` class
    with `sources()/load_panel()` (+ `load_source()/source_tag()` for resumable ingest). Unit-test
-   the derivations on hand-crafted rows (copy `test_ingest_fannie_mae.py`'s pattern).
+   the derivations on hand-crafted rows (copy `test_ingest_mortgage_performance.py`'s pattern).
 4. `python scripts/validate_dataset.py --dataset configs/<asset>/dataset.yaml --panel <panel>`
 5. Copy the recipe family (`common.yaml` first — set paths/`run_name`), then T2→T7 in order.
 

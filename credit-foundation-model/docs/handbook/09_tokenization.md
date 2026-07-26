@@ -5,7 +5,7 @@
 
 > Files: `src/credit_fm/tokenizer/` (`key_value_time.py`, `numeric_bucketer.py`, `categorical.py`,
 > `vocabulary.py`) · fit by `scripts/train_tokenizer.py` · schema proposed by
-> `scripts/classify_schema.py` · frozen artifact `configs/fannie_mae/tokenizer.json` (552 tokens).
+> `scripts/classify_schema.py` · frozen artifact `configs/mortgage_performance/tokenizer.json` (552 tokens).
 
 ## 9.1 Why structured data needs tokenization at all
 

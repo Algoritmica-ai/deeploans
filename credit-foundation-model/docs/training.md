@@ -23,9 +23,9 @@ deterministic so losses are comparable across epochs.
 ## Running it
 
 ```bash
-python scripts/pretrain.py -c configs/fannie_mae/pretrain.yaml
+python scripts/pretrain.py -c configs/mortgage_performance/pretrain.yaml
 # dotted overrides, e.g.:
-python scripts/pretrain.py -c configs/fannie_mae/pretrain.yaml --steps 12000 --batch_size 128
+python scripts/pretrain.py -c configs/mortgage_performance/pretrain.yaml --steps 12000 --batch_size 128
 ```
 
 Reads shard dirs (local or `gs://`) via `CreditDataModule`; vocab size comes from the shard

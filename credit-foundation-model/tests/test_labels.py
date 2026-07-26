@@ -125,10 +125,10 @@ def test_resolve_label_spec_needs_one_of_the_two_paths():
 
 
 def test_committed_finetune_configs_resolve_from_the_contract():
-    """The migrated Fannie finetune recipes must resolve default_12m without legacy keys."""
+    """The migrated Mortgage finetune recipes must resolve default_12m without legacy keys."""
     from credit_fm.utils.config import load_config
-    for recipe in ("configs/fannie_mae/finetune.yaml", "configs/fannie_mae/finetune_oot.yaml",
-                   "configs/fannie_mae/finetune_crisis.yaml"):
+    for recipe in ("configs/mortgage_performance/finetune.yaml", "configs/mortgage_performance/finetune_oot.yaml",
+                   "configs/mortgage_performance/finetune_crisis.yaml"):
         cfg = load_config(recipe)
         spec = resolve_label_spec(cfg)
         assert spec.name == "default_12m" and spec.horizon_months == 12
@@ -139,7 +139,7 @@ def test_committed_finetune_configs_resolve_from_the_contract():
 def test_prepay_task_is_pure_config():
     """★ G2.2 — the second task is one yaml line: label: prepay_12m (zero code)."""
     from credit_fm.utils.config import load_config
-    cfg = load_config("configs/fannie_mae/finetune_prepay_oot.yaml")
+    cfg = load_config("configs/mortgage_performance/finetune_prepay_oot.yaml")
     spec = resolve_label_spec(cfg)
     assert spec.name == "prepay_12m" and spec.event_col == "prepay_event"
     assert spec.horizon_months == 12 and spec.gate_col == "is_performing"

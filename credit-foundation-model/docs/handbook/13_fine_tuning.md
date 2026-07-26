@@ -3,7 +3,7 @@
 > **You are here:**  raw ─▶ ingest ─▶ validate ─▶ split ─▶ tokenize ─▶ encode ─▶ pretrain ─▶ [FINE-TUNE] ─▶ score ─▶ calibrate ─▶ serve
 
 
-> File: `scripts/finetune.py` · recipes `configs/fannie_mae/finetune*.yaml` · LoRA machinery in
+> File: `scripts/finetune.py` · recipes `configs/mortgage_performance/finetune*.yaml` · LoRA machinery in
 > `src/credit_fm/inference/scoring.py` (single source of truth, shared with serving).
 
 ## 13.1 What fine-tuning is

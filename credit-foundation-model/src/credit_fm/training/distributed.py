@@ -10,7 +10,7 @@ behaves exactly as before.
 
 Launch a multi-GPU run with::
 
-    torchrun --standalone --nproc_per_node 8 scripts/pretrain.py -c configs/fannie_mae/pretrain_100m.yaml
+    torchrun --standalone --nproc_per_node 8 scripts/pretrain.py -c configs/mortgage_performance/pretrain_100m.yaml
 
 Backend is NCCL on CUDA (the fast GPU collective) and gloo on CPU (used by the smoke test).
 """

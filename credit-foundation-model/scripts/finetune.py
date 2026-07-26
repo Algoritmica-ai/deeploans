@@ -32,12 +32,12 @@ predicted probabilities become uncalibrated by design), and ``train.pos_weight_c
 loss weight. A 10% monitoring split at the TRUE class balance reports val ROC every epoch, so a
 collapsing run is visible after epoch 1.
 
-Config-driven (recipe: ``configs/fannie_mae/finetune.yaml``)::
+Config-driven (recipe: ``configs/mortgage_performance/finetune.yaml``)::
 
-    python scripts/finetune.py -c configs/fannie_mae/finetune.yaml                 # lora (default)
-    python scripts/finetune.py -c configs/fannie_mae/finetune.yaml \
+    python scripts/finetune.py -c configs/mortgage_performance/finetune.yaml                 # lora (default)
+    python scripts/finetune.py -c configs/mortgage_performance/finetune.yaml \
         --mode frozen --report reports/ft_frozen.md
-    python scripts/finetune.py -c configs/fannie_mae/finetune.yaml \
+    python scripts/finetune.py -c configs/mortgage_performance/finetune.yaml \
         --mode full --train.lr 1e-5 --report reports/ft_full.md
 """
 
@@ -136,7 +136,7 @@ def predict_full(model, samples, collate, device, bsz, use_amp):
 
 
 def main() -> None:
-    cfg = parse_cli(__doc__, default_config="configs/fannie_mae/finetune.yaml")
+    cfg = parse_cli(__doc__, default_config="configs/mortgage_performance/finetune.yaml")
     print(f"config: {cfg.config_path}\n"
           f"{summarize(cfg, 'checkpoint', 'panel', 'task', 'mode', 'lora', 'train', 'split', 'report')}",
           flush=True)

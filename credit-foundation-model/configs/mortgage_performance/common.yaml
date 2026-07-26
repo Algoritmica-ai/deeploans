@@ -1,0 +1,23 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# Shared base for all mortgage performance data pipeline recipes (include: common.yaml).
+# Paths are defined ONCE here and interpolated everywhere else; switch the whole
+# pipeline to a new data run with a single override: --run_name run_2008_2010
+
+run_name: run_2016_2017
+gcs_root: gs://sriram-credit-fm-data
+key: /workspace/.gcloud/credit-fm-sa.json     # GCS service-account key (container)
+
+dataset: configs/mortgage_performance/dataset.yaml      # the dataset contract (cols/labels/leakage) — v1.1 G1
+tokenizer: configs/mortgage_performance/tokenizer.json  # frozen KVT vocab (train-only fit, DL-008)
+schema: configs/mortgage_performance/tokenizer.yaml     # field lists + id/time cols (generated)
+
+paths:
+  raw: ${gcs_root}/output/raw/mortgage_performance
+  processed: ${gcs_root}/output/processed/mortgage_performance/${run_name}
+  encoded: ${gcs_root}/output/encoded/mortgage_performance/${run_name}
+  embeddings: ${gcs_root}/output/embeddings/mortgage_performance/${run_name}
+  runs: ${gcs_root}/runs
+
+seed: 42

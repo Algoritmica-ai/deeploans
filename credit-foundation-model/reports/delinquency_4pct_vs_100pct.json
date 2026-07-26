@@ -3,7 +3,7 @@
     "label_a": "4% sample",
     "label_b": "100% book",
     "a": {
-      "source": "gs://sriram-credit-fm-data/output/raw/fannie_mae/panel_2000_2024.parquet",
+      "source": "gs://sriram-credit-fm-data/output/raw/mortgage_performance/panel_2000_2024.parquet",
       "n_rows": 125027505,
       "n_loans": 2264282,
       "pooled": {
@@ -14,7 +14,7 @@
       }
     },
     "b": {
-      "source": "gs://sriram-credit-fm-data/fannie_by_reporting",
+      "source": "gs://sriram-credit-fm-data/raw_by_reporting",
       "n_rows": 3314483004,
       "n_loans": ">200,000",
       "pooled": {

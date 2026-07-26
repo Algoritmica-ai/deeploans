@@ -7,11 +7,11 @@ foundation model is meant to break.
 
 ```bash
 # split (no origination column → derive from reporting − seasoning, DL-007)
-python scripts/prepare_data.py -c configs/fannie_mae/prepare.yaml \
+python scripts/prepare_data.py -c configs/mortgage_performance/prepare.yaml \
     --input data/raw/all_cutoffs.parquet --origination_col null --out_dir data/processed
 
 # field schema (fully generated for this panel) + baseline
-python scripts/classify_schema.py -c configs/fannie_mae/classify.yaml \
+python scripts/classify_schema.py -c configs/mortgage_performance/classify.yaml \
     --input data/processed/train.parquet --out configs/dutch_mortgages/tokenizer.yaml
 python scripts/train_baseline.py --config configs/dutch_mortgages/baseline.yaml \
     --book data/raw/loan_book.parquet --report reports/baseline_report.md   # Gate G1 + ceiling

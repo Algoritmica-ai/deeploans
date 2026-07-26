@@ -11,7 +11,7 @@ The notebook explains ``scripts/train_tokenizer.py`` (stage 4) — how the KVT v
 TRAIN only** (leakage rule DL-008), how each field becomes ``field=value`` tokens (numeric quantile
 buckets with anchored regulatory cliffs, capped categoricals, the ``t=`` age coordinate and the
 ``cal=<YYYYQ#>`` macro-regime token), and how a loan is assembled into a token sequence. It renders
-the real frozen ``configs/fannie_mae/tokenizer.json`` (552 tokens) and runs small **live** demos of
+the real frozen ``configs/mortgage_performance/tokenizer.json`` (552 tokens) and runs small **live** demos of
 the bucketer / categorical / full loan encoder — all from committed configs, no GCS.
 """
 
@@ -75,15 +75,15 @@ import yaml
 
 # find the repo root (walk up until we see configs/)
 ROOT = Path.cwd()
-while not (ROOT / "configs" / "fannie_mae").exists() and ROOT != ROOT.parent:
+while not (ROOT / "configs" / "mortgage_performance").exists() and ROOT != ROOT.parent:
     ROOT = ROOT.parent
-assert (ROOT / "configs" / "fannie_mae").exists(), "run inside the credit-foundation-model repo"
+assert (ROOT / "configs" / "mortgage_performance").exists(), "run inside the credit-foundation-model repo"
 
 # so `import credit_fm...` works when the notebook runs from notebooks/
 if str(ROOT / "src") not in sys.path:
     sys.path.insert(0, str(ROOT / "src"))
 
-CFG = ROOT / "configs" / "fannie_mae"
+CFG = ROOT / "configs" / "mortgage_performance"
 SCHEMA = yaml.safe_load((CFG / "tokenizer.yaml").read_text())      # field schema + bins/anchors/calendar
 FIT = yaml.safe_load((CFG / "tokenizer_fit.yaml").read_text())     # the fit recipe (train path, out, QA)
 FROZEN = json.loads((CFG / "tokenizer.json").read_text())          # the FITTED, frozen tokenizer
@@ -100,8 +100,8 @@ print("frozen vocab size :", len(FROZEN["vocab"]), "tokens")
 
 | File | What it is |
 |---|---|
-| `configs/fannie_mae/tokenizer.json` | the **frozen tokenizer** — vocabulary + every bin edge + every kept category. This is the artifact everything downstream loads. |
-| `reports/fannie_tokenizer_report.md` | a **QA report** — vocab size, sequence-length distribution, and token-health rates (roundtrip lossless, `=UNK`, `=NA`). |
+| `configs/mortgage_performance/tokenizer.json` | the **frozen tokenizer** — vocabulary + every bin edge + every kept category. This is the artifact everything downstream loads. |
+| `reports/mortgage_tokenizer_report.md` | a **QA report** — vocab size, sequence-length distribution, and token-health rates (roundtrip lossless, `=UNK`, `=NA`). |
 
 Three ideas make KVT ("key-value-time") what it is:
 
@@ -160,7 +160,7 @@ never invent a new one (that keeps the frozen vocab closed).
 **Anchors — the regulatory-cliff fix.** Credit has hard thresholds: LTV **80** (PMI), **90/95/97**;
 DTI **43/45** (QM). A pure quantile bin might blur `79.9` and `80.1` into one bucket, throwing away a
 sharp signal an XGBoost split gets for free. `anchors:` **forces a bin boundary** exactly at those
-cutpoints. Fannie's anchors:
+cutpoints. the source's anchors:
 """),
     code(r"""
 print("Per-field bin overrides (more resolution for high-signal fields):")
@@ -335,7 +335,7 @@ metadata — is exactly what stage 5 (`encode`) freezes into shards for the mode
 ## 8. The QA report the script writes
 
 `train_tokenizer.py` doesn't just save the tokenizer — it encodes a sample of `qa_loans` (2000)
-loans and writes `reports/fannie_tokenizer_report.md` so you can sanity-check the fit **without
+loans and writes `reports/mortgage_tokenizer_report.md` so you can sanity-check the fit **without
 training anything**:
 
 - **Vocabulary** — total size + profile/event field counts.
@@ -358,10 +358,10 @@ This is the artifact-level check for this stage (the code-level checks live in `
 
 ```bash
 # fit on the train split, save tokenizer.json + write the QA report
-python scripts/train_tokenizer.py -c configs/fannie_mae/tokenizer_fit.yaml
+python scripts/train_tokenizer.py -c configs/mortgage_performance/tokenizer_fit.yaml
 
 # optional: cap the rows used to fit (faster; the fit is a quantile/count estimate)
-python scripts/train_tokenizer.py -c configs/fannie_mae/tokenizer_fit.yaml --max_fit_rows 500000
+python scripts/train_tokenizer.py -c configs/mortgage_performance/tokenizer_fit.yaml --max_fit_rows 500000
 ```
 
 The recipe (`tokenizer_fit.yaml`) points `train:` at `${paths.processed}/train.parquet` — the

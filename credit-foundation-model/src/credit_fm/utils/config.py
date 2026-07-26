@@ -5,7 +5,7 @@
 Every pipeline script runs from a YAML recipe (NVIDIA-blueprint style) instead of a wall of
 argparse flags::
 
-    python scripts/pretrain.py -c configs/fannie_mae/pretrain.yaml \
+    python scripts/pretrain.py -c configs/mortgage_performance/pretrain.yaml \
         --model.dim 512 --schedule.steps 2000 --data.limit 1000
 
 Features (PyYAML only — no hydra/omegaconf dependency):

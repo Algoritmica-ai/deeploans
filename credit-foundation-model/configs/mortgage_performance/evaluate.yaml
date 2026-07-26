@@ -1,0 +1,24 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# Downstream verdict: FM embeddings vs features-XGBoost on forward default.
+#
+#   python scripts/evaluate_downstream.py -c configs/mortgage_performance/evaluate.yaml
+
+include: common.yaml
+
+embeddings: ${paths.embeddings}/m3_dec2016_train.parquet
+panel: ${paths.processed}/train.parquet
+
+task:
+  cutoff: "2016-12-31"
+  horizon_months: 12
+  label_col: default_event
+
+split:
+  test_frac: 0.3           # loan-disjoint held-out fraction
+
+pca_dims: 64               # blueprint recipe: PCA-compress embeddings before XGBoost
+                           # (raw 384 dims next to ~30 features dilute the trees); null = off
+xgb_device: cuda
+report: reports/fm_downstream_dec2016.md

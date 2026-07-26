@@ -16,12 +16,12 @@ Outputs ``<out>`` (parquet: ``loan_id, score, n_events, cutoff``) plus ``<out>_m
 ``score`` stays the raw rank score; the mapping is monotone, so rankings are identical — ``pd``
 just fixes the level (raw softmax ≫ base rate after rebalanced fine-tuning).
 
-Config-driven (recipe: ``configs/fannie_mae/scoring.yaml``)::
+Config-driven (recipe: ``configs/mortgage_performance/scoring.yaml``)::
 
-    python scripts/score_portfolio.py -c configs/fannie_mae/scoring.yaml
-    python scripts/score_portfolio.py -c configs/fannie_mae/scoring.yaml \
+    python scripts/score_portfolio.py -c configs/mortgage_performance/scoring.yaml
+    python scripts/score_portfolio.py -c configs/mortgage_performance/scoring.yaml \
         --panel gs://.../portfolio.parquet --cutoff 2023-12-31 --limit 1000
-    python scripts/score_portfolio.py -c configs/fannie_mae/scoring.yaml \
+    python scripts/score_portfolio.py -c configs/mortgage_performance/scoring.yaml \
         --calibrator gs://.../calibrator.json
 """
 
@@ -41,7 +41,7 @@ from credit_fm.utils.reproducibility import set_seed
 
 
 def main() -> None:
-    cfg = parse_cli(__doc__, default_config="configs/fannie_mae/scoring.yaml")
+    cfg = parse_cli(__doc__, default_config="configs/mortgage_performance/scoring.yaml")
     print(f"config: {cfg.config_path}\n"
           f"{summarize(cfg, 'checkpoint', 'panel', 'cutoff', 'gate', 'out')}", flush=True)
     set_seed(cfg.get_path("seed", 42))

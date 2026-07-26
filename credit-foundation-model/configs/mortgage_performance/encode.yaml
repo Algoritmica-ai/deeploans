@@ -1,0 +1,17 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# Encode-once: processed panel split -> token-id parquet shards + manifest.
+#
+#   python scripts/encode_dataset.py -c configs/mortgage_performance/encode.yaml --split val
+#   python scripts/encode_dataset.py -c configs/mortgage_performance/encode.yaml --workers 8 --shard_size 10000
+
+include: common.yaml
+
+split: train
+input: ${paths.processed}/${split}.parquet
+output: ${paths.encoded}/${split}
+
+shard_size: 50000        # loans per shard
+workers: 32              # cpu engine: processes (spawn); 0/1 = in-process
+engine: cpu              # cpu (worker pool) | vector (vectorized NumPy) | gpu (RAPIDS cuDF/CuPy)

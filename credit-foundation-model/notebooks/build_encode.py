@@ -67,15 +67,15 @@ import yaml
 
 # find the repo root (walk up until we see configs/)
 ROOT = Path.cwd()
-while not (ROOT / "configs" / "fannie_mae").exists() and ROOT != ROOT.parent:
+while not (ROOT / "configs" / "mortgage_performance").exists() and ROOT != ROOT.parent:
     ROOT = ROOT.parent
-assert (ROOT / "configs" / "fannie_mae").exists(), "run inside the credit-foundation-model repo"
+assert (ROOT / "configs" / "mortgage_performance").exists(), "run inside the credit-foundation-model repo"
 
 # so `import credit_fm...` works when the notebook runs from notebooks/
 if str(ROOT / "src") not in sys.path:
     sys.path.insert(0, str(ROOT / "src"))
 
-CFG = ROOT / "configs" / "fannie_mae"
+CFG = ROOT / "configs" / "mortgage_performance"
 ENCODE = yaml.safe_load((CFG / "encode.yaml").read_text())
 print("encode recipe:")
 print("  input      :", ENCODE["input"])       # ${paths.processed}/${split}.parquet
@@ -243,11 +243,11 @@ you need it). Point the recipe at the split with `--split`; everything else has 
 ### The two commands you actually need
 ```bash
 # train split (the big one) — cpu engine, 64 worker processes
-python scripts/encode_dataset.py -c configs/fannie_mae/encode.yaml \
+python scripts/encode_dataset.py -c configs/mortgage_performance/encode.yaml \
     --run_name run_2000_2022_10pct --split train --workers 64
 
 # val split
-python scripts/encode_dataset.py -c configs/fannie_mae/encode.yaml \
+python scripts/encode_dataset.py -c configs/mortgage_performance/encode.yaml \
     --run_name run_2000_2022_10pct --split val   --workers 64
 ```
 `--run_name` selects which split directory to read and where to write (it fills the `${paths.*}`
@@ -256,14 +256,14 @@ in the recipe). Omit it to use the config's default run.
 ### Knobs (override any recipe key on the CLI)
 ```bash
 # fewer/more workers (match your core count); smaller shards for finer resume
-python scripts/encode_dataset.py -c configs/fannie_mae/encode.yaml --split train \
+python scripts/encode_dataset.py -c configs/mortgage_performance/encode.yaml --split train \
     --workers 32 --shard_size 25000
 
 # use the vectorized NumPy engine (token-identical; good for smaller panels)
-python scripts/encode_dataset.py -c configs/fannie_mae/encode.yaml --split val --engine vector
+python scripts/encode_dataset.py -c configs/mortgage_performance/encode.yaml --split val --engine vector
 
 # a quick smoke test on a tiny slice before the full run
-python scripts/encode_dataset.py -c configs/fannie_mae/encode.yaml --split val \
+python scripts/encode_dataset.py -c configs/mortgage_performance/encode.yaml --split val \
     --workers 4 --shard_size 5000
 ```
 
@@ -283,7 +283,7 @@ shard names are deterministic (`shard-<id>.parquet`), re-running overwrites clea
 # print the exact commands for THIS run's paths, resolved from the recipe
 run = "run_2000_2022_10pct"
 for split in ("train", "val"):
-    print(f"python scripts/encode_dataset.py -c configs/fannie_mae/encode.yaml "
+    print(f"python scripts/encode_dataset.py -c configs/mortgage_performance/encode.yaml "
           f"--run_name {run} --split {split} --workers 64")
 """),
 

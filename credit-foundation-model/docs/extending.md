@@ -59,12 +59,12 @@ class MyAssetAdapter:
     def load_panel(self) -> pd.DataFrame: ...      # contract-conforming panel
 
     # optional — enables sharded, RESUMABLE ingest (one shard per source, rerun skips
-    # completed ones; how the 100% Fannie corpus is ingested):
+    # completed ones; how the 100% Mortgage corpus is ingested):
     def load_source(self, source) -> pd.DataFrame: ...
     def source_tag(self, source) -> str: ...       # unique shard tag, e.g. '2016Q1'
 ```
 
-`reference_implementations/fannie_mae/adapter.py` is the worked example (~140 lines: column
+`reference_implementations/mortgage_performance/adapter.py` is the worked example (~140 lines: column
 derivations, date parsing, hash sampling).
 
 ## 3. The pipeline — same scripts, your recipes
@@ -95,7 +95,7 @@ tokenizer schema free of leakage/exclude columns, gate/terminal-state consistenc
 
 ## 4. Adding a task = one YAML block
 
-Because labels are declarative, a new task touches zero code. The prepayment task on Fannie is,
+Because labels are declarative, a new task touches zero code. The prepayment task on the source is,
 in full:
 
 ```yaml
@@ -125,7 +125,7 @@ Same split, same OOT protocol, same reports — different target.
 
 ## 6. Worked examples
 
-- **Fannie Mae** (`configs/fannie_mae/` + `reference_implementations/fannie_mae/`) — full
+- **mortgage performance data** (`configs/mortgage_performance/` + `reference_implementations/mortgage_performance/`) — full
   path-B reference: custom adapter, 113-column raw layout, 44 leakage + 15 exclude columns.
 - **Dutch mortgages** (`configs/dutch_mortgages/`) — a completely different schema (ESMA
   Annex 2, 71 columns, no origination column → derived) running through identical scripts;

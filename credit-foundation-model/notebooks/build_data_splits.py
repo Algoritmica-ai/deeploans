@@ -64,11 +64,11 @@ import yaml
 
 # find the repo root (walk up until we see configs/)
 ROOT = Path.cwd()
-while not (ROOT / "configs" / "fannie_mae").exists() and ROOT != ROOT.parent:
+while not (ROOT / "configs" / "mortgage_performance").exists() and ROOT != ROOT.parent:
     ROOT = ROOT.parent
-assert (ROOT / "configs" / "fannie_mae").exists(), "run inside the credit-foundation-model repo"
+assert (ROOT / "configs" / "mortgage_performance").exists(), "run inside the credit-foundation-model repo"
 
-CFG = yaml.safe_load((ROOT / "configs" / "fannie_mae" / "prepare.yaml").read_text())
+CFG = yaml.safe_load((ROOT / "configs" / "mortgage_performance" / "prepare.yaml").read_text())
 
 # the split writes splits.meta.json into its out_dir (on GCS); to render offline, drop a copy into
 # one of these local paths (the manifest is tiny), or point META_PATH at it directly.
@@ -90,7 +90,7 @@ Four steps:
    `2022-12-31`), every row *after* that date is dropped — this keeps the pretraining corpus blind
    to the future out-of-time (OOT) test era.
 2. **Find one origination date per loan.** Two modes: use the real `origination_date` column
-   (Fannie), or *derive* `reporting_date − seasoning_months` (the Dutch panel, which has no
+   (Mortgage), or *derive* `reporting_date − seasoning_months` (the Dutch panel, which has no
    origination column).
 3. **Assign each loan to a split.** Sort loans by `(origination_date, loan_id)` and cut
    **positionally** — earliest 80% → train, next 10% → val, latest 10% → test.
@@ -131,12 +131,12 @@ below, produce the split and copy the manifest down:
 
 ```bash
 # produce the split (reporting_max keeps the pretrain corpus blind to the OOT test era)
-python scripts/prepare_data.py -c configs/fannie_mae/prepare.yaml \
-    --input gs://sriram-credit-fm-data/output/raw/fannie_mae/panel_2000_2024.parquet \
+python scripts/prepare_data.py -c configs/mortgage_performance/prepare.yaml \
+    --input gs://sriram-credit-fm-data/output/raw/mortgage_performance/panel_2000_2024.parquet \
     --run_name run_2000_2024 --reporting_max 2022-12-31
 
 # fetch just the manifest for this notebook
-gsutil cp gs://sriram-credit-fm-data/output/processed/fannie_mae/run_2000_2024/splits.meta.json \
+gsutil cp gs://sriram-credit-fm-data/output/processed/mortgage_performance/run_2000_2024/splits.meta.json \
     reports/splits.meta.json
 ```
 """),
@@ -207,7 +207,7 @@ only the id / origination / reporting columns, so it's cheap):
 
 ```bash
 python scripts/validate_splits.py \
-    --dir gs://sriram-credit-fm-data/output/processed/fannie_mae/run_2000_2024
+    --dir gs://sriram-credit-fm-data/output/processed/mortgage_performance/run_2000_2024
 ```
 
 Expected output ends `ALL CHECKS PASSED`, with the key lines:
@@ -233,14 +233,14 @@ The split is one command: read the ingested panel, write `{train,val,test}.parqu
 
 ```bash
 # the split used for the scaling run (10% panel, capped at 2022 so pretrain is blind to the OOT era)
-python scripts/prepare_data.py -c configs/fannie_mae/prepare.yaml \
-    --input  gs://sriram-credit-fm-data/output/raw/fannie_mae/panel_2000_2024_10pct.parquet \
+python scripts/prepare_data.py -c configs/mortgage_performance/prepare.yaml \
+    --input  gs://sriram-credit-fm-data/output/raw/mortgage_performance/panel_2000_2024_10pct.parquet \
     --run_name run_2000_2022_10pct \
     --reporting_max 2022-12-31
 
 # then always audit the produced files (disjoint + complete + temporally ordered)
 python scripts/validate_splits.py \
-    --dir gs://sriram-credit-fm-data/output/processed/fannie_mae/run_2000_2022_10pct
+    --dir gs://sriram-credit-fm-data/output/processed/mortgage_performance/run_2000_2022_10pct
 ```
 
 Key flags (override any recipe key on the CLI):
@@ -248,7 +248,7 @@ Key flags (override any recipe key on the CLI):
 | Flag | Meaning |
 |---|---|
 | `--input` | the ingested panel to split (stage 1's output) |
-| `--run_name` | names the output dir `.../processed/fannie_mae/<run_name>/` |
+| `--run_name` | names the output dir `.../processed/mortgage_performance/<run_name>/` |
 | `--reporting_max` | drop rows after this date (caps the pretrain corpus); omit for full history |
 | `--fractions` | train/val/test split, e.g. `'[0.8, 0.1, 0.1]'` (default) |
 | `--seed` | the loan-hash seed (default 42) — same seed → same split |
@@ -261,7 +261,7 @@ It consumes stage 1's `panel*.parquet` and produces the `train.parquet` that the
 (train only, DL-008) and that `encode` then turns into shards. To fetch the tiny `splits.meta.json`
 for this notebook, copy it locally:
 ```bash
-gsutil cp gs://.../processed/fannie_mae/run_2000_2022_10pct/splits.meta.json reports/
+gsutil cp gs://.../processed/mortgage_performance/run_2000_2022_10pct/splits.meta.json reports/
 ```
 """),
 

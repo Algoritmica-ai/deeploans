@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 finevals.ai and contributors.
-"""Out-of-time (calendar-split) Gate-G1 baseline for Fannie Mae.
+"""Out-of-time (calendar-split) Gate-G1 baseline for mortgage performance data.
 
 Unlike ``train_baseline.py`` (single observation cutoff, vintage split), this builds a
 **multi-cutoff, out-of-time** baseline that uses the full history:
@@ -20,19 +20,19 @@ Two leakage guards:
 
 Reads the raw acquisition-cohort source files (``gs://<bucket>/parquet/<acqQ>.parquet``) — each
 holds a loan's whole life, so cutoffs + forward label compute within one file. Columns are
-renamed/cast via ``configs/fannie_mae/raw_schema.yaml``; the leakage/exclude lists come from
-``configs/fannie_mae/baseline.yaml`` (single source of truth). Loan-level sampling (``--sample-pct``,
+renamed/cast via ``configs/mortgage_performance/raw_schema.yaml``; the leakage/exclude lists come from
+``configs/mortgage_performance/baseline.yaml`` (single source of truth). Loan-level sampling (``--sample-pct``,
 hash on loan id) keeps it tractable.
 
 Examples
 --------
 Crisis stress test (train pre-crisis, test the crash):
     python scripts/build_oot_baseline.py --train-years 2000-2006 --test-years 2008-2010 \
-        --sample-pct 20 --report reports/fannie_oot_crisis.md
+        --sample-pct 20 --report reports/mortgage_oot_crisis.md
 
 Recent out-of-time:
     python scripts/build_oot_baseline.py --train-years 2000-2022 --test-years 2023-2025 \
-        --sample-pct 20 --report reports/fannie_oot_recent.md
+        --sample-pct 20 --report reports/mortgage_oot_recent.md
 """
 
 from __future__ import annotations
@@ -185,8 +185,8 @@ def main() -> None:
     ap.add_argument("--device", default="cuda", help="xgboost device: cuda (GPU) or cpu")
     ap.add_argument("--neg-per-pos", type=int, default=0,
                     help="downsample TRAIN negatives to N x positives (0 = keep all); test untouched")
-    ap.add_argument("--config", default="configs/fannie_mae/baseline.yaml")
-    ap.add_argument("--raw-schema", default="configs/fannie_mae/raw_schema.yaml")
+    ap.add_argument("--config", default="configs/mortgage_performance/baseline.yaml")
+    ap.add_argument("--raw-schema", default="configs/mortgage_performance/raw_schema.yaml")
     ap.add_argument("--staging", default="/workspace/staging_oot")
     ap.add_argument("--workers", type=int, default=6)
     ap.add_argument("--duckdb-threads", type=int, default=4)
@@ -305,7 +305,7 @@ def main() -> None:
         te = rows[-1]
         per_year = (part["test"].groupby("obs_year").y.agg(["size", "mean"]))
         lines = [
-            "# Fannie Mae — Out-of-Time Gate-G1 Baseline", "",
+            "# Mortgage Performance — Out-of-Time Gate-G1 Baseline", "",
             f"Calendar split — **train {eff_train_years[0]}–{eff_train_years[-1]}**, "
             f"**test {args.test_years}** (val = 10% of train loans). {args.sample_pct}% loan sample; "
             f"{args.horizon_months}-month default horizon; {len(clean_features)} no-leakage features. "

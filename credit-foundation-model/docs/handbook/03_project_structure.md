@@ -56,21 +56,21 @@ credit-foundation-model/
 │   ├── score_portfolio.py           batch scoring (+ --calibrator)
 │   ├── calibrate.py                 fit the score→PD calibrator (refuses test windows)
 │   ├── validate_{ingest,splits,dataset,scores}.py  the artifact auditors
-│   ├── profile_fannie_dataset.py / compare_profiles.py   data profiling
+│   ├── profile_mortgage_dataset.py / compare_profiles.py   data profiling
 │   ├── publish_model.py             package a checkpoint for release
 │   ├── run_*.sh                     end-to-end experiment orchestration (nohup-able)
 │   └── setup_container.sh           idempotent H100-container bring-up
 ├── configs/
-│   ├── fannie_mae/                  the reference recipes (one YAML per stage)
+│   ├── mortgage_performance/                  the reference recipes (one YAML per stage)
 │   │   ├── dataset.yaml               THE CONTRACT: columns, labels:, exclude:, leakage:
 │   │   ├── common.yaml                paths defined once (${gcs_root}, ${run_name})
 │   │   ├── tokenizer.yaml / tokenizer.json   field schema / the frozen 552-token vocab
 │   │   └── ingest, prepare, encode, pretrain*, finetune*, scoring, calibrate .yaml
 │   └── dutch_mortgages/             second asset: proof the framework is YAML-only
 ├── reference_implementations/
-│   └── fannie_mae/                  ALL Fannie-specific code lives here, not in src/
-│       ├── adapter.py                 FannieMaeAdapter (derivations, hive paths, sampling)
-│       ├── fannie_glossary.py         the 113-column published layout
+│   └── mortgage_performance/                  ALL source-specific code lives here, not in src/
+│       ├── adapter.py                 MortgagePerformanceAdapter (derivations, hive paths, sampling)
+│       ├── mortgage_glossary.py         the 113-column published layout
 │       ├── serve.py                   FastAPI serving example
 │       └── README.md                  runbook + curl demo
 ├── notebooks/                     00_data_bible … 05_new_dataset — GENERATED from
@@ -87,10 +87,10 @@ credit-foundation-model/
 
 | Folder | Belongs here | Must NEVER be here |
 |---|---|---|
-| `src/credit_fm/` | Generic, reusable, importable logic; type-hinted public APIs | **Anything asset-specific.** No "fannie" in any name; no hardcoded columns beyond the contract's parameters; no file paths. `tests/test_asset_blind.py` fails the build otherwise |
+| `src/credit_fm/` | Generic, reusable, importable logic; type-hinted public APIs | **Anything asset-specific.** No "mortgage" in any name; no hardcoded columns beyond the contract's parameters; no file paths. `tests/test_asset_blind.py` fails the build otherwise |
 | `scripts/` | Thin orchestration: parse config → call `src/` → print/write artifacts | Business logic you'd want to unit-test directly (put it in `src/`, script imports it); state (scripts must be re-runnable) |
 | `configs/` | Declarative facts: paths, hyperparameters, the dataset contract | Code, secrets, absolute machine-local paths (that's what env vars `CREDIT_FM_GCS_KEY` / `CREDIT_FM_BUCKET` are for) |
-| `reference_implementations/` | Everything the raw source forces you to know (Fannie's MMYYYY dates, zero-balance codes, hive layout) | Generic logic other assets would need (promote it to `src/`) |
+| `reference_implementations/` | Everything the raw source forces you to know (the source's MMYYYY dates, zero-balance codes, hive layout) | Generic logic other assets would need (promote it to `src/`) |
 | `tests/` | Fast synthetic-data tests; script tests via subprocess; negative controls | Tests needing network/GCS/GPU without a skip guard |
 | `notebooks/` | Generated teaching artifacts | Hand edits (they're overwritten by `build_*.py`); heavy computation |
 | `docs/` | Explanations that outlive a PR | Run-by-run results (those go to `reports/`) |

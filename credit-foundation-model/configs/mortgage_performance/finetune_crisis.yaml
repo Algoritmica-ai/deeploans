@@ -1,0 +1,57 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# CRISIS calendar-OOT fine-tune — the hardest regime-shift test. The head trains on Dec-2000..2006
+# observations and is scored on Dec-2008..2010 (defaults land in 2009-2011, the crisis peak).
+# Uses a CRISIS-BLIND backbone (pretrained on <=2007 only, run_2000_2007) so the model never saw
+# the crisis era during pretraining — a clean "unseen 2008 crisis" test vs the XGBoost bar (0.757).
+#
+#   python scripts/finetune.py -c configs/mortgage_performance/finetune_crisis.yaml --mode full
+#
+# CAVEATS (documented honestly):
+#  * The tokenizer (bins + `cal=<YYYYQ#>` vocab) is the SHARED frozen `tokenizer.json` fit on the
+#    full 2000-2022 train — standard fixed-vocabulary practice, but the calendar tokens for the
+#    2008-2011 test quarters were barely/never seen by the crisis-blind pretrain, so their
+#    embeddings are near-untrained. That is an HONEST limitation of a model blind to the era.
+#  * The <=2007 corpus is smaller than the full one, so the crisis-blind backbone is trained on
+#    fewer tokens (watch its val MLM loss).
+
+include: common.yaml
+
+run_name: run_2000_2007    # crisis-blind corpus (split + encode + pretrain all capped at 2007)
+tokenizer: configs/mortgage_performance/tokenizer.json      # shared frozen vocab (has cal tokens for all quarters)
+
+checkpoint: ${paths.runs}/m_crisis_blind.pt       # the <=2007-pretrained backbone (run_crisis_oot.sh stage 4)
+panel: ${paths.raw}/panel_2000_2024.parquet       # full panel — test obs + forward labels need 2008-2011 rows
+save: ${paths.runs}/m_crisis_blind_ft.pt          # persist the fine-tuned crisis model
+
+task:
+  train_cutoffs: ["2000-12-31", "2001-12-31", "2002-12-31", "2003-12-31", "2004-12-31", "2005-12-31", "2006-12-31"]
+  test_cutoffs: ["2008-12-31", "2009-12-31", "2010-12-31"]   # embargo year 2007 (train labels end <= 2007)
+  label: default_12m         # declarative task from dataset.yaml labels: (v1.1 G2.1)
+
+mode: lora                 # frozen | lora | full
+lora:
+  rank: 8
+  alpha: 16
+
+train:
+  epochs: 3
+  batch_size: 32
+  lr: null
+  weight_decay: 0.01
+  grad_clip: 1.0
+  neg_per_pos: 20
+  pos_weight_cap: 100
+
+split:
+  test_frac: 0.3           # unused in OOT mode
+
+runtime:
+  device: null
+  bf16: true
+
+workers: 32
+engine: vector             # vectorized NumPy encode (token-identical, faster)
+features_bar: 0.757        # crisis XGBoost bar (build_oot_baseline train 2000-06 -> test 2008-10)
+report: reports/mortgage_oot_crisis_ft.md

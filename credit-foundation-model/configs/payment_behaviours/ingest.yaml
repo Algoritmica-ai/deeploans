@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# Ingest the payment-behaviours CSV -> exploded per-invoice contract panel.
+#
+#   python scripts/ingest.py -c configs/payment_behaviours/ingest.yaml
+#   python scripts/ingest.py -c configs/payment_behaviours/ingest.yaml --sample_pct 10
+
+include: common.yaml
+
+source_csv: ${paths.raw}/Payment_Behaviours_Anon.csv
+base_month: "2000-01"      # pseudo-calendar origin (invoice i -> month-end of base_month + i)
+cap_dpd: 3650              # clip corrupt outliers (raw max ~665k "days" past due)
+sample_pct: 100            # keep ~N% of customers (hash on customer_id) for quick runs
+
+out: ${paths.raw}
+combined_name: panel.parquet
+sharded: false             # single small CSV — the v1.0 whole-panel path is the right tool

@@ -1,0 +1,18 @@
+# SPDX-License-Identifier: Apache-2.0
+# Copyright (c) 2026 finevals.ai and contributors.
+#
+# Encode-once: processed split -> token-id parquet shards + manifest.
+#
+#   for s in train val test; do
+#     python scripts/encode_dataset.py -c configs/payment_behaviours/encode.yaml --split $s
+#   done
+
+include: common.yaml
+
+split: train
+input: ${paths.processed}/${split}.parquet
+output: ${paths.encoded}/${split}
+
+shard_size: 50000        # customers per shard
+workers: 16
+engine: cpu              # cpu (worker pool) | vector (vectorized NumPy)

@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: Apache-2.0
 # Copyright (c) 2026 finevals.ai and contributors.
-"""Validate an ingested Fannie panel against the ingest invariants — read-only audit.
+"""Validate an ingested Mortgage panel against the ingest invariants — read-only audit.
 
 Proves the *produced artifact* is correct (not just the code): the derived label columns
 (``default_event``/``is_performing``/``prepay_event``/``dlq_num``/``reporting_date``) exactly
@@ -28,8 +28,8 @@ import pandas as pd
 import pyarrow.parquet as pq
 
 _spec = importlib.util.spec_from_file_location(
-    "fannie_adapter", Path(__file__).resolve().parent.parent
-    / "reference_implementations" / "fannie_mae" / "adapter.py")
+    "mortgage_adapter", Path(__file__).resolve().parent.parent
+    / "reference_implementations" / "mortgage_performance" / "adapter.py")
 ing = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(ing)
 

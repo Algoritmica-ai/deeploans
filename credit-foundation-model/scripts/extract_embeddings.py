@@ -10,10 +10,10 @@ Leakage control lives here: ``observe.cutoff`` truncates each loan's history to 
 keeps only loans performing at that cutoff (the "predict *new* defaults" gate). The downstream
 label (default within the forward window) is computed later, in ``evaluate_downstream.py``.
 
-Config-driven (recipe: ``configs/fannie_mae/extract.yaml``)::
+Config-driven (recipe: ``configs/mortgage_performance/extract.yaml``)::
 
-    python scripts/extract_embeddings.py -c configs/fannie_mae/extract.yaml
-    python scripts/extract_embeddings.py -c configs/fannie_mae/extract.yaml \
+    python scripts/extract_embeddings.py -c configs/mortgage_performance/extract.yaml
+    python scripts/extract_embeddings.py -c configs/mortgage_performance/extract.yaml \
         --limit 1000 --observe.cutoff 2017-06-30 --out gs://.../m3_jun2017.parquet
 """
 
@@ -62,7 +62,7 @@ def observe_panel(panel: pd.DataFrame, id_col: str, time_col: str,
 
 
 def main() -> None:
-    cfg = parse_cli(__doc__, default_config="configs/fannie_mae/extract.yaml")
+    cfg = parse_cli(__doc__, default_config="configs/mortgage_performance/extract.yaml")
     print(f"config: {cfg.config_path}\n"
           f"{summarize(cfg, 'checkpoint', 'panel', 'observe', 'batch_size', 'out')}", flush=True)
 

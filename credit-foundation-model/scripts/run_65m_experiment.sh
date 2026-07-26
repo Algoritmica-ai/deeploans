@@ -23,7 +23,7 @@ ROOT="${CREDIT_FM_BUCKET:-gs://sriram-credit-fm-data}"   # override: export CRED
 RUNS="$ROOT/runs"
 CKPT="$RUNS/m5_65m.pt"                       # 65M pretrained checkpoint (produced by stage 2)
 FT="$RUNS/m5_65m_ft.pt"                      # 65M fine-tuned model (produced by stage 3)
-ENCODED="$ROOT/output/encoded/fannie_mae/run_2000_2022"  # must match pretrain_65m.yaml run_name
+ENCODED="$ROOT/output/encoded/mortgage_performance/run_2000_2022"  # must match pretrain_65m.yaml run_name
 
 echo "================================================================"
 echo " 65M scale-up experiment — started $(date)"
@@ -36,8 +36,8 @@ python - <<'PY'
 import yaml
 from credit_fm.models import CreditFoundationModel
 from credit_fm.tokenizer import KVTTokenizer
-m = yaml.safe_load(open("configs/fannie_mae/pretrain_65m.yaml"))["model"]
-tok = KVTTokenizer.load("configs/fannie_mae/tokenizer.json")
+m = yaml.safe_load(open("configs/mortgage_performance/pretrain_65m.yaml"))["model"]
+tok = KVTTokenizer.load("configs/mortgage_performance/tokenizer.json")
 model = CreditFoundationModel(tok.vocab_size, len(tok.field_types), dim=m["dim"], n_heads=m["n_heads"],
     profile_layers=m["profile_layers"], event_layers=m["event_layers"], history_layers=m["history_layers"])
 n = sum(p.numel() for p in model.parameters()) / 1e6
@@ -52,7 +52,7 @@ PY
 echo "[1] checking encoded shards exist under $ENCODED ..."
 if ! gsutil ls "$ENCODED/train/" >/dev/null 2>&1; then
     echo "    ERROR: no encoded shards at $ENCODED/train/."
-    echo "    Set the run_name in configs/fannie_mae/pretrain_65m.yaml (and \$ENCODED above) to the"
+    echo "    Set the run_name in configs/mortgage_performance/pretrain_65m.yaml (and \$ENCODED above) to the"
     echo "    corpus the 26M model trained on, OR run scripts/encode_dataset.py first."
     exit 1
 fi
@@ -60,11 +60,11 @@ echo "    ok."
 
 # --- 2. pretrain the 65M model (MLM; same shards, same recipe, bigger model) --------------------
 echo "[2] pretrain 65M -> $CKPT   ($(date))"
-python scripts/pretrain.py -c configs/fannie_mae/pretrain_65m.yaml
+python scripts/pretrain.py -c configs/mortgage_performance/pretrain_65m.yaml
 
 # --- 3. calendar-OOT fine-tune with the 65M checkpoint (full mode) ------------------------------
 echo "[3] OOT fine-tune (full) with the 65M checkpoint   ($(date))"
-python scripts/finetune.py -c configs/fannie_mae/finetune_oot.yaml --mode full \
+python scripts/finetune.py -c configs/mortgage_performance/finetune_oot.yaml --mode full \
     --checkpoint "$CKPT" --save "$FT" --report reports/m5_65m_oot_ft_full.md
 
 # --- 4. done — the comparison the whole experiment exists to make -------------------------------

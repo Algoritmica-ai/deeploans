@@ -7,11 +7,11 @@ bucketers/categoricals on TRAIN only, serializes the tokenizer to JSON, then enc
 loans to report vocabulary size, sequence-length distribution, and token health (roundtrip,
 unseen-category and missing rates).
 
-Config-driven (recipe: ``configs/fannie_mae/tokenizer_fit.yaml``; the field schema itself
-comes from the recipe's ``schema`` key, i.e. ``configs/fannie_mae/tokenizer.yaml``)::
+Config-driven (recipe: ``configs/mortgage_performance/tokenizer_fit.yaml``; the field schema itself
+comes from the recipe's ``schema`` key, i.e. ``configs/mortgage_performance/tokenizer.yaml``)::
 
-    python scripts/train_tokenizer.py -c configs/fannie_mae/tokenizer_fit.yaml
-    python scripts/train_tokenizer.py -c configs/fannie_mae/tokenizer_fit.yaml --max_fit_rows 500000
+    python scripts/train_tokenizer.py -c configs/mortgage_performance/tokenizer_fit.yaml
+    python scripts/train_tokenizer.py -c configs/mortgage_performance/tokenizer_fit.yaml --max_fit_rows 500000
 """
 
 from __future__ import annotations
@@ -41,7 +41,7 @@ def _prune_to_panel(cfg: dict, columns) -> list[str]:
 
 
 def main() -> None:
-    cfg = parse_cli(__doc__, default_config="configs/fannie_mae/tokenizer_fit.yaml")
+    cfg = parse_cli(__doc__, default_config="configs/mortgage_performance/tokenizer_fit.yaml")
     print(f"config: {cfg.config_path}\n"
           f"{summarize(cfg, 'schema', 'train', 'out', 'report', 'qa_loans', 'max_fit_rows')}",
           flush=True)
@@ -95,7 +95,7 @@ def main() -> None:
     n_pf = len(schema["profile"]["numeric"]) + len(schema["profile"]["categorical"])
     n_ev = len(schema["event"]["numeric"]) + len(schema["event"]["categorical"])
     lines = [
-        "# Fannie Mae — KVT Tokenizer Report (M1)", "",
+        "# Mortgage Performance — KVT Tokenizer Report (M1)", "",
         f"Fitted on `{cfg.train}` ({len(fit_df):,} rows). Schema `{cfg.schema}`; "
         f"saved to `{cfg.out}`.", "",
         "## Vocabulary", "",

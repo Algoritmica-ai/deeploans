@@ -13,12 +13,12 @@ Pipeline (all data-driven, so re-running regenerates the same file):
      (printed as suggestions; kept by default so explicit signals aren't lost silently).
   5. emit profile (static) / event (dynamic) field lists, split by type.
 
-Config-driven (recipe: ``configs/fannie_mae/classify.yaml``). Run on the TRAIN split so
+Config-driven (recipe: ``configs/mortgage_performance/classify.yaml``). Run on the TRAIN split so
 cardinality stats stay train-only::
 
-    python scripts/classify_schema.py -c configs/fannie_mae/classify.yaml
-    python scripts/classify_schema.py -c configs/fannie_mae/classify.yaml \
-        --out configs/fannie_mae/tokenizer.yaml --drop '[days_past_due, construction_year_bucket]'
+    python scripts/classify_schema.py -c configs/mortgage_performance/classify.yaml
+    python scripts/classify_schema.py -c configs/mortgage_performance/classify.yaml \
+        --out configs/mortgage_performance/tokenizer.yaml --drop '[days_past_due, construction_year_bucket]'
 """
 
 from __future__ import annotations
@@ -35,7 +35,7 @@ TYPE_GROUP = {"numeric": "numeric", "categorical": "categorical",
 
 
 def main() -> None:
-    cfg = parse_cli(__doc__, default_config="configs/fannie_mae/classify.yaml")
+    cfg = parse_cli(__doc__, default_config="configs/mortgage_performance/classify.yaml")
     print(f"config: {cfg.config_path}\n"
           f"{summarize(cfg, 'input', 'id_col', 'time_col', 'dataset', 'drop', 'out')}", flush=True)
 
