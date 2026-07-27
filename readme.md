@@ -1,85 +1,154 @@
-# deeploans overview
+# deeploans
 
-deeploans is an open-source **ETL** framework designed for working with **granular asset data**. It extracts, cleans, transforms, and standardizes **datasets**, making them easier to use in analytics, machine learning models, and downstream applications.
+**Open infrastructure for granular credit data, from ingestion to modelling.**
 
-Initially developed as an advanced credit risk analytics tool for portfolio managers and bankers, deeploans evolved into an open data infrastructure project to address the industry-wide challenge of **inconsistent** and **fragmented financial data**. It enables users to:
+deeploans is an Apache 2.0-licensed collection of tools for turning fragmented
+loan-level data into consistent, analysis-ready datasets and using those datasets
+in applications, AI integrations, synthetic-data workflows, and credit models.
 
-- Ingest loan-level datasets from multiple sources.
-- Process and standardize data formats for easier integration.
-- **Validate** and **clean** incomplete or inconsistent records.
-- Output **better-structured data** suitable for analysis, modeling, data science or reporting.
+The project began as an ETL framework for structured-finance data. It now covers
+the wider credit-data lifecycle:
 
-deeploans is designed for analysts, data scientists, and developers working with granular asset data who need an efficient and cost-effective way to handle structured datasets without relying on third-party providers. It supports modern data workflows and removes the bottlenecks associated with manual data preparation.
+```text
+raw loan data
+    │
+    ▼
+ETL pipelines ──► validated, standardised datasets ──► API / analyst apps / MCP
+                              │
+                              ├──► synthetic panel generation
+                              └──► credit foundation-model training and scoring
+```
 
-deeploans includes ETLs for the following structured finance datasets:
-- Auto Loans
-- SME Loans
-- Consumer Loans
-- Residential Mortgages
-- Commercial Mortgages
+## What's in this repository
 
-Additional components in this repository include:
+| Component | Purpose | Start here |
+| --- | --- | --- |
+| **ETL pipelines** | Ingest, validate, transform, and standardise granular asset data in a GCP-based lakehouse. | [`etl-pipelines/readme.md`](etl-pipelines/readme.md) |
+| **Credit Foundation Model** | Config-driven framework for tokenising credit-event sequences, pretraining credit foundation models, fine-tuning them, and scoring portfolios. | [`credit-foundation-model/README.md`](credit-foundation-model/README.md) |
+| **Synthetic Data Designer** | Reproducible generator for an ESMA Annex 2-aligned Dutch RMBS monthly panel, including longitudinal loan dynamics and SQL validation. | [`synthetic-data-designer/README.md`](synthetic-data-designer/README.md) |
+| **API** | FastAPI backend and OpenAPI specification for programmatic access to processed credit data. | [`api/api-backend-main/readme.md`](api/api-backend-main/readme.md) |
+| **Application library** | Browser-based reference applications for data quality, CMBS data-provider workflows, data-centre junior-note analysis, and capital-structure modelling. | [`app-library/`](app-library/) |
+| **MCP server** | Standalone Model Context Protocol server that lets AI clients discover the platform, inspect schemas, build filters, and sample API data. | [`mcp-server/README.md`](mcp-server/README.md) |
 
-- `api/api-backend-main/`: FastAPI backend for data access
-- `app-library/`: A library of (MVP) applications that run on top of deeploans
-- `mcp-server/`: standalone MCP server for AI/client integrations
+### Supported structured-finance datasets
 
-<p align="center">
-<img src="deeploans-overview.png" alt="Deeploans Overview" title="deeploans overview" width="400">
-</p>
+The ETL collection currently covers:
 
+- auto loans;
+- SME loans;
+- consumer loans;
+- residential mortgages; and
+- commercial mortgages.
 
-# Licence
+The individual pipeline directories contain the relevant source-specific setup,
+schemas, and validation guidance.
 
-Deeploans is available under the Apache licence. See here for [full text](https://www.apache.org/licenses/LICENSE-2.0). 
-<br>
+## Recent additions
 
-# How to get involved
+### Credit Foundation Model framework
 
-deeploans is a growing open-source project where developers and data analysts can directly shape the future of their tools and infrastructure. 
+The repository now includes a schema-agnostic, configuration-driven framework for
+training encoder-only models over month-by-month borrower histories. It provides
+key-value-time tokenisation, data preparation, pretraining, downstream fine-tuning,
+portfolio scoring, artifact validators, reference recipes, notebooks, and a detailed
+handbook. The included reference implementation reports an out-of-time evaluation
+against an XGBoost baseline; see the
+[`technical report`](credit-foundation-model/docs/technical_report.md) for the
+methodology, results, and limitations.
 
-🛠 **Help build deeploans**
-<br>
-We’re actively expanding deeploans, and now is the perfect time to jump in. Whether you’re experienced with ETL pipelines, data processing, or just getting started, now is the time to become a core part of the deeploans project.
+To explore it locally:
 
-🔨 **Code contributions**
-<br>
-Got an idea to improve our data processing? Spotted something that could use some tweaking? Even smaller contributions can make a real impact.
+```bash
+cd credit-foundation-model
+python -m venv .venv
+source .venv/bin/activate
+pip install -e ".[dev]"
+pytest
+```
 
-📊 **Test and give feedback**
-<br>
-Not a developer? No problem. Run Deeploans with real data, report bugs, and let us know how it performs. Your feedback makes the tool more robust for everyone.
-Have an idea for improvement? Open a discussion—real-world testing is just as valuable as coding.
+Read the [Credit Foundation Model README](credit-foundation-model/README.md) for
+dataset recipes, GPU setup, the end-to-end training commands, and optional extras.
 
-📖 **Improve the docs**
-<br>
-Documentation is everything. If something unclear or missing, your contributions to our docs can help the next developer get started faster.
+### Synthetic Dutch RMBS panels
 
-💡**Feature requests & ideas**
-<br>
-Got a use case we haven’t covered? Open an issue or drop a comment in [Discussions](https://github.com/orgs/Algoritmica-ai/discussions) to brainstorm.
-<br>
+The Synthetic Data Designer creates a coherent monthly Dutch residential-mortgage
+panel with a 71-column schema aligned to ESMA Annex 2 and the Green Lion reference
+format. Data Designer samples the origination book, then vectorised ageing models
+amortisation, delinquency transitions, prepayment, and property-value changes. The
+default workflow uses no LLM calls.
 
-## Get started
+Run a small local example:
 
-- **Fork the repo** and clone it locally.
-- Explore the codebase and try it out.
-- Have an idea? Open a discussion to talk about potential contributions.
-- Once issues are posted, grab one and submit a pull request when you're ready.
-- Stay tuned to join the community on Discord!
-<br>
+```bash
+cd synthetic-data-designer
+python -m venv .venv
+source .venv/bin/activate
+pip install data-designer numpy pandas pyarrow duckdb
+python run.py --num-records 5000 --out-dir ./out_smoke
+python tests/run_sql_tests.py --cutoff-dir ./out_smoke/cutoffs
+```
 
+See the [Synthetic Data Designer README](synthetic-data-designer/README.md) before
+attempting a production-scale run; it documents expected runtime, memory, disk use,
+calibration controls, and known limitations.
 
-# Contacts
+## Choose a starting point
 
-To get in touch, drop an email at:
+- **I need clean, standardised loan data:** begin with the
+  [lakehouse and ETL overview](etl-pipelines/readme.md).
+- **I want to train or evaluate a credit sequence model:** follow the
+  [Credit Foundation Model quickstart](credit-foundation-model/README.md#quickstart)
+  or start with its [handbook](credit-foundation-model/docs/handbook/00_README.md).
+- **I need a synthetic mortgage panel:** use the
+  [Synthetic Data Designer quickstart](synthetic-data-designer/README.md#quick-start).
+- **I want to connect an AI client:** install the
+  [MCP server](mcp-server/README.md#quick-start).
+- **I want to build on the data API:** review the
+  [backend documentation](api/api-backend-main/readme.md) and
+  [OpenAPI specification](api/api-backend-main/openapi.json).
+- **I want to see example user interfaces:** browse the
+  [application library](app-library/).
+
+## Repository map
+
+```text
+deeploans/
+├── etl-pipelines/              data ingestion, validation, and lakehouse pipelines
+├── credit-foundation-model/    credit sequence-model framework and references
+├── synthetic-data-designer/    synthetic Dutch RMBS panel generator
+├── api/                        FastAPI backend and API documentation
+├── app-library/                reference analyst applications
+├── mcp-server/                 MCP server for AI/client integrations
+├── CONTRIBUTING.md             contribution guidelines
+└── LICENSE                     Apache License 2.0
+```
+
+Each component is independently documented and may have its own environment and
+dependencies. Follow the component README rather than installing everything into a
+single Python environment.
+
+## Contributing
+
+Contributions from developers, analysts, researchers, and documentation writers are
+welcome. Useful ways to help include:
+
+- adding or improving validation rules and ETL coverage;
+- testing workflows on real-world data and reporting reproducible issues;
+- extending dataset adapters, recipes, examples, or documentation;
+- proposing applications and integrations; and
+- improving usability for first-time contributors.
+
+Before opening a pull request, read [`CONTRIBUTING.md`](CONTRIBUTING.md) and the
+[`CLA`](cla.md). For design proposals and feature ideas, use the organisation's
+[GitHub Discussions](https://github.com/orgs/Algoritmica-ai/discussions).
+
+## License
+
+deeploans is licensed under the [Apache License 2.0](LICENSE). Components imported
+from related projects also include their own license files; consult the component
+directory when redistributing it independently.
+
+## Contact
+
 - [luca.borella@algoritmica.ai](mailto:luca.borella@algoritmica.ai)
 - [dylan.thiam@algoritmica.ai](mailto:dylan.p.thiam@algoritmica.ai)
-
-# deeploans background
-
-deeploans began as an AI-powered analytics tool designed to help portfolio managers predict default risk. 
-
-However, we quickly recognised a fundamental challenge: before the market can adopt more advanced tools, it needs clean and better-structured data.
-
-Thus, deeploans evolved into an open data infrastructure project. Today, deeploans solves the fragmented, inconsistent and incomplete data problem in finance, enabling analysts and developers to build better tools. 
