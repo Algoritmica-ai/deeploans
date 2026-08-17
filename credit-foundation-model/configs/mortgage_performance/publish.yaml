@@ -7,7 +7,7 @@
 
 include: common.yaml
 
-checkpoint: ${paths.runs}/m5_full.pt
+checkpoint: ${paths.runs}/m_100m_rr.pt   # the reproducible 100M backbone (§7.5)
 tokenizer: configs/mortgage_performance/tokenizer.json
 model_card: docs/model_cards/mortgage_performance.md
-out: models/mortgage_performance_credit_fm_m5
+out: models/credit_fm_mortgage_100m

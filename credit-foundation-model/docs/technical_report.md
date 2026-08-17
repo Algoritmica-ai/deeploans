@@ -222,27 +222,70 @@ two share an identical 1.78M-loan test set (0.14% base rate).
 |---|---|---|---|--:|--:|
 | E8 (reference) | 25.7M | 4% (1.2B tok) | 4% | 0.8257 | 0.0113 |
 | E10 — capacity only | 66.8M | 4% (same) | 4% | 0.8223 | ≈E8 |
-| E12 — data only | 25.7M (unchanged) | 4% (same) | **10%** | 0.8406 | 0.0145 |
-| **E11 — both** | **100.9M** | **10% (3.0B tok)** | **10%** | **0.8468** | **0.0175** |
+| E12 — fine-tune data only | 25.7M (unchanged) | 4% (same) | **10%** | 0.8406 | 0.0145 |
+| E13 — pretrain data too | 25.7M (unchanged) | **10% (3.0B tok)** | **10%** | **0.8488** | 0.0156 |
+| **E11 — and capacity** | **100.9M** | **10% (3.0B tok)** | **10%** | 0.8468 | **0.0175** |
 
-Three-point story:
+Four-point story (E13 completes the 2×2 and was run last; it matches E11 on every hyperparameter
+except width, including the effective batch of 256):
 
 1. **Capacity alone does nothing (E10).** A 2.6× larger model on unchanged data is flat — the
    26M model was already data-bound.
-2. **Data alone recovers most of the gain (E12).** Holding the backbone fixed and growing only the
-   fine-tuning panel captures **+0.0149 of the +0.0211 total ROC gain (~71%)** and +0.0032 AP.
-3. **Capacity pays once the data is there (E11).** The 100M backbone adds a further **+0.0062 ROC
-   and +0.0030 AP** on top — on AP the data/capacity split is roughly 50/50, and AP is the
-   operational metric.
+2. **Fine-tune data is the single biggest lever (E12).** Holding the backbone fixed and growing only
+   the adaptation panel captures **+0.0149 ROC** and +0.0032 AP.
+3. **Pretraining data pays again (E13).** Growing the *pretraining* corpus at the same 25.7M width
+   adds a further **+0.0082 ROC** and +0.0011 AP.
+4. **Capacity still does nothing, even once the data is there (E11 vs E13).** At identical corpus and
+   identical recipe, widening 25.7M → 100.9M moves ROC by **−0.0020** and AP by **+0.0019** — both
+   inside one standard error. A 26M model reaches **0.8488 ROC** against the 100M model's 0.8468,
+   at a quarter of the parameters, and reached a *lower* pretraining validation loss (0.1715 vs
+   0.1743).
+
+Read on ROC, essentially **all** of the gain over E8 is data: E13 alone is +0.0231, more than the
++0.0211 that E11 achieves. Read on AP — the operational metric — data contributes ≈69% of the
++0.0062 total and capacity ≈31%. The defensible summary is that **capacity is not what moved this
+result**, and that at this data scale the 26M and 100M models are statistically indistinguishable.
 
 Against the XGBoost baseline, the best model's margin is now **+0.063 ROC and 3.1× AP**
 (0.0175 vs 0.0057). The practical reading for anyone applying this framework: **feed the model
 before you grow it** — and the null result (E10) is what makes the positive results credible.
 
-Two attribution caveats, stated plainly: (a) the E11-vs-E12 increment bundles the larger backbone
-*and* the larger pretraining corpus (a 26M-pretrained-on-10% run would split them; left as future
-work); (b) with ~2,500 test positives the +0.0062 ROC increment is on the order of one standard
-error — suggestive, while the AP increment and the E12 data effect are comfortably larger.
+Two caveats, stated plainly: (a) E13 matches E11's recipe rather than E12's (batch 256 vs 128,
+warmup 1000 vs 500) and ran 8-GPU DDP against E11's single-GPU accumulation — the effective batch is
+identical and the two are mathematically equivalent, but not bit-identical, so the E13−E12 increment
+carries a small recipe delta; (b) with ~2,500 test positives, one standard error is ≈±0.01 ROC, so
+the E11-vs-E13 comparison is a null result rather than evidence that the smaller model is better.
+The data effects (+0.0149, +0.0082) are comfortably outside that band; the capacity effect is not.
+
+---
+### 7.5 Independent reproduction on the v1.1 framework
+
+After nine refactoring pull requests to the framework, the headline was re-run end to end from raw
+data on fresh output paths, using the same recipes and seed. The point is not a new number but a
+regression certificate: does the released code still produce the published result?
+
+The **deterministic** stages matched exactly — split loan counts (4,374,414 / 546,801 / 546,803),
+254,407,599 training rows, **2,997,726,396 encoded tokens**, and an identical evaluation population
+of 1,782,453 observations at 0.14%.
+
+| | ROC-AUC | AP |
+|---|--:|--:|
+| Original run (E11) | 0.8468 | 0.0175 |
+| Reproduction (E14) | 0.8447 | 0.0160 |
+| Δ | −0.0021 | −0.0015 |
+
+Both deltas fall inside the pre-registered run-to-run band (±0.003 ROC / ±0.002 AP), so every
+qualitative conclusion is unchanged: the model still beats the features bar by a wide margin and
+still sits clearly above the 26M champion. The run also exercised kill-resume for real (100/100
+quarters skipped on restart) and surfaced one genuine defect — a shard-schema unification bug — now
+fixed and regression-tested.
+
+**Artifact note.** The reproduction checkpoints (`runs/m_100m_rr.pt`, `runs/m_100m_rr_ft.pt`) are
+the ones that can be verified end to end today, and they are what is published. The original E11
+backbone at `runs/m_100m.pt` was **overwritten by a later short run** and its weights no longer
+exist; the fine-tuned E11 artefact (`runs/m_100m_ft.pt`, which carries a full backbone) survives and
+still records 0.8468 / 0.0175 in its embedded metrics. Where a single number must be quoted from a
+checkpoint someone else can re-derive, prefer the reproduction figures.
 
 ---
 ## 8. Discussion
@@ -276,8 +319,10 @@ real credit data and a true future-prediction test rather than an in-period frau
   (1.78M loans) and E8/E10 on the 4% panel's (714k). Both are deterministic loan-hash samples of
   the same book (the 4% is a subset of the 10% by construction), so the populations match in
   distribution — but the rows are not literally identical across the two pairs.
-- **Scaling attribution residual.** The E11-vs-E12 increment bundles backbone size with pretraining
-  corpus size (§7.4 caveat a); the splitting run (26M pretrained on the 10% corpus) is future work.
+- **Scaling attribution (resolved).** The splitting run (E13: 26M pretrained on the 10% corpus) has
+  been executed — see §7.4. It shows the backbone-size contribution is nil on ROC and ≈+0.002 AP,
+  i.e. inside noise. What remains untested is whether capacity begins to pay at a corpus larger than
+  10%.
 - **Model scale.** Tested to 100.9M parameters / 3.0B tokens (Chinchilla-matched). The full corpus
   (~30B tokens at 100%) supports ~1B parameters — untested headroom, gated on the streaming data
   path and multi-GPU training.
@@ -301,8 +346,10 @@ python scripts/build_oot_baseline.py  --train-years 2016-2021 --test-years 2022-
 The crisis run reproduces via `scripts/run_crisis_oot.sh`; the scaling run (10% ingest → 100M
 pretrain → OOT fine-tune, resume-safe) via `scripts/run_scale_100m.sh`.
 
-Artifacts: pretrained checkpoints `runs/m5_full.pt` (25.7M) and `runs/m_100m.pt` /
-`runs/m_100m_ft.pt` (100.9M); tokenizer `configs/mortgage_performance/tokenizer.json`; result reports under
+Artifacts: pretrained checkpoints `runs/m5_full.pt` (25.7M) and `runs/m_100m_rr.pt` /
+`runs/m_100m_rr_ft.pt` (100.9M, the reproducible pair — see §7.5; the earlier `runs/m_100m.pt`
+was overwritten by a later short run and must not be used); tokenizer
+`configs/mortgage_performance/tokenizer.json`; result reports under
 `reports/m5_oot_ft_*.md`, `reports/mortgage_oot_2022_2023.md`, `reports/m_100m_oot_ft_full.md`, and
 `reports/m5_on_10pct_ablation.md`.
 

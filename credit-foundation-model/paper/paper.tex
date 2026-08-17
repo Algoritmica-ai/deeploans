@@ -1,0 +1,422 @@
+% SPDX-License-Identifier: Apache-2.0
+% Copyright (c) 2026 finevals.ai and contributors.
+%
+% Credit Foundation Models -- paper draft.
+% Neutral single-column article preamble; the body ports unchanged if a specific
+% template is adopted later.
+%
+% Build:  tectonic paper.tex      (or: pdflatex paper.tex, run twice for references)
+\documentclass[10pt,letterpaper]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{booktabs}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{url}
+\usepackage[hidelinks]{hyperref}
+\usepackage{caption}
+\captionsetup{font=small}
+
+\title{\textbf{Feed the Model Before You Grow It:\\
+A Sequence Foundation Model for Credit Risk,\\
+Evaluated Out-of-Time}}
+
+\author{%
+  Sriram Krishnan \\
+  \normalsize finevals.ai \\
+  \normalsize \texttt{sriram.arun@gmail.com}
+}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Credit risk models in production are overwhelmingly \emph{point-in-time}: gradient-boosted trees
+applied to a single feature row summarising a loan as of today. We ask whether a \emph{sequence}
+foundation model, pretrained without labels on the full month-by-month repayment history of
+millions of loans, produces a better risk signal --- and we insist on measuring it the way
+deployment actually tests a model: trained on the past, evaluated on future years the model has
+never seen. On a public panel of US single-family mortgage performance data (2000--2024,
+$\approx$3.3B loan-month observations), an encoder-only masked-language-model with a three-branch
+architecture over key-value-time tokenized credit events reaches \textbf{0.8468 ROC-AUC / 0.0175
+average precision} on a calendar out-of-time window, against \textbf{0.7913 / 0.0057} for a
+strong leakage-audited gradient-boosting baseline on the identical population --- \textbf{+0.056
+ROC and $3.1\times$ AP} at a $0.14\%$ default base rate. Beyond the headline we report a
+controlled scaling decomposition that we believe is the more useful contribution. Growing the
+backbone $2.6\times$ on unchanged data changes nothing; growing it a further $4\times$ on a
+matched corpus changes nothing either --- a $25.7$M model reaches $0.8488$ ROC against the $100.9$M
+model's $0.8468$. Data accounts for essentially the whole gain. Two null results at two scales give
+one practical rule: \emph{feed the model before you grow it}. We further report an honest negative result on
+prepayment, a crisis-regime stress test, and an end-to-end independent reproduction of the
+headline on a refactored codebase. The complete training framework is released under Apache~2.0.
+\end{abstract}
+
+\section{Introduction}
+\label{sec:intro}
+
+A bank deciding whether a borrower will default next year has, in principle, a rich object to
+reason over: the loan's entire repayment history --- every monthly balance, every delinquency
+transition, every modification --- stretching back to origination. In practice, almost all
+deployed credit models collapse that history into a single row of engineered features and hand it
+to a gradient-boosted tree. The sequence is discarded before modelling begins.
+
+This paper asks a narrow, empirical question: \emph{does keeping the sequence pay, and if so, what
+is doing the work?} We treat a loan's history as a sentence in a domain-specific language and
+pretrain a transformer encoder on it with a masked-token objective, no labels required. The
+pretrained backbone is then adapted to specific tasks (default, prepayment) with a lightweight
+head.
+
+Two commitments shape everything that follows.
+
+\textbf{Evaluation must be out-of-time.} Credit models fail when the world moves, not when a random
+row is held out. We therefore fit on observation snapshots from one set of calendar years and test
+on later ones whose outcome windows fall entirely after the training data ends. Random splits, and
+even loan-disjoint random splits, systematically flatter a credit model; we avoid both.
+
+\textbf{Scale claims must be decomposed.} It is easy to report that a bigger model scored better and
+imply that capacity was responsible. We ran the controls: a capacity-only arm, a data-only arm, and
+the combined arm. The capacity-only arm is a null result, and we report it prominently --- it is
+what makes the positive results credible.
+
+Our contributions are:
+\begin{enumerate}
+  \item A sequence foundation model for tabular credit panels that beats a leakage-audited
+        gradient-boosting baseline out-of-time by $+0.056$ ROC-AUC and $3.1\times$ average
+        precision at a $0.14\%$ base rate (Section~\ref{sec:results}).
+  \item A controlled scaling decomposition separating backbone capacity from corpus size, yielding
+        a concrete practitioner rule (Section~\ref{sec:scaling}).
+  \item Honest negative and stress results: prepayment is near-unpredictable from borrower history
+        alone; the benign in-period window favours features; a crisis-regime transfer test
+        (Section~\ref{sec:stress}).
+  \item An end-to-end independent reproduction of the headline on a refactored codebase, and the
+        complete training framework released under Apache~2.0 (Section~\ref{sec:repro}).
+\end{enumerate}
+
+\section{Related Work}
+\label{sec:related}
+
+\textbf{Foundation models for tabular and event data.}
+Transformer architectures adapted to tabular inputs --- attention over feature embeddings rather
+than tokens --- have been explored extensively, and a parallel line treats sequences of discrete
+events (transactions, clicks, clinical codes) as a language amenable to masked pretraining. Our
+setting sits at the intersection: the unit of study is a \emph{panel}, one row per entity per
+month, mixing static origination attributes with a long dynamic sequence.
+
+\textbf{Encoder-only masked pretraining.}
+We adopt the bidirectional masked-token objective of BERT~\cite{devlin2019bert} rather than a
+causal objective. The task is to \emph{score} a completed history, not to generate one; bidirectional
+context is available at inference and there is no generation surface to hallucinate.
+
+\textbf{Financial event-sequence foundation models.}
+The closest published work is PRAGMA~\cite{pragma2026}, a family of foundation models for
+multi-source \emph{banking event} sequences (10M--1B parameters). Its design choices are close to
+ours and were arrived at independently for the same reasons: an encoder-only bidirectional backbone
+chosen because the goal is transfer rather than generation, separate encoder branches for profile
+state and events whose outputs are fused by a history encoder, and adaptation by embedding probe or
+LoRA. PRAGMA reports large relative gains on credit scoring ($+130.2\%$ PR-AUC, $+12.4\%$ ROC-AUC
+over a task-specific baseline).
+
+Two differences matter for what a reader can check. First, the substrate: PRAGMA models
+heterogeneous banking events (transactions, product interactions) from a proprietary corpus,
+whereas we model a \emph{loan-performance panel} --- one row per loan per month, static origination
+attributes plus a long monthly sequence --- from a public source. Second, and more consequentially,
+PRAGMA states that it reports \emph{only relative improvements, as absolute metrics are
+commercially sensitive}. We report absolute ROC-AUC and average precision against a disclosed
+baseline on public data, with the code released, so every number here can be re-derived rather than
+taken on trust. An industrial transaction foundation model blueprint~\cite{nvidiatfm} provides our
+engineering baseline and the convention of judging average precision first.
+
+\textbf{Scaling laws.}
+Compute-optimal scaling~\cite{hoffmann2022chinchilla} predicts that model size and data must grow
+together. Our decomposition (Section~\ref{sec:scaling}) is a direct, small-scale test of that
+prediction in a domain where the data ceiling is a real operational constraint, and it reproduces
+the qualitative prediction: capacity added without data is wasted.
+
+\textbf{Parameter-efficient adaptation.}
+We compare frozen-embedding, low-rank adaptation~\cite{hu2021lora}, and full fine-tuning as
+interchangeable heads on one backbone.
+
+\section{Method}
+\label{sec:method}
+
+\subsection{From panel rows to a language}
+The raw corpus is a panel: one row per loan per month, combining \emph{static} attributes fixed at
+origination (term, loan-to-value, debt-to-income, credit score band, occupancy, property type) with
+\emph{dynamic} monthly state (current balance, loan age, remaining term, delinquency status).
+
+We serialise each loan into a token sequence with a key-value-time (KVT) scheme:
+\begin{itemize}
+  \item Every field becomes a single fused token \texttt{field=value}, so the model never has to
+        learn which column a bare value came from.
+  \item Continuous fields are quantile-binned, with bin boundaries \emph{forced} at points where
+        credit behaviour genuinely changes (loan-to-value at 80/90/95/97, debt-to-income at 43).
+        These are regulatory and pricing cliffs; letting a quantiser smear across them destroys
+        signal that underwriters treat as categorical.
+  \item Each monthly block is anchored by a relative time token \texttt{t=}$\langle$age$\rangle$ and
+        an absolute calendar token \texttt{cal=}$\langle$YYYYQ$n\rangle$. The calendar token is what
+        allows the model to represent macro regime --- a 2009 month and a 2021 month are not
+        exchangeable.
+\end{itemize}
+The vocabulary is small (552 tokens) and is fit \emph{on the training split only}, then frozen.
+
+\subsection{Three-branch encoder}
+Static attributes and monthly events have different statistics and different roles, so we encode
+them separately before fusing:
+\[
+\underbrace{\text{static fields}}_{\text{Profile encoder (3L)}} \;\;\oplus\;\;
+\underbrace{\text{monthly events}}_{\text{Event encoder (5L)}}
+\;\longrightarrow\;
+\underbrace{\text{History encoder (6L)}}_{\text{sequence fusion}}
+\;\longrightarrow\; \texttt{[USR]} \text{ loan embedding}
+\]
+The Profile encoder sees the origination record; the Event encoder contextualises each month's
+fields within that month; the History encoder attends across months. A distinguished
+\texttt{[USR]} position aggregates the loan into a single vector used by downstream heads.
+Blocks use RoPE positional encoding, RMSNorm, SwiGLU feed-forwards, and scaled dot-product
+(Flash) attention. We report two sizes: $25.7$M parameters at $d{=}384$ and $100.9$M at $d{=}768$,
+identical in depth and differing only in width.
+
+\subsection{Pretraining objective}
+We minimise a masked-token cross-entropy with three complementary corruption sources, applied
+jointly: (i) $15\%$ of individual tokens, (ii) $10\%$ of whole monthly event blocks, and (iii)
+$10\%$ of entire field \emph{types} across the sequence. Masking whole events forces temporal
+inference (reconstruct a month from its neighbours) and masking a field type forces cross-field
+inference (reconstruct balance from delinquency and age). Selected positions follow the standard
+80/10/10 replace/random/keep policy. Formally, for masked index set $\mathcal{M}$,
+\[
+\mathcal{L} = -\frac{1}{|\mathcal{M}|}\sum_{i\in\mathcal{M}} \log p_\theta\!\left(x_i \mid x_{\setminus \mathcal{M}}\right).
+\]
+
+\subsection{Adaptation}
+The pretrained backbone is adapted with one of three interchangeable heads: \emph{frozen}
+(embeddings fed to a classifier, backbone untouched), \emph{LoRA}~\cite{hu2021lora} (low-rank
+updates, $r{=}8$), or \emph{full} fine-tuning. Tasks are declared in configuration rather than
+code: a task specifies an event column, a horizon, and a gate (e.g.\ observe only loans performing
+at the cutoff), so adding a task requires no new modelling code.
+
+\section{Experimental Setup}
+\label{sec:setup}
+
+\subsection{Corpus}
+We use a public panel of US single-family mortgage performance data covering 2000--2024:
+approximately $3.3$B loan-month observations over tens of millions of fixed-rate loans, with 113
+published fields.\footnote{We describe the corpus by its properties rather than by name. It is a
+widely used public loan-performance release; the released code contains the ingestion adapter and
+schema needed to reproduce every result once the reader supplies the source files.} Pretraining
+uses deterministic loan-hash samples ($4\%$ and $10\%$) of the book; a $4\%$ sample was verified
+representative against the full population (pooled default rate $0.671\%$ vs $0.648\%$).
+
+\subsection{Leakage discipline}
+Credit datasets punish carelessness, so the protocol is enforced mechanically rather than by
+convention:
+\begin{itemize}
+  \item Splits are by \emph{loan}, never by row, and ordered temporally by origination.
+  \item Outcome and contemporaneous-state columns (current delinquency, zero-balance code,
+        foreclosure and disposition dates, loss amounts) are excluded from features for
+        \emph{both} the
+        foundation model and the baseline; the baseline additionally gates to loans performing at
+        the observation date.
+  \item Tokenizer vocabulary and bin edges are fit on the training split only.
+  \item Evaluation is calendar out-of-time with loan-disjoint and embargo guards.
+\end{itemize}
+Each pipeline stage ships an artifact validator that re-derives its own output and is tested to
+\emph{fail} on deliberately corrupted input.
+
+\subsection{Protocol and metrics}
+The main protocol fits a head on observation snapshots from 2016--2021 and tests on 2022 and 2023
+snapshots, whose 12-month default windows fall in 2023--2024 --- years neither the backbone nor the
+head has seen. The test population is $1{,}782{,}453$ loan observations at a $0.14\%$ default rate.
+
+We report ROC-AUC and average precision (AP, equivalently PR-AUC). At a $0.14\%$ base rate we
+regard \textbf{AP as the operational metric}: it measures precision in the risky tail, which is
+where a credit decision is actually made. ROC is reported for comparability but is generous at
+extreme class imbalance.
+
+\subsection{Baseline}
+The baseline is a gradient-boosted tree over 57 engineered, leakage-audited features on the
+identical observation population and identical label definition. It is intended to be strong and
+honest rather than a straw man: it uses the same gating and the same excluded-column list.
+
+\section{Results}
+\label{sec:results}
+
+\subsection{Main out-of-time result}
+\begin{table}[h]
+\centering
+\begin{tabular}{lcc}
+\toprule
+\textbf{Model} & \textbf{ROC-AUC} & \textbf{AP} \\
+\midrule
+Gradient-boosting baseline (57 features)      & 0.7913 & 0.0057 \\
+Credit FM, 25.7M parameters (4\% corpus)      & 0.8257 & 0.0113 \\
+\textbf{Credit FM, 25.7M (10\% corpus)}       & \textbf{0.8488} & 0.0156 \\
+Credit FM, 100.9M (10\% corpus)               & 0.8468 & \textbf{0.0175} \\
+\bottomrule
+\end{tabular}
+\caption{Calendar out-of-time performance. Head fit on 2016--2021 snapshots; tested on 2022--2023
+snapshots with outcomes in 2023--2024. Test population $1{,}782{,}453$ loans, $0.14\%$ default.}
+\label{tab:main}
+\end{table}
+
+The foundation model wins on both metrics, and the margin that matters operationally is the
+$3.1\times$ improvement in average precision.
+
+\subsection{Adaptation mode matters}
+At the 25.7M scale, holding data and protocol fixed: frozen embeddings reach $0.7309$, LoRA
+$0.8068$, and full fine-tuning $0.8257$. Frozen embeddings alone do \emph{not} beat good features
+--- consistent with prior reports --- and the pretrained representation only pays once the backbone
+is allowed to adapt.
+
+\subsection{Scaling: what actually moves the needle}
+\label{sec:scaling}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lllcc}
+\toprule
+\textbf{Arm} & \textbf{Backbone} & \textbf{Pretrain / fine-tune data} & \textbf{ROC-AUC} & \textbf{AP} \\
+\midrule
+Reference               & 25.7M  & 4\% / 4\%    & 0.8257 & 0.0113 \\
+Capacity only           & 66.8M  & 4\% / 4\%    & 0.8223 & $\approx$ ref \\
+Fine-tune data only     & 25.7M  & 4\% / 10\%   & 0.8406 & 0.0145 \\
+\textbf{Pretrain data too} & \textbf{25.7M} & \textbf{10\% / 10\%} & \textbf{0.8488} & 0.0156 \\
+And capacity            & 100.9M & 10\% / 10\%  & 0.8468 & \textbf{0.0175} \\
+\bottomrule
+\end{tabular}
+\caption{Scaling decomposition, one variable at a time. The last two rows share an identical corpus
+and an identical recipe (effective batch 256, 20k steps) and differ only in backbone width, which
+isolates capacity. Test population is identical across the final three rows.}
+\label{tab:scaling}
+\end{table}
+
+Four findings, one variable at a time:
+\begin{enumerate}
+  \item \textbf{Capacity alone does nothing.} A $2.6\times$ larger backbone on unchanged data is
+        flat ($0.8223$ vs $0.8257$, within noise). The smaller model was already data-bound.
+  \item \textbf{Data alone recovers most of the gain.} Holding the backbone fixed and growing the
+        data captures $+0.0149$ of the $+0.0211$ total ROC gain ($\approx 71\%$), and $+0.0032$ AP.
+  \item \textbf{Capacity still does nothing, even once the data is there.} Holding the corpus and
+        the recipe fixed and widening $25.7$M~$\rightarrow$~$100.9$M moves ROC by $-0.0020$ and AP by
+        $+0.0019$ --- both inside one standard error. The 25.7M model reaches $0.8488$ ROC against
+        the 100.9M model's $0.8468$, at a quarter of the parameters.
+\end{enumerate}
+
+On ROC, essentially all of the gain is data: the matched-data 25.7M arm alone is $+0.0231$ over the
+reference, exceeding the $+0.0211$ of the largest model. On AP, data contributes $\approx$69\% of the
+total and capacity $\approx$31\%. At this data scale the two backbones are statistically
+indistinguishable, and the efficient one is four times cheaper.
+
+The practitioner's rule: \textbf{feed the model before you grow it}. We regard the two null results
+--- capacity added at $4\%$ data, and capacity added at $10\%$ data --- as the most transferable
+finding in the paper.
+
+\subsection{Stress and negative results}
+\label{sec:stress}
+\textbf{Crisis regime.} Trained on originations through 2006 and tested on 2008--2010 defaults ---
+a genuine distribution shift --- the model reaches $0.7819$ ROC / $0.0248$ AP against
+$0.757$ / $0.024$ for the baseline. The margin narrows under severe shift but does not invert.
+
+\textbf{Benign in-period window.} On a same-period window with no regime shift, engineered features
+win narrowly. This is the expected and honest result: the sequence model earns its keep precisely
+when the world moves.
+
+\textbf{Prepayment (negative).} The identical pipeline, retargeted to 12-month prepayment by
+changing one configuration line, reaches only $0.6259$ ROC. Prepayment is dominated by exogenous
+interest-rate dynamics that a borrower-history model cannot see. We report this because a framework
+that only ever produces good numbers should not be trusted.
+
+\subsection{Independent reproduction}
+\label{sec:repro}
+After nine refactoring pull requests to the codebase, we re-ran the headline end to end from raw
+data on fresh output paths. Deterministic stages matched exactly (identical split loan counts,
+$254.4$M training rows, $2{,}997{,}726{,}396$ tokens, and an identical $1{,}782{,}453$-observation
+evaluation population). The stochastic endpoint landed at $0.8447$ ROC / $0.0160$ AP against the
+original $0.8468$ / $0.0175$ --- inside the pre-registered run-to-run band. The reproduction also
+surfaced one genuine defect (a schema-unification bug across per-quarter shards), now fixed and
+regression-tested.
+
+\section{Discussion}
+\label{sec:discussion}
+
+\textbf{Why sequences win out-of-time and not in-period.} A snapshot feature vector and a full
+history contain similar information about a stable world. They diverge when the world shifts: the
+trajectory (how quickly a borrower cured a delinquency, how balance moved through a rate cycle)
+generalises across regimes in a way that a level does not. Our benign-window result and our
+out-of-time result together isolate exactly this.
+
+\textbf{Why AP and not ROC.} At $0.14\%$ positives, ROC differences are compressed and easy to
+over-read. AP measures the quantity a credit officer experiences --- of the loans flagged riskiest,
+how many truly default --- and it is where our margin is largest ($3.1\times$).
+
+\textbf{Implications for practitioners.} The scaling decomposition suggests the first move for an
+institution with a modest labelled book is not a larger model but a larger \emph{unlabelled} pretraining
+corpus, which most lenders already possess and do not exploit.
+
+\section{Limitations}
+\label{sec:limitations}
+\begin{itemize}
+  \item \textbf{Single corpus.} All headline results come from one national mortgage market. A
+        second asset class (business-to-business invoice payment behaviour) has been onboarded
+        through the same interface but is not yet a published result.
+  \item \textbf{Benign test years.} 2023--2024 were low-default years; absolute AP is small for all
+        models and the \emph{relative} lift is the claim, not the absolute value.
+  \item \textbf{Statistical power.} With $\approx$2{,}500 test positives, a ROC increment of
+        $\pm0.01$ is roughly one standard error. The headline margin over the baseline ($+0.056$)
+        is far outside that band; the smaller within-family increments are correspondingly weaker
+        evidence and are labelled as such.
+  \item \textbf{Test-population note.} Arms trained on different sample fractions are evaluated on
+        the corresponding deterministic loan-hash test populations; the $4\%$ sample is a subset of
+        the $10\%$ by construction, so the populations match in distribution but are not row-identical
+        across all pairs.
+  \item \textbf{Scale ceiling.} We test to $100.9$M parameters and $3.0$B tokens. The full corpus
+        supports roughly an order of magnitude more; that headroom is untested.
+  \item \textbf{Corpus naming.} We characterise the dataset by its properties rather than naming the
+        publisher. The released ingestion adapter and schema make the mapping unambiguous for a
+        reader who obtains the public source files.
+\end{itemize}
+
+\section{Conclusion}
+Treating a loan's repayment history as a sequence, and pretraining on it without labels, produces a
+materially better credit risk signal than a strong point-in-time baseline --- and the advantage
+appears exactly where it matters, on future years the model has never seen. The scaling
+decomposition matters more than the headline: capacity added to a data-bound model bought nothing,
+while data bought most of the gain. The framework, the reference implementation, and the evaluation
+protocol are released under Apache~2.0 so that both the positive and the negative results can be
+checked.
+
+\section*{Reproducibility Statement}
+The complete training framework, configuration recipes, per-stage artifact validators, and the
+runnable pipeline are released under Apache~2.0. Every headline number in this paper corresponds to
+a committed configuration and a generated report file. Section~\ref{sec:repro} documents an
+independent end-to-end re-run of the headline result on a refactored codebase.
+
+\sloppy
+\begin{thebibliography}{9}
+\bibitem{devlin2019bert}
+J.~Devlin, M.-W. Chang, K.~Lee, and K.~Toutanova.
+\newblock BERT: Pre-training of Deep Bidirectional Transformers for Language Understanding.
+\newblock In \emph{NAACL-HLT}, 2019.
+
+\bibitem{hu2021lora}
+E.~Hu, Y.~Shen, P.~Wallis, Z.~Allen-Zhu, Y.~Li, S.~Wang, L.~Wang, and W.~Chen.
+\newblock LoRA: Low-Rank Adaptation of Large Language Models.
+\newblock \emph{arXiv:2106.09685}, 2021.
+
+\bibitem{hoffmann2022chinchilla}
+J.~Hoffmann et al.
+\newblock Training Compute-Optimal Large Language Models.
+\newblock \emph{arXiv:2203.15556}, 2022.
+
+\bibitem{pragma2026}
+M.~Ostroukhov, R.~Mikhailov, V.~Iashin, A.~Sokolov, A.~Akshonov, V.~Protasov, D.~Beloborodov,
+V.~Mullin, R.~Y. Enzmann, G.~Kolovos, J.~Renders, P.~Nesterov, and A.~Repushko.
+\newblock PRAGMA: Revolut Foundation Model.
+\newblock \emph{arXiv:2604.08649}, 2026. Revolut Research and NVIDIA.
+
+\bibitem{nvidiatfm}
+NVIDIA AI Blueprints.
+\newblock Transaction Foundation Model blueprint.
+\newblock \url{https://github.com/NVIDIA-AI-Blueprints/transaction-foundation-model}.
+\end{thebibliography}
+
+\end{document}
