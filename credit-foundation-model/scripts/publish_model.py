@@ -56,6 +56,27 @@ print(f"loaded {model.num_parameters()/1e6:.1f}M-param credit FM; encode loans w
 '''
 
 
+_PUBLIC_RUN_KEYS = ('run_name', 'seed', 'model', 'optimizer', 'schedule', 'runtime')
+
+
+def _public_run_config(rc):
+    """Provenance fit to publish: the recipe, without any storage location.
+
+    The raw pretrain lineage embeds bucket URLs, the service-account key path and per-asset
+    config filenames. None of that helps a downstream user, and none of it should travel with
+    published weights, so only the reproducible hyperparameters are kept.
+    """
+    if not isinstance(rc, dict):
+        return None
+    pub = {k: rc[k] for k in _PUBLIC_RUN_KEYS if k in rc}
+    if isinstance(pub.get('runtime'), dict):
+        pub['runtime'] = {'bf16': pub['runtime'].get('bf16')}
+    if isinstance(pub.get('schedule'), dict):
+        pub['schedule'] = {k: v for k, v in pub['schedule'].items()
+                           if k in ('steps', 'grad_accum', 'warmup', 'val_every')}
+    return pub
+
+
 def main() -> None:
     cfg = parse_cli(__doc__, default_config="configs/mortgage_performance/publish.yaml")
     print(f"config: {cfg.config_path}\n{summarize(cfg, 'checkpoint', 'tokenizer', 'model_card', 'out')}",
@@ -82,8 +103,8 @@ def main() -> None:
               "n_parameters": int(n_params),
               "framework": "credit_fm",
               "license": "Apache-2.0",
-              "source_checkpoint": cfg.checkpoint,
-              "run_config": ckpt.get("run_config"),
+              "source_checkpoint": Path(str(cfg.checkpoint)).name,
+              "run_config": _public_run_config(ckpt.get("run_config")),
               "pretrain_steps": ckpt.get("steps")}
     (out / "config.json").write_text(json.dumps(config, indent=2, default=str))
 
