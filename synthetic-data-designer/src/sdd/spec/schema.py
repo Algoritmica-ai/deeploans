@@ -114,7 +114,12 @@ class Calendar(_Base):
         "month_end",
         "quarter_end",
         "year_end",
-    ] = "month_end"
+    ] = Field(
+        default="month_end",
+        description="How far apart the cut-offs are. Every rate in a spec is annual and is "
+        "converted to this cadence, so moving from monthly to quarterly does not silently "
+        "change how much default a run produces.",
+    )
 
     @field_validator("start", mode="before")
     @classmethod
@@ -941,14 +946,27 @@ class Index(_Base):
 
 
 class Counter(_Base):
-    """A column that ticks each period — seasoning up, remaining term down."""
+    """A column that ticks each period — seasoning up, remaining term down.
 
-    column: str
-    step: float | None = None
-    expr: str | None = None
-    clip_min: float | None = None
-    clip_max: float | None = None
-    dtype: DType | None = "int"
+    Either a fixed `step`, or an `expr` recomputed from other columns. A
+    countdown is usually the second: `original_term - seasoning` cannot drift
+    out of step with seasoning the way an independently decremented copy can.
+    """
+
+    column: str = Field(description="The column that advances.")
+    step: float | None = Field(
+        default=None, description="Added each cut-off. Give this or `expr`, not both."
+    )
+    expr: str | None = Field(
+        default=None,
+        description="Recompute from other columns instead of stepping, e.g. "
+        "'max(original_term_months - seasoning_months, 0)'.",
+    )
+    clip_min: float | None = Field(default=None, description="Floor applied after each step.")
+    clip_max: float | None = Field(default=None, description="Ceiling applied after each step.")
+    dtype: DType | None = Field(
+        default="int", description="Cast after stepping. `int` keeps a month count whole."
+    )
 
     @model_validator(mode="after")
     def _check(self) -> Counter:
@@ -1465,7 +1483,7 @@ class Evaluation(_Base):
 
 
 class Benchmark(_Base):
-    """How to compute the best score any model could achieve on this data.
+    """How to compute the maximum achievable from the permitted observables.
 
     Every other section describes what to generate. This one describes how the
     data was generated *well enough to invert* — which is the difference between
