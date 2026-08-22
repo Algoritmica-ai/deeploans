@@ -1,4 +1,4 @@
-"""The best score any model could achieve on a generated portfolio.
+"""The maximum score achievable from the permitted observables, and what a model got.
 
 Every other module here helps you make data that looks real. This one answers a
 question real data structurally cannot.

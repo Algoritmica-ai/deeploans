@@ -1,6 +1,7 @@
 # The known ceiling
 
-How to measure a model against the best score anything could achieve, and why that
+How to measure a model against the maximum achievable from the permitted
+observables, and why that
 is a different kind of claim from "our synthetic data is realistic".
 
 ## The problem it solves
@@ -60,6 +61,83 @@ would eventually disagree with the first.
 Being **derived rather than estimated** is the point. An approximated ceiling is one
 more number to argue about, and the purpose here is to end an argument.
 
+## Where the calculation happens
+
+Everything lives in [`src/sdd/benchmark.py`](../src/sdd/benchmark.py). Nothing about
+the ceiling touches the generator — it reads a finished panel and the spec that made
+it.
+
+```
+ packs/credit_benchmark_known_ceiling.yaml
+ │   the declared generating process: hidden tier, three noisy
+ │   readings, the arrears ladder, what counts as "bad"
+ ▼
+ api.run(...)                                          the ordinary generator
+ │
+ ├──► panel.parquet          144,000 rows   (8,000 entities × 18 cut-offs)
+ │                                           risk_tier NOT in it
+ │
+ ▼
+ ══════════════════ benchmark.ceiling(spec, panel) ══════════════════
+ │
+ │  ┌─ observables()                            → 8,000 × 3
+ │  │    opening cut-off only, declared columns only.
+ │  │    One row per BORROWER, not per panel row: a score is
+ │  │    made at a point in time, and later cut-offs would
+ │  │    leak the answer.
+ │  │
+ │  ├─ label_outcome()                          → 8,000
+ │  │    did this borrower EVER reach 60-89 DPD or Defaulted,
+ │  │    at any cut-off? Read across the whole panel.
+ │  │
+ │  ├─ _latent_risk()      ── runs the generator a second time,
+ │  │                         with the tier exposed ──────────► P(bad | tier)
+ │  │                                                            5 numbers
+ │  │
+ │  ├─ _posterior()                              → 8,000 × 5
+ │  │    Bayes: P(tier | the three readings), for every
+ │  │    borrower and every tier, in one matrix operation
+ │  │
+ │  └─ scores = posterior @ P(bad | tier)        → 8,000
+ │       each borrower's best-possible risk estimate
+ │
+ ▼
+ CEILING = roc_auc(labels, scores)          one number, over all 8,000
+ ORACLE  = roc_auc from the exposed run     one number
+ ═════════════════════════════════════════════════════════════════════
+ │
+ ▼
+ benchmark.compare(spec, panel, your_scores)
+ │    achieved · captured · five metrics · behaviour checks · passed
+ ▼
+ a verdict
+```
+
+### Per row, or all at once?
+
+Both, at different stages — and the distinction matters for reading the code.
+
+| stage | shape | per what |
+|---|---|---|
+| the readings | 8,000 × 3 | **one row per borrower** — the opening cut-off only |
+| P(bad \| tier) | 5 | per *tier*, not per borrower |
+| the posterior | 8,000 × 5 | per borrower **and** per tier |
+| the risk score | 8,000 | one per borrower |
+| **the ceiling** | 1 | **one number over the whole population** |
+
+So each borrower gets their own posterior and their own score — but computed as one
+vectorised matrix operation, not a loop. The log-posterior is accumulated in logs
+across the three readings and normalised per row, which is a single
+`(8000, 5)` array from start to finish.
+
+The **ceiling itself is not per row.** It is an AUC, and an AUC is a property of a
+whole population: it asks how often a bad borrower is ranked above a good one, across
+every pair. One borrower has no AUC.
+
+That is also why a model must be scored **out of sample** to be compared against it.
+The ceiling is a population quantity; a score measured on rows the model memorised is
+not the same quantity.
+
 ## Using it
 
 ```python
@@ -84,6 +162,51 @@ it is comparable across datasets.
 
 **Score out of sample.** The ceiling is a population quantity; an in-sample score is
 not comparable to it.
+
+## Scoring an LLM, or anything else
+
+`compare()` takes a pandas Series of scores indexed by entity. It never sees the
+model, so it does not care what produced them — a scorecard, a gradient booster, a
+foundation model, an LLM reading rows, or a CSV a vendor emailed over are all scored
+identically.
+
+The practical obstacle with an LLM is not the interface, it is **granularity**. Asked
+to rate a borrower, a language model returns "7 out of 10" or "medium risk", not a
+float. Coarse output means massive ties, and ties cost AUC.
+
+Measured on this benchmark, against a ceiling of 0.8996:
+
+| what the model emits | AUC | signal captured | ties |
+|---|---:|---:|---:|
+| continuous score | 0.8904 | 97.7% | 0% |
+| **1–10 integer** | **0.8857** | **96.5%** | 99.9% |
+| 1–5 integer | 0.8675 | 92.0% | 99.9% |
+| low / medium / high | 0.8282 | 82.2% | 100% |
+| binary yes / no | 0.7460 | 61.6% | 100% |
+
+**A 1–10 rating costs almost nothing** — about a point of captured signal against a
+continuous score. Three buckets costs fifteen points, and a yes/no answer throws away
+a third of what the model knew.
+
+That is worth knowing before blaming the model. An LLM scored at 82% captured on a
+three-way judgement may be extracting as much as one scored at 96% on a ten-point
+scale; the difference is the answer format, not the reasoning. **Ask for the finest
+granularity the model can give.**
+
+### What does not transfer
+
+The ceiling exists because the emission model is declared and invertible: observables
+are a latent group's centre plus Gaussian noise of stated width, so the posterior is
+exact.
+
+There is no analogous inversion for text. A benchmark for hallucination, retrieval or
+policy compliance can absolutely have a **known answer** — you planted the fact, so
+you know whether the model recalled it. It cannot have a **computable ceiling**,
+because nobody can derive what the best possible reader of a passage could score.
+
+Those are different claims and only one of them is unusual. Known-answer evals for
+LLMs are common. A computable ceiling is the part that is rare, and it does not
+survive the jump from numbers to text.
 
 ## The check that keeps it honest
 

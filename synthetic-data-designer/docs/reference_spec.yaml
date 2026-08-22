@@ -1,0 +1,372 @@
+# ---------------------------------------------------------------------------
+# Reference spec — every block, every option, in one runnable file
+# ---------------------------------------------------------------------------
+#
+# Not a calibrated pack and not a model of anything real. It exists to show what
+# a spec *can* contain, so a reader (or an LLM) has a working example of each
+# option rather than a field list to guess from.
+#
+# It is a real spec and it runs. `tests/test_reference_spec.py` generates from
+# it, checks the invariants pass, and asserts it still covers every generator
+# kind, hazard kind, derivation kind, metric kind and chart kind — so an option
+# added to the schema and not shown here fails the suite.
+#
+# Nothing here is a recommendation. Some of it is deliberately odd — a uuid
+# beside a sequence, an empirical draw beside a fitted lognormal — because the
+# point is coverage, not realism. For sensible examples read the packs.
+
+spec_version: 1
+
+meta:
+  name: reference_all_options
+  title: Reference — every option
+  asset_class: reference
+  regulatory_template: none
+  description: A runnable spec exercising every block. Not calibrated to anything.
+  source: Hand-written as documentation.
+  entity_noun: contract          # the UI says "500 contracts", not "500 loans"
+  entity_noun_plural: contracts
+  display_order: 99              # keeps it out of the way if ever listed
+  featured: false
+
+# Reusable values. Referenced as ${params.x} anywhere in the document, so a
+# number used in three places is stated once.
+params:
+  base_rate_pct: 4.25
+  pool_size: 400
+
+# Deal-level facts, identical on every row. Emitted as columns without being
+# generated per entity.
+constants:
+  deal_name: REFERENCE-2026-1
+  currency: EUR
+
+entity:
+  id_column: contract_id
+  time_column: as_of_date
+  id_format: "REF{seq:06d}"      # ids minted from a pattern, not a generator
+  calendar:
+    start: "2026-01-31"
+    periods: 12
+    freq: month_end              # day | week_end | fortnight_end | month_start | month_end | quarter_end | year_end
+  targets:
+    # The opening book should come to this. Scales the column's generator so
+    # the expected total lands on it.
+    - column: current_balance
+      total: 8_000_000
+      entities: 400
+
+columns:
+  # -- identifiers and dates ------------------------------------------------
+  - name: contract_id
+    role: static
+    dtype: str
+    description: Contract identifier.
+    generator: {kind: sequence, prefix: "REF", start: 1, width: 6}
+
+  - name: as_of_date
+    role: dynamic
+    dtype: date
+    description: Reporting cut-off.
+    generator: {kind: constant, value: "2026-01-31"}
+
+  - name: external_ref
+    role: static
+    dtype: str
+    description: An opaque identifier, where a sequence would be too guessable.
+    generator: {kind: uuid}
+
+  # -- numeric generators ---------------------------------------------------
+  - name: current_balance
+    role: dynamic
+    dtype: float
+    min: 0.0
+    description: Outstanding principal. A fitted distribution with clips.
+    generator:
+      kind: scipy                # any scipy.stats continuous distribution
+      dist: lognorm
+      params: {s: 0.5, loc: 0.0, scale: 18_000}
+      clip_min: 2_000
+      clip_max: 60_000
+      decimals: 2
+
+  - name: interest_rate_pct
+    role: static
+    dtype: float
+    description: A bell curve, bounded.
+    generator: {kind: gaussian, mean: 6.4, stddev: 1.2, clip_min: 2.0, clip_max: 14.0, decimals: 4}
+
+  - name: original_term_months
+    role: static
+    dtype: int
+    description: A flat draw between two bounds.
+    generator: {kind: uniform, low: 24, high: 84, decimals: 0}
+
+  - name: prior_arrears_count
+    role: static
+    dtype: int
+    description: Resampled from observed values, shape and spikes intact.
+    generator: {kind: empirical, values: [0, 0, 0, 0, 1, 1, 2, 3], decimals: 0}
+
+  # -- categorical generators ----------------------------------------------
+  - name: region
+    role: static
+    dtype: category
+    domain: [North, South, East, West]
+    description: A weighted pick.
+    generator:
+      kind: categorical
+      values: [North, South, East, West]
+      weights: [0.30, 0.28, 0.24, 0.18]
+
+  - name: district
+    role: static
+    dtype: category
+    domain: [N1, N2, S1, S2, E1, E2, W1, W2]
+    description: A pick from a pool chosen by another column's value.
+    generator:
+      kind: conditional_categorical
+      parent: region
+      mapping:
+        North: [N1, N2]
+        South: [S1, S2]
+        East:  [E1, E2]
+        West:  [W1, W2]
+
+  - name: insured_flag
+    role: static
+    dtype: bool
+    description: A coin weighted to one side.
+    generator: {kind: bernoulli, p: 0.35}
+
+  # -- helpers: generated, used, dropped before the file is written ---------
+  - name: _score_noise
+    role: helper
+    dtype: float
+    description: HIDDEN. Measurement error on the score below.
+    generator: {kind: gaussian, mean: 0.0, stddev: 25.0}
+
+  # -- derived: computed, never generated -----------------------------------
+  - {name: credit_score, role: derived, dtype: float, description: Score plus noise.}
+  - {name: balance_band, role: derived, dtype: str, description: Bucketed balance.}
+  - {name: risk_flag, role: derived, dtype: category, domain: ["Y", "N"], description: Rule output.}
+  - {name: cohort_label, role: derived, dtype: str, description: A formatted string.}
+
+  # -- counters and state ---------------------------------------------------
+  - {name: seasoning_months, role: dynamic, dtype: int, description: Months since origination., generator: {kind: constant, value: 0}}
+  - {name: months_to_maturity, role: dynamic, dtype: int, description: Term remaining., generator: {kind: constant, value: 60}}
+  - {name: arrears_amount, role: dynamic, dtype: float, min: 0.0, description: Cash overdue., generator: {kind: constant, value: 0.0}}
+  - {name: scheduled_payment, role: static, dtype: float, description: Contractual instalment., generator: {kind: constant, value: 0.0}}
+  # Note the quotes: in YAML flow style a comma inside an unquoted value ends
+  # the entry, so `description: Security value, indexed.` silently becomes a
+  # second key called "indexed." and the loader rejects it.
+  - {name: collateral_value, role: dynamic, dtype: float, min: 0.0,
+     description: "Security value, indexed each period.",
+     generator: {kind: gaussian, mean: 30_000, stddev: 6_000, clip_min: 5_000, decimals: 2}}
+
+  # A secondary chain and the recovery block both write columns. Declare them,
+  # or entities arriving through `originations` are created without them and
+  # the run stops with "the entities joining at period 1 are missing columns
+  # the pool already has". The generator value is just the opening state.
+  - {name: internal_grade, role: dynamic, dtype: category, domain: [G1, G2, G3],
+     description: "Internal grade, migrating on its own chain.",
+     generator: {kind: categorical, values: [G1, G2, G3], weights: [0.5, 0.35, 0.15]}}
+  - {name: recovery_amount, role: dynamic, dtype: float, min: 0.0,
+     description: "Recovered on resolution. Zero until then.",
+     generator: {kind: constant, value: 0.0}}
+
+  - name: account_status
+    role: dynamic
+    dtype: category
+    domain: [Performing, "1-29 DPD", "30-59 DPD", Defaulted, Recovered, Redeemed]
+    description: Arrears bucket.
+    generator: {kind: constant, value: Performing}
+
+# Named bin edges, referenced by a bucket derivation.
+buckets:
+  balance_bands:
+    # Edges and labels only. The source column is named by the derivation that
+    # applies it, so one set of bands can be reused across columns.
+    bins: [0, 10_000, 25_000, 50_000, 1_000_000]
+    labels: ["<10k", "10-25k", "25-50k", "50k+"]
+
+derivations:
+  # kind: expr — a vectorised expression over other columns
+  - {target: credit_score, kind: expr, expr: "700 - (interest_rate_pct * 12) + _score_noise", dtype: float, round: 0, stage: book}
+
+  # kind: bucket — apply a named bucket definition
+  - {target: balance_band, kind: bucket, bucket: balance_bands, source: current_balance, stage: both}
+
+  # kind: when — ordered rules with a fallback, for categorical output
+  - target: risk_flag
+    kind: when
+    stage: both
+    rules:
+      - {if: "account_status != 'Performing'", then: "Y"}
+      - {if: "credit_score < 600", then: "Y"}
+    else: "N"
+
+  # kind: format — a string built from other columns
+  - target: cohort_label
+    kind: format
+    template: "{reg}-{band}"
+    args: {reg: region, band: balance_band}
+    stage: book
+
+lifecycle:
+  state_column: account_status
+  states: [Performing, "1-29 DPD", "30-59 DPD", Defaulted, Recovered, Redeemed]
+  terminal: [Recovered, Redeemed]      # leave the pool and stop being reported
+  absorbing: [Defaulted]               # stay in the pool, never leave the state
+  # Rows over the non-terminal states, each summing to 1.
+  transitions:
+    - [0.9700, 0.0280, 0.0015, 0.0005]
+    - [0.4200, 0.4300, 0.1400, 0.0100]
+    - [0.1500, 0.1800, 0.5500, 0.1200]
+    - [0.0000, 0.0000, 0.0000, 1.0000]
+  initial_distribution:
+    Performing: 0.97
+    "1-29 DPD": 0.03
+  hazards:
+    # kind: bernoulli — a flat annual chance
+    - {kind: bernoulli, name: early_redemption, annual_rate: 0.12, to_state: Redeemed, excluded_states: [Defaulted]}
+    # kind: dwell_time — a fixed delay after entering a state
+    - {kind: dwell_time, name: workout, from_state: Defaulted, periods: 6, to_state: Recovered}
+    # kind: condition — a rule over the entity's own columns
+    - {kind: condition, name: maturity, when: "months_to_maturity <= 1", to_state: Redeemed, excluded_states: [Defaulted]}
+  state_fields:
+    Redeemed: {current_balance: 0.0}
+    Recovered: {current_balance: 0.0}
+
+# A second state machine, running alongside and owning one column.
+secondary_chains:
+  - name: grade
+    lifecycle:
+      state_column: internal_grade
+      states: [G1, G2, G3]
+      transitions:
+        - [0.960, 0.035, 0.005]
+        - [0.040, 0.920, 0.040]
+        - [0.005, 0.055, 0.940]
+      absorbing: []
+      terminal: []
+    coupling:
+      forced_by: {Defaulted: G3}     # a defaulted contract is grade G3
+      stress: {G3: 2.5}              # being G3 makes worsening likelier
+
+dynamics:
+  amortisation:
+    kind: annuity                    # annuity | linear | bullet | interest_only | revolving | depreciation | none
+    balance: current_balance
+    rate: interest_rate_pct
+    term: months_to_maturity
+    payment: scheduled_payment
+    only_when_state: [Performing, "1-29 DPD", "30-59 DPD"]
+  counters:
+    - {column: seasoning_months, step: 1}
+    - {column: months_to_maturity, expr: "max(original_term_months - seasoning_months, 0)", clip_min: 0, dtype: int}
+  accruals:
+    - {column: arrears_amount, add: scheduled_payment, when: not_performing}
+  indices:
+    - {name: collateral_index, applies_to: [collateral_value], kind: constant_drift, annual: 0.02, volatility: 0.01}
+  recovery:
+    rate: 0.55
+    balance: current_balance
+    on_states: [Recovered]
+
+# A parent record several contracts share.
+groups:
+  - name: household
+    key: household_id
+    ratio: 0.7
+    id_format: "HH{seq:06d}"
+    new_group_rate: 0.5
+    size: {kind: zipf, concentration: 1.5, max_members: 4}
+    columns:
+      - {name: household_income, dtype: float, generator: {kind: gaussian, mean: 62_000, stddev: 18_000, clip_min: 15_000, decimals: 0}}
+      - {name: household_size, dtype: int, generator: {kind: categorical, values: [1, 2, 3, 4], weights: [0.3, 0.35, 0.2, 0.15]}}
+
+# New contracts arriving after the opening book.
+originations:
+  per_period: 5
+  start_period: 1
+  end_period: 6
+  fresh: true
+  reset: {seasoning_months: 0}
+  # Evaluated per arriving cohort. Available names are the new rows' own
+  # columns plus `period`, `period_year`, `period_month` and `period_day` —
+  # anything else fails at run time, not at check time.
+  reset_expr: {original_term_months: "60 + period"}
+
+generation:
+  method: distribution             # statistical | distribution | rule_based | sampling | ctgan | hybrid
+  noise: 0.0
+  correlation: 1.0
+  outliers: 0.0
+  outlier_sigma: 4.0
+  missing: 0.0
+
+scenarios:
+  base:
+    name: base
+    description: The calibration as written.
+  adverse:
+    name: adverse
+    description: A downturn, uneven across regions.
+    default_multiplier: 2.5
+    prepayment_multiplier: 0.6
+    recovery_multiplier: 0.8
+    rate_shift: 1.0
+    rate_columns: [interest_rate_pct]
+    index_shift: {collateral_index: -0.08}
+    segment_stress: {region: {North: 1.8, South: 1.3}}
+
+metrics:
+  - {name: contracts, kind: count, description: Rows at this cut-off.}
+  - {name: total_balance, kind: sum, column: current_balance, decimals: 2}
+  - {name: distinct_regions, kind: distinct_count, column: region}
+  - {name: wa_rate, kind: weighted_mean, column: interest_rate_pct, weight: current_balance, decimals: 4}
+  - {name: arrears_pct, kind: share_where, column: current_balance, where: "account_status != 'Performing'", decimals: 6}
+  - {name: largest_region_pct, kind: max_group_share, column: current_balance, group: region, decimals: 6}
+  - {name: cumulative_arrears, kind: cumulative, column: arrears_amount, decimals: 2}
+  - {name: effective_households, kind: effective_count, column: current_balance, group: household_id, decimals: 2}
+  - {name: turnover, kind: turnover, column: current_balance, entity_column: contract_id, decimals: 6}
+
+results:
+  charts:
+    - {kind: series, title: Balance, metric: total_balance, unit: money, description: Outstanding over time., explain: The book running down as contracts amortise and redeem.}
+    - {kind: stacked_series, title: Arrears mix, column: account_status, states: [Performing, "1-29 DPD", "30-59 DPD", Defaulted], unit: percent, description: Share in each bucket.}
+    - {kind: category_bar, title: Balance by region, group: region, column: current_balance, unit: money, description: Where the book is.}
+    - {kind: histogram, title: Balance distribution, column: current_balance, unit: money, description: Spread of contract sizes.}
+
+emit:
+  filename: "reference_{yyyymm}.csv"
+  formats: [csv, parquet]
+  panel_filename: panel.parquet
+  write_panel: true
+  cutoff_dir: cutoffs
+  float_format: "%.2f"
+
+validation:
+  checks:
+    ids_unique_per_period: true
+    static_columns_stable: true
+    terminal_states_absorb: true
+    domains_respected: true
+    counters_step_correctly: true
+    state_fields_applied: true
+    group_columns_stable: true
+    non_negative_balances: true
+    closed_pool: false
+  non_negative_columns: [current_balance, arrears_amount, collateral_value]
+  custom:
+    - name: balance_band_matches_balance
+      description: The band must contain the balance it was cut from.
+      sql: |
+        select contract_id, as_of_date, current_balance, balance_band
+        from panel
+        where (balance_band = '<10k'    and current_balance >= 10000)
+           or (balance_band = '50k+'    and current_balance <  50000)
+  plausibility:
+    - {name: interest_rate, column: interest_rate_pct, statistic: mean, between: [4.0, 9.0],
+       note: "Illustrative only. Not calibrated to any market."}
