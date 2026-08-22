@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Synthetic Data Designer</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <span class="mark" aria-hidden="true"></span>
+    <span class="title">Synthetic Data Designer</span>
+    <span class="tag" id="version"></span>
+  </div>
+  <span class="spacer"></span>
+  <span class="tag subtle" id="spec-name" hidden></span>
+  <span class="tag" id="validity" hidden></span>
+</header>
+
+<div class="shell">
+
+  <!-- ------------------------------------------------------------ step rail -->
+  <nav class="rail" id="rail" aria-label="Steps">
+    <button class="step" data-view="upload"    aria-current="true">
+      <span class="n">1</span><span class="s"><b>Upload</b><i>Schema and sample</i></span></button>
+    <button class="step" data-view="review"    disabled>
+      <span class="n">2</span><span class="s"><b>Review</b><i>Columns and types</i></span></button>
+    <button class="step" data-view="configure" disabled>
+      <span class="n">3</span><span class="s"><b>Configure</b><i>Method and rates</i></span></button>
+    <button class="step" data-view="generate"  disabled>
+      <span class="n">4</span><span class="s"><b>Generate</b><i>Run the engine</i></span></button>
+    <button class="step" data-view="results"   disabled>
+      <span class="n">5</span><span class="s"><b>Results</b><i>Charts and data</i></span></button>
+    <button class="step" data-view="download"  disabled>
+      <span class="n">6</span><span class="s"><b>Download</b><i>Five formats</i></span></button>
+
+    <!-- Below the flow, not inside it: this is not a seventh step. Separated by
+         a rule so the numbered sequence still reads as six things. -->
+    <a class="rail-link" href="https://github.com/Algoritmica-ai/deeploans/tree/main/synthetic-data-designer"
+       target="_blank" rel="noopener noreferrer">
+      <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true" focusable="false">
+        <path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38
+          0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01
+          1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95
+          0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.4 7.4 0 0 1 2-.27c.68 0
+          1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0
+          3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0
+          0 0 16 8c0-4.42-3.58-8-8-8z"/>
+      </svg>
+      <span>Source on GitHub</span>
+    </a>
+  </nav>
+
+  <main>
+
+    <!-- ------------------------------------------------------- 1. upload -->
+    <section class="view" id="view-upload">
+      <div class="head">
+        <h1>Upload</h1>
+        <p id="upload-lede">Give it a schema and, if you have one, real data to learn from.
+           Nothing leaves this machine — the file is read, profiled and deleted with the
+           workspace.</p>
+      </div>
+
+      <div id="shared-notice"></div>
+
+      <div class="grid two">
+        <div class="card">
+          <div class="card-head">
+            <h2>Schema</h2>
+            <span class="badge req" id="schema-req">Required</span>
+          </div>
+          <p class="hint">The columns your output must have. A CSV or Excel header, a parquet
+             schema, a data dictionary, or an ESMA taxonomy JSON.</p>
+          <div class="drop" id="drop-schema" tabindex="0" role="button">
+            <strong>Drop a schema, or click to choose</strong>
+            <span class="formats">CSV &middot; Parquet &middot; Excel &middot; JSON</span>
+            <input type="file" id="file-schema" accept=".csv,.tsv,.parquet,.pq,.xlsx,.xlsm,.xls,.json" hidden />
+          </div>
+          <div id="schema-status"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2>Sample data</h2>
+            <span class="badge">Optional</span>
+          </div>
+          <p class="hint">A loan tape, a transaction file, portfolio data. With it, every
+             distribution is measured rather than guessed, and behaviour over time can be
+             learned from repeated cut-offs.</p>
+          <div class="drop" id="drop-sample" tabindex="0" role="button">
+            <strong>Drop sample data, or click to choose</strong>
+            <span class="formats">CSV &middot; Parquet &middot; Excel &middot; JSON</span>
+            <input type="file" id="file-sample" accept=".csv,.tsv,.parquet,.pq,.xlsx,.xlsm,.xls,.json,.jsonl" hidden />
+          </div>
+          <div id="sample-status"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Or start from a calibrated pack</h2>
+        </div>
+        <p class="hint">A pack is a spec already calibrated against a real asset class. Load one
+           to skip straight to configuring.</p>
+        <div class="pack-list" id="packs"></div>
+      </div>
+
+      <div id="upload-error"></div>
+    </section>
+
+    <!-- ------------------------------------------------------- 2. review -->
+    <section class="view" id="view-review" hidden>
+      <div class="head">
+        <h1>Review schema</h1>
+        <p id="review-lede">What was detected, and what you can change before anything is
+           generated.</p>
+      </div>
+
+      <div class="stats" id="review-stats"></div>
+      <div id="review-detection"></div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Columns</h2>
+          <span class="spacer"></span>
+          <input type="search" id="review-filter" class="search" placeholder="Filter columns…" />
+          <label class="check"><input type="checkbox" id="review-review-only" />
+            <span>Needs review</span></label>
+        </div>
+        <p class="hint">Edit a name, change a type, or mark a column optional. Optional columns
+           are the ones the missing-values control in the next step is allowed to blank.</p>
+        <div class="scroll tall"><table class="grid-table" id="review-table"></table></div>
+      </div>
+    </section>
+
+    <!-- ---------------------------------------------------- 3. configure -->
+    <section class="view" id="view-configure" hidden>
+      <div class="head">
+        <h1>Configure</h1>
+        <p>Two sections are open because they are the ones worth checking. The rest have
+           working defaults — open them only if you want to change something.</p>
+      </div>
+
+      <!-- What pressing Generate will actually produce. Live. -->
+      <div class="outcome" id="cfg-outcome"></div>
+
+      <!-- 1 ─ essentials -->
+      <details class="group" id="grp-essentials" open>
+        <summary>
+          <span class="g-title">Size and shape</span>
+          <span class="g-sub">How much data, over how long, and under which scenario</span>
+          <span class="g-state" id="state-essentials"></span>
+        </summary>
+        <div class="g-body">
+          <div class="grid three">
+            <label class="field">
+              <span class="lbl" id="cfg-records-label">How many loans</span>
+              <input type="number" id="cfg-records" min="1" step="100" value="10000" />
+              <span class="sub" id="cfg-records-sub">Each one appears once per cut-off, so the
+                row count is this times the number of periods.</span>
+            </label>
+            <label class="field">
+              <span class="lbl">Seed</span>
+              <input type="number" id="cfg-seed" step="1" value="42" />
+              <span class="sub">Same seed, same data, every time.</span>
+            </label>
+            <label class="field">
+              <span class="lbl">Scenario</span>
+              <select id="cfg-scenario"></select>
+              <span class="sub" id="cfg-scenario-sub">A stress overlay shifting defaults,
+                prepayment and collateral together.</span>
+            </label>
+          </div>
+          <div class="grid three" id="cfg-aging-basics" style="margin-top:16px"></div>
+        </div>
+      </details>
+
+      <!-- 2 ─ behaviour -->
+      <details class="group" id="grp-behaviour" open>
+        <summary>
+          <span class="g-title">How loans behave</span>
+          <span class="g-sub">Defaults, early repayment, recovery, and whether the pool keeps
+            lending</span>
+          <span class="g-state" id="state-behaviour"></span>
+        </summary>
+        <div class="g-body">
+          <div class="grid three" id="cfg-aging-rates"></div>
+          <div id="aging-notes"></div>
+          <div class="sub-head">New business</div>
+          <p class="hint">A closed pool holds every loan at the first cut-off and only shrinks.
+             An open one keeps lending: loans written during the window appear at the cut-off
+             they were written on, and are aged from there.</p>
+          <div class="grid two" id="cfg-originations"></div>
+        </div>
+      </details>
+
+      <!-- 3 ─ realism -->
+      <details class="group" id="grp-realism">
+        <summary>
+          <span class="g-title">Realism</span>
+          <span class="g-sub">How each value is drawn, and how much noise to add</span>
+          <span class="g-state" id="state-realism"></span>
+        </summary>
+        <div class="g-body">
+          <div class="sub-head">How values are drawn</div>
+          <p class="hint">Whatever you pick is written into the configuration as a set of
+             generators you can read and edit.</p>
+          <div class="method-list" id="cfg-methods"></div>
+          <div id="method-notes"></div>
+
+          <div class="sub-head">Imperfection</div>
+          <p class="hint">Applied after sampling, before anything is derived — so a ratio
+             recomputed from a jittered balance still matches that balance.</p>
+          <div class="grid two" id="cfg-randomness"></div>
+          <div id="randomness-notes"></div>
+        </div>
+      </details>
+
+      <!-- 4 ─ columns -->
+      <details class="group" id="grp-columns">
+        <summary>
+          <span class="g-title">Columns</span>
+          <span class="g-sub">The distribution behind each one</span>
+          <span class="g-state" id="state-columns"></span>
+        </summary>
+        <div class="g-body">
+          <input type="search" id="cfg-filter" class="search" placeholder="Filter columns…" />
+          <div id="cfg-columns"></div>
+        </div>
+      </details>
+
+      <!-- 5 ─ the document -->
+      <details class="group" id="grp-document">
+        <summary>
+          <span class="g-title">The configuration itself</span>
+          <span class="g-sub">The transition matrix, and the YAML that actually runs</span>
+          <span class="g-state" id="state-document"></span>
+        </summary>
+        <div class="g-body">
+          <div id="card-lifecycle">
+            <div class="sub-head">Transition matrix</div>
+            <p class="hint">Each row is a state, each column where a loan might be next period.
+               Rows must sum to 1 — the total is live, and turns red if it does not.</p>
+            <div class="matrix" id="cfg-matrix"></div>
+          </div>
+
+          <div class="sub-head">
+            YAML
+            <span class="spacer"></span>
+            <button class="btn ghost sm" id="btn-yaml-apply">Apply</button>
+            <button class="btn ghost sm" id="btn-yaml-revert">Revert</button>
+          </div>
+          <p class="hint">This is the whole configuration, and it is what runs. Anything the
+             forms do not expose can be set here; it is validated before it is accepted.</p>
+          <textarea id="cfg-yaml" spellcheck="false"></textarea>
+          <div id="yaml-status"></div>
+        </div>
+      </details>
+
+      <div id="config-problems"></div>
+    </section>
+
+    <!-- ----------------------------------------------------- 4. generate -->
+    <section class="view" id="view-generate" hidden>
+      <div class="head">
+        <h1>Generating</h1>
+        <p id="generate-lede">Building the opening book, walking it forward, then checking the
+           result against everything the configuration asserts.</p>
+      </div>
+
+      <div class="card">
+        <div class="progress-head">
+          <span class="pstage" id="run-stage">starting…</span>
+          <span class="spacer"></span>
+          <span class="peta" id="run-eta"></span>
+          <span class="ppct" id="run-pct">0%</span>
+        </div>
+        <div class="bar"><i id="run-bar" style="width:0%"></i></div>
+        <ol class="stages" id="run-stages"></ol>
+      </div>
+
+      <div id="run-error"></div>
+    </section>
+
+    <!-- ------------------------------------------------------ 5. results -->
+    <section class="view" id="view-results" hidden>
+      <div class="head">
+        <h1>Results</h1>
+        <p id="results-lede"></p>
+      </div>
+
+      <div class="stats" id="run-stats"></div>
+      <div id="run-validation"></div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Distribution comparison</h2>
+          <span class="spacer"></span>
+          <select id="chart-column" class="search"></select>
+        </div>
+        <p class="hint" id="dist-hint"></p>
+        <div class="chart-host" id="chart-distribution"></div>
+      </div>
+
+      <!-- Charts this pack asked for. Empty unless its spec declares any. -->
+      <div id="pack-charts"></div>
+
+      <div class="grid two" id="legacy-charts-pair">
+        <div class="card">
+          <div class="card-head"><h2>Delinquency curve</h2></div>
+          <p class="hint">Share of the surviving pool in each distressed state, period by
+             period.</p>
+          <div class="chart-host" id="chart-delinquency"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>LTV distribution</h2></div>
+          <p class="hint">Leverage at the first cut-off against the last.</p>
+          <div class="chart-host" id="chart-ltv"></div>
+        </div>
+      </div>
+
+      <div class="card" id="legacy-chart-balance">
+        <div class="card-head"><h2>Pool balance over time</h2></div>
+        <p class="hint">Total outstanding balance per cut-off, and the pool factor beside it.</p>
+        <div class="chart-host" id="chart-balance"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Generated data</h2>
+          <span class="spacer"></span>
+          <input type="search" id="table-search" class="search" placeholder="Search all columns…" />
+        </div>
+        <p class="hint">Searching and sorting run against the file, not the page, so this stays
+           fast on a panel of any size.</p>
+        <div class="scroll tall"><table class="grid-table" id="data-table"></table></div>
+        <div class="pager" id="table-pager"></div>
+      </div>
+    </section>
+
+    <!-- ----------------------------------------------------- 6. download -->
+    <section class="view" id="view-download" hidden>
+      <div class="head">
+        <h1>Download</h1>
+        <p>The data in whichever format you need, plus the configuration that produced it and
+           the report proving what was checked.</p>
+      </div>
+      <div class="download-grid" id="download-grid"></div>
+      <div class="card">
+        <div class="card-head"><h2>Per-period files</h2></div>
+        <p class="hint">One file per cut-off, exactly as the ageing engine wrote them.</p>
+        <div class="scroll"><table class="grid-table" id="run-files"></table></div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="footer-bar">
+  <div class="footer-inner">
+    <span class="status" id="footer-status">Upload a schema to begin.</span>
+    <span class="spacer"></span>
+    <button class="btn ghost" id="btn-back" hidden>Back</button>
+    <button class="btn primary" id="btn-next" disabled>Analyze data</button>
+  </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,772 @@
+# Dutch prime RMBS — ESMA Annex 2 / Hypoport "Green Lion" 71-column layout.
+#
+# This is a declarative re-expression of the hardcoded Python in upstream
+# deeploans (`data_designer_loan_book.py` + `age_to_panel.py`). It exists to
+# prove the generalisation is lossless: the same 71 columns, the same
+# distributions, the same lifecycle, with nothing deal-specific left in code.
+#
+# Calibration anchors are noted per block. See NOTICE for attribution.
+
+spec_version: 1
+
+meta:
+  name: green_lion
+  entity_noun: loan
+  display_order: 3
+  title: Dutch Green Loans — Residential Mortgages
+  asset_class: rmbs
+  regulatory_template: ESMA Annex 2 — Underlying exposures, residential real estate
+  description: >-
+    Dutch prime residential mortgages as a monthly panel. Zero LLM calls: every
+    column is a sampler or a deterministic derivation.
+  source: an upstream Dutch RMBS generator, generalised into this spec model
+
+entity:
+  id_column: loan_id
+  # Sequential ids cannot collide. Upstream noted that an 8-hex-char random id
+  # collides ~29 times in 500k draws, which breaks the panel's entity identity.
+  id_format: "GL{deal_year}_{seq:06d}"
+  time_column: reporting_date
+  calendar:
+    start: "2024-01-31"
+    periods: 24
+    freq: month_end
+
+params:
+  deal_year: 2024
+  first_cutoff_year: 2024
+  first_cutoff_month: 1
+  # Upstream approximates origination as mid-year, so seasoning at the first
+  # cut-off is measured from July of the origination year.
+  origination_month: 7
+  hpi_market_annual: 1.030   # market-value uplift since origination
+  hpi_indexed_annual: 1.045  # indexed-valuation uplift since origination
+  nhg_balance_cap: 435000    # 2024 NHG guarantee limit, EUR
+
+constants:
+  transaction_name: Green Lion 2024-1 B.V.
+  # ESMA convention: 18-char SPV LEI + YYYYMM of deal close.
+  esma_transaction_identifier: 3TK20IVIUJ8J3ZU0QE75N202401
+  closing_date: "2024-01-01"   # first business day of January 2024
+  originator_name: ING
+  servicer_name: ING
+  currency: EUR
+  country: NL
+  interest_payment_frequency: Monthly
+  principal_payment_frequency: Monthly
+  property_valuation_type: Indexed/Origination Proxy
+
+# ---------------------------------------------------------------------------
+# columns
+# ---------------------------------------------------------------------------
+
+columns:
+  - name: loan_id
+    role: static
+    dtype: str
+    generator: { kind: sequence, prefix: "GL_", width: 6 }
+
+  # -- loan terms ---------------------------------------------------------
+  - name: origination_year
+    role: static
+    dtype: int
+    generator:
+      kind: categorical
+      values: [2008, 2009, 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021, 2022, 2023]
+      weights: [0.02, 0.02, 0.02, 0.03, 0.03, 0.04, 0.05, 0.06, 0.07, 0.08, 0.09, 0.10, 0.11, 0.10, 0.10, 0.08]
+
+  - name: repayment_type
+    role: static
+    dtype: category
+    generator:
+      kind: categorical
+      values: [Annuity, Linear, InterestOnly, Bullet, Savings]
+      weights: [0.80, 0.06, 0.08, 0.03, 0.03]
+
+  - name: rate_type
+    role: static
+    dtype: category
+    generator:
+      kind: categorical
+      values: [Fixed, Variable, Hybrid]
+      weights: [0.90, 0.07, 0.03]
+
+  - name: remaining_interest_fixed_period_months
+    role: dynamic
+    dtype: int
+    generator:
+      kind: categorical
+      values: [12, 24, 36, 60, 84, 108, 120, 180, 240]
+      weights: [0.06, 0.07, 0.09, 0.18, 0.20, 0.18, 0.10, 0.08, 0.04]
+
+  - name: legal_maturity_months
+    role: static
+    dtype: int
+    generator:
+      kind: categorical
+      values: [240, 300, 330, 360]
+      weights: [0.08, 0.30, 0.12, 0.50]
+
+  - name: loan_part_count
+    role: static
+    dtype: int
+    generator: { kind: categorical, values: [1, 2, 3, 4], weights: [0.55, 0.30, 0.10, 0.05] }
+
+  - name: debtor_count
+    role: static
+    dtype: int
+    generator: { kind: categorical, values: [1, 2, 3], weights: [0.30, 0.66, 0.04] }
+
+  # -- property and borrower ----------------------------------------------
+  - name: property_type
+    role: static
+    dtype: category
+    generator:
+      kind: categorical
+      values: [House, Apartment, Townhouse, Detached, SemiDetached]
+      weights: [0.45, 0.30, 0.13, 0.07, 0.05]
+
+  # Hypoport empirical mix; CBS NL housing-stock distribution is the anchor.
+  - name: province
+    role: static
+    dtype: category
+    generator:
+      kind: categorical
+      values: [Zuid-Holland, Noord-Holland, Noord-Brabant, Gelderland, Utrecht, Limburg,
+               Overijssel, Groningen, Friesland, Drenthe, Flevoland, Zeeland]
+      weights: [0.230, 0.205, 0.135, 0.115, 0.085, 0.060, 0.055, 0.035, 0.030, 0.025, 0.020, 0.005]
+
+  # NUTS-3 is nested inside province — a Utrecht loan can only sit in NL310.
+  - name: economic_region_nuts3
+    role: static
+    dtype: category
+    generator:
+      kind: conditional_categorical
+      parent: province
+      mapping:
+        Zuid-Holland:  [NL331, NL332, NL333, NL337, NL33A, NL33B, NL33C]
+        Noord-Holland: [NL321, NL322, NL323, NL324, NL325, NL326, NL327, NL329, NL32B]
+        Noord-Brabant: [NL411, NL412, NL413, NL414, NL415]
+        Gelderland:    [NL221, NL224, NL225, NL226, NL227, NL228]
+        Utrecht:       [NL310]
+        Limburg:       [NL421, NL422, NL423]
+        Overijssel:    [NL211, NL212, NL213]
+        Groningen:     [NL111, NL112, NL113]
+        Friesland:     [NL121, NL122, NL123]
+        Drenthe:       [NL131, NL132, NL133]
+        Flevoland:     [NL230]
+        Zeeland:       [NL341, NL342]
+
+  - name: construction_year
+    role: static
+    dtype: int
+    generator:
+      kind: categorical
+      values: [1900, 1920, 1945, 1960, 1970, 1980, 1990, 2000, 2010, 2018, 2022]
+      weights: [0.02, 0.04, 0.08, 0.09, 0.11, 0.13, 0.15, 0.18, 0.10, 0.07, 0.03]
+
+  - name: occupancy
+    role: static
+    dtype: category
+    generator:
+      kind: categorical
+      values: [OwnerOccupied, TenantOccupied, Vacant, PartiallyOccupied]
+      weights: [0.88, 0.08, 0.02, 0.02]
+
+  - name: employment_status
+    role: static
+    dtype: category
+    generator:
+      kind: categorical
+      values: [Employed, SelfEmployed, Retired, Unemployed, Student, Other]
+      weights: [0.72, 0.14, 0.08, 0.02, 0.01, 0.03]
+
+  - name: borrower_type
+    role: static
+    dtype: category
+    generator: { kind: categorical, values: [Consumer, Corporate], weights: [0.985, 0.015] }
+
+  - name: loan_purpose
+    role: static
+    dtype: category
+    generator:
+      kind: categorical
+      values: ["Purchase/Refinance", Construction, Renovation, Other]
+      weights: [0.86, 0.04, 0.07, 0.03]
+
+  # NL housing-stock EPC mix — Rijksdienst voor Ondernemend Nederland.
+  - name: epc_label
+    role: static
+    dtype: category
+    generator:
+      kind: categorical
+      values: ["A+++", "A++", "A+", A, B, C, D, E, F, G]
+      weights: [0.02, 0.04, 0.06, 0.18, 0.21, 0.20, 0.13, 0.08, 0.05, 0.03]
+
+  - name: forbearance_flag
+    role: static
+    dtype: category
+    generator: { kind: categorical, values: [N, Y], weights: [0.985, 0.015] }
+
+  - name: restructuring_flag
+    role: static
+    dtype: category
+    generator: { kind: categorical, values: [N, Y], weights: [0.99, 0.01] }
+
+  # The lifecycle state at period 0. 96.5% performing matches DBRS NL RMBS
+  # performance reporting for a seasoned prime pool.
+  - name: arrears_bucket
+    role: dynamic
+    dtype: category
+    generator:
+      kind: categorical
+      values: [Performing, 1-29 DPD, 30-59 DPD, 60-89 DPD, 90+ DPD, Defaulted]
+      weights: [0.965, 0.018, 0.008, 0.004, 0.003, 0.002]
+
+  # -- numeric primitives --------------------------------------------------
+  - name: borrower_annual_income
+    role: static
+    dtype: float
+    generator:
+      kind: scipy
+      dist: lognorm
+      params: { s: 0.45, scale: 65000.0 }
+      decimals: 2
+
+  # NL prime median ~EUR 300k — DNB mortgage portfolio data.
+  - name: original_balance
+    role: static
+    dtype: float
+    generator:
+      kind: scipy
+      dist: lognorm
+      params: { s: 0.40, scale: 300000.0 }
+      decimals: 2
+
+  # Original loan-to-market-value. Truncated so no loan starts above ~103%.
+  - name: oltomv_original
+    role: static
+    dtype: float
+    generator:
+      kind: scipy
+      dist: truncnorm
+      params: { a: -2.5, b: 1.5, loc: 85.0, scale: 12.0 }
+      decimals: 2
+
+  # 2024 NL mortgage rates — ECB / DNB monthly series.
+  - name: current_interest_rate_pct
+    role: static
+    dtype: float
+    generator: { kind: gaussian, mean: 3.10, stddev: 0.65, decimals: 2 }
+
+  # -- helpers (dropped before output) -------------------------------------
+  - name: _nhg_pre
+    role: helper
+    generator: { kind: bernoulli, p: 0.45 }
+
+  - name: _construction_deposit_pre
+    role: helper
+    generator: { kind: bernoulli, p: 0.04 }
+
+  # Upstream spread the deposit percentage with `row_index % 15 + 10`, which
+  # ties the value to row position. A uniform draw over the same 10-24 range is
+  # equivalent in distribution and independent of ordering.
+  - name: _cd_pct_raw
+    role: helper
+    generator: { kind: uniform, low: 10, high: 24.999, decimals: 0 }
+
+  # -- columns produced by derivations -------------------------------------
+  - { name: reporting_date, role: dynamic, dtype: str, generator: { kind: constant, value: "2024-01-31" } }
+  - { name: transaction_name, role: constant }
+  - { name: esma_transaction_identifier, role: constant }
+  - { name: closing_date, role: constant }
+  - { name: originator_name, role: constant }
+  - { name: servicer_name, role: constant }
+  - { name: currency, role: constant }
+  - { name: country, role: constant }
+  - { name: interest_payment_frequency, role: constant }
+  - { name: principal_payment_frequency, role: constant }
+  - { name: property_valuation_type, role: constant }
+
+  - { name: interest_only_flag, role: derived, dtype: category, domain: [Y, N] }
+  - { name: self_employed_flag, role: derived, dtype: category, domain: [Y, N] }
+  - { name: property_usage, role: derived, dtype: category }
+  - { name: buy_to_let_flag, role: derived, dtype: category, domain: [Y, N] }
+  - { name: nhg_flag, role: derived, dtype: category, domain: [Y, N] }
+  - { name: guarantee_type, role: derived, dtype: category }
+  - { name: fixed_interest_period_end_in_months, role: dynamic, dtype: int, generator: { kind: constant, value: 0 } }
+  - { name: maturity_date_proxy, role: derived, dtype: str }
+  - { name: original_market_value_at_origination, role: derived, dtype: float }
+  - { name: seasoning_months, role: derived, dtype: int }
+  - { name: remaining_term_months, role: derived, dtype: int }
+  - { name: current_original_market_value, role: derived, dtype: float }
+  - { name: indexed_market_value, role: derived, dtype: float }
+  - { name: current_balance, role: derived, dtype: float }
+  - { name: cltomv_current, role: derived, dtype: float }
+  - { name: cltimv_current, role: derived, dtype: float }
+  - { name: loan_to_income, role: derived, dtype: float }
+  - { name: scheduled_monthly_payment, role: derived, dtype: float }
+  - { name: payment_due_to_income_pct, role: derived, dtype: float }
+  - { name: days_past_due, role: derived, dtype: int }
+  - { name: arrears_amount, role: derived, dtype: float }
+  - { name: default_crr_flag, role: derived, dtype: category, domain: [Y, N] }
+  - { name: performing_status, role: derived, dtype: category }
+  - { name: foreclosure_flag, role: derived, dtype: category, domain: [Y, N] }
+  - { name: epc_issue_year, role: derived, dtype: int }
+  - { name: primary_energy_demand_kwh_m2, role: derived, dtype: int }
+  - { name: construction_deposit_flag, role: derived, dtype: category, domain: [Y, N] }
+  - { name: construction_deposit_pct, role: derived, dtype: int }
+  - { name: construction_deposit_amount, role: derived, dtype: float }
+  - { name: balance_bucket, role: derived }
+  - { name: cltomv_current_bucket, role: derived }
+  - { name: cltimv_current_bucket, role: derived }
+  - { name: oltomv_original_bucket, role: derived }
+  - { name: loan_to_income_bucket, role: derived }
+  - { name: payment_due_to_income_pct_bucket, role: derived }
+  - { name: construction_year_bucket, role: derived }
+
+# ---------------------------------------------------------------------------
+# derivations — evaluated in order
+# ---------------------------------------------------------------------------
+
+derivations:
+  # -- simple flags --------------------------------------------------------
+  - target: interest_only_flag
+    kind: when
+    rules: [{ if: "repayment_type in ['InterestOnly', 'Bullet']", then: Y }]
+    else: N
+
+  - target: self_employed_flag
+    kind: when
+    rules: [{ if: "employment_status == 'SelfEmployed'", then: Y }]
+    else: N
+
+  - target: property_usage
+    kind: when
+    rules: [{ if: "occupancy == 'OwnerOccupied'", then: OwnerOccupied }]
+    else: BuyToLet
+
+  - target: buy_to_let_flag
+    kind: when
+    rules: [{ if: "property_usage == 'BuyToLet'", then: Y }]
+    else: N
+
+  # NHG (the Dutch state mortgage guarantee) is capped by balance, so a large
+  # loan cannot carry it however the coin flip landed.
+  - target: nhg_flag
+    kind: when
+    rules: [{ if: "original_balance <= nhg_balance_cap and _nhg_pre == 1", then: Y }]
+    else: N
+
+  - target: guarantee_type
+    kind: when
+    rules: [{ if: "nhg_flag == 'Y'", then: NHG }]
+    else: "None"
+
+  - target: fixed_interest_period_end_in_months
+    expr: remaining_interest_fixed_period_months
+    dtype: int
+
+  - target: maturity_date_proxy
+    kind: format
+    template: "{y:04d}-{m:02d}-28"
+    args:
+      y: "int(origination_year + legal_maturity_months // 12)"
+      m: "int(legal_maturity_months % 12 + 1)"
+
+  # -- valuation -----------------------------------------------------------
+  - target: original_market_value_at_origination
+    expr: "original_balance / (oltomv_original / 100.0)"
+    round: 2
+
+  - target: seasoning_months
+    expr: "max((first_cutoff_year - origination_year) * 12 + (first_cutoff_month - origination_month), 1)"
+    dtype: int
+
+  - target: remaining_term_months
+    expr: "max(legal_maturity_months - seasoning_months, 1)"
+    dtype: int
+
+  - target: _years_since_origination
+    expr: "first_cutoff_year - origination_year"
+
+  - target: current_original_market_value
+    expr: "original_market_value_at_origination * power(hpi_market_annual, _years_since_origination)"
+    round: 2
+
+  - target: indexed_market_value
+    expr: "original_market_value_at_origination * power(hpi_indexed_annual, _years_since_origination)"
+    round: 2
+
+  # -- balance and payment -------------------------------------------------
+  # Closed-form annuity balance after `t` payments:
+  #   B(t) = P * ((1+r)^n - (1+r)^t) / ((1+r)^n - 1)
+  - target: _r
+    expr: "current_interest_rate_pct / 100.0 / 12.0"
+  - target: _pow_n
+    expr: "power(1.0 + _r, legal_maturity_months)"
+  - target: _pow_t
+    expr: "power(1.0 + _r, seasoning_months)"
+
+  - target: current_balance
+    expr: >-
+      original_balance if interest_only_flag == 'Y'
+      else original_balance * (_pow_n - _pow_t) / (_pow_n - 1.0)
+    round: 2
+
+  - target: scheduled_monthly_payment
+    expr: >-
+      original_balance * _r if interest_only_flag == 'Y'
+      else original_balance * _r * _pow_n / (_pow_n - 1.0)
+    round: 2
+
+  - target: loan_to_income
+    expr: "original_balance / borrower_annual_income"
+    round: 2
+
+  - target: payment_due_to_income_pct
+    expr: "scheduled_monthly_payment * 12 / borrower_annual_income * 100"
+    round: 2
+
+  # -- ratios, recomputed every period as balances and valuations move -----
+  - target: cltomv_current
+    expr: "current_balance / current_original_market_value * 100"
+    round: 2
+    stage: both
+
+  - target: cltimv_current
+    expr: "current_balance / indexed_market_value * 100"
+    round: 2
+    stage: both
+
+  # -- arrears at period 0 -------------------------------------------------
+  # One missed scheduled payment per ~30 days past due. Seeding it this way
+  # means the first step of the ageing pass adds exactly one more payment,
+  # with no discontinuity at the period-0 boundary.
+  - target: arrears_amount
+    expr: "0.0 if days_past_due <= 0 else scheduled_monthly_payment * max(ceil(days_past_due / 30.0), 1)"
+    round: 2
+
+  # -- energy --------------------------------------------------------------
+  - target: epc_issue_year
+    expr: origination_year
+    dtype: int
+
+  # Mid-points of the typical Dutch EPC kWh/m2/yr bands.
+  - target: primary_energy_demand_kwh_m2
+    kind: when
+    rules:
+      - { if: "epc_label == 'A+++'", then: 30 }
+      - { if: "epc_label == 'A++'", then: 60 }
+      - { if: "epc_label == 'A+'", then: 90 }
+      - { if: "epc_label == 'A'", then: 130 }
+      - { if: "epc_label == 'B'", then: 170 }
+      - { if: "epc_label == 'C'", then: 210 }
+      - { if: "epc_label == 'D'", then: 260 }
+      - { if: "epc_label == 'E'", then: 310 }
+      - { if: "epc_label == 'F'", then: 360 }
+    else: 420
+    dtype: int
+
+  # -- construction deposit ------------------------------------------------
+  - target: construction_deposit_flag
+    kind: when
+    rules:
+      - { if: "_construction_deposit_pre == 1 and loan_purpose in ['Renovation', 'Construction']", then: Y }
+    else: N
+
+  - target: construction_deposit_pct
+    expr: "_cd_pct_raw if construction_deposit_flag == 'Y' else 0"
+    dtype: int
+
+  - target: construction_deposit_amount
+    expr: "original_balance * construction_deposit_pct / 100.0"
+    round: 2
+
+  # -- buckets -------------------------------------------------------------
+  - { target: balance_bucket, kind: bucket, bucket: balance, source: current_balance, stage: both }
+  - { target: cltomv_current_bucket, kind: bucket, bucket: ltv, source: cltomv_current, stage: both }
+  - { target: cltimv_current_bucket, kind: bucket, bucket: ltv, source: cltimv_current, stage: both }
+  - { target: oltomv_original_bucket, kind: bucket, bucket: ltv, source: oltomv_original }
+  - { target: loan_to_income_bucket, kind: bucket, bucket: lti, source: loan_to_income }
+  - { target: payment_due_to_income_pct_bucket, kind: bucket, bucket: payment, source: payment_due_to_income_pct }
+  - { target: construction_year_bucket, kind: bucket, bucket: construction_year, source: construction_year }
+
+# ---------------------------------------------------------------------------
+# buckets
+# ---------------------------------------------------------------------------
+
+buckets:
+  balance:
+    bins: [0, 100000, 150000, 200000, 250000, 300000, 350000, 400000, 450000, 500000, 550000, 600000, 1.0e12]
+    labels: ["<100k", 100k-150k, 150k-200k, 200k-250k, 250k-300k, 300k-350k, 350k-400k,
+             400k-450k, 450k-500k, 500k-550k, 550k-600k, 600k+]
+  ltv:
+    bins: [-1, 20, 30, 40, 50, 60, 70, 80, 90, 100, 1.0e6]
+    labels: ["<20", 20-30, 30-40, 40-50, 50-60, 60-70, 70-80, 80-90, 90-100, 100+]
+  lti:
+    bins: [-1, 1.5, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 1.0e6]
+    labels: ["<1.5", 1.5-2.0, 2.0-2.5, 2.5-3.0, 3.0-3.5, 3.5-4.0, 4.0-4.5, 4.5-5.0,
+             5.0-5.5, 5.5-6.0, 6.0+]
+  payment:
+    bins: [-1, 5, 10, 15, 20, 25, 30, 35, 1.0e6]
+    labels: ["<5", 5-10, 10-15, 15-20, 20-25, 25-30, 30-35, 35+]
+  construction_year:
+    bins: [-1, 1945, 1960, 1970, 1980, 1985, 1990, 1995, 2000, 2005, 2010, 2015, 9999]
+    labels: ["<1945", 1945-1960, 1960-1970, 1970-1980, 1980-1985, 1985-1990, 1990-1995,
+             1995-2000, 2000-2005, 2005-2010, 2010-2015, 2015+]
+
+# ---------------------------------------------------------------------------
+# lifecycle
+# ---------------------------------------------------------------------------
+
+lifecycle:
+  state_column: arrears_bucket
+  # Ordered best-first. Stress scenarios rely on that ordering to know which
+  # transitions count as "worsening".
+  states: [Performing, 1-29 DPD, 30-59 DPD, 60-89 DPD, 90+ DPD, Defaulted, Charged-Off, Redeemed]
+  absorbing: [Defaulted]
+  terminal: [Charged-Off, Redeemed]
+
+  # Monthly transitions over the six live states. Calibrated to roughly 0.7%
+  # annualised default — Dutch prime range. To halve cumulative defaults,
+  # reduce the Performing -> 1-29 DPD cell and add the difference back to the
+  # Performing -> Performing cell.
+  #              Perf    1-29    30-59   60-89   90+     Def
+  transitions:
+    - [0.9925, 0.0060, 0.0010, 0.0003, 0.0001, 0.0001]   # from Performing
+    - [0.6500, 0.1500, 0.1800, 0.0150, 0.0040, 0.0010]   # from 1-29 DPD
+    - [0.3000, 0.1200, 0.1500, 0.4000, 0.0250, 0.0050]   # from 30-59 DPD
+    - [0.1200, 0.0500, 0.0800, 0.1500, 0.5800, 0.0200]   # from 60-89 DPD
+    - [0.0400, 0.0100, 0.0200, 0.0500, 0.4800, 0.4000]   # from 90+ DPD
+    - [0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000]   # Defaulted (absorbing)
+
+  hazards:
+    # 7% annualised — Dutch prime mid-range (Moody's UK RMBS Forecast, DBRS NL).
+    # A loan already in default cannot prepay.
+    - kind: bernoulli
+      name: prepayment
+      annual_rate: 0.07
+      to_state: Redeemed
+      excluded_states: [Defaulted]
+    # ~9 months in default before write-off — DBRS/Moody's NL recovery timelines.
+    - kind: dwell_time
+      name: chargeoff
+      from_state: Defaulted
+      periods: 9
+      to_state: Charged-Off
+
+  # What each state forces onto the row. Days-past-due are bucket mid-points.
+  state_fields:
+    Performing:   { days_past_due: 0,   performing_status: Non-defaulted, default_crr_flag: N, foreclosure_flag: N }
+    1-29 DPD:     { days_past_due: 15,  performing_status: Non-defaulted, default_crr_flag: N, foreclosure_flag: N }
+    30-59 DPD:    { days_past_due: 45,  performing_status: Non-defaulted, default_crr_flag: N, foreclosure_flag: N }
+    60-89 DPD:    { days_past_due: 75,  performing_status: Non-defaulted, default_crr_flag: N, foreclosure_flag: N }
+    90+ DPD:      { days_past_due: 120, performing_status: Non-defaulted, default_crr_flag: Y, foreclosure_flag: N }
+    Defaulted:    { days_past_due: 200, performing_status: Defaulted,     default_crr_flag: Y, foreclosure_flag: Y }
+    Charged-Off:  { days_past_due: 200, performing_status: Charged-Off,   default_crr_flag: Y, foreclosure_flag: Y, current_balance: 0.0 }
+    Redeemed:     { days_past_due: 0,   performing_status: Redeemed,      default_crr_flag: N, foreclosure_flag: N, current_balance: 0.0 }
+
+# ---------------------------------------------------------------------------
+# dynamics
+# ---------------------------------------------------------------------------
+
+dynamics:
+  # Only a performing borrower pays, so only a performing loan amortises.
+  # Interest-only loans never retire principal at all.
+  amortisation:
+    kind: annuity
+    balance: current_balance
+    rate: current_interest_rate_pct
+    payment: scheduled_monthly_payment
+    only_when_state: Performing
+    flat_when: "interest_only_flag == 'Y'"
+
+  # ~3% annualised house-price drift. Swap for the CBS NL HPI series (kind:
+  # series) to run against real history instead of a constant.
+  indices:
+    - name: hpi
+      kind: constant_drift
+      annual: 0.03
+      applies_to: [current_original_market_value, indexed_market_value]
+
+  counters:
+    - { column: seasoning_months, step: 1 }
+    - { column: remaining_term_months, expr: "legal_maturity_months - seasoning_months", clip_min: 0 }
+    - { column: remaining_interest_fixed_period_months, step: -1, clip_min: 0 }
+    - { column: fixed_interest_period_end_in_months, expr: remaining_interest_fixed_period_months, clip_min: 0 }
+
+  # Each period a borrower is behind, one more scheduled payment is owed.
+  accruals:
+    - column: arrears_amount
+      add: scheduled_monthly_payment
+      when: not_performing
+
+# ---------------------------------------------------------------------------
+# scenarios
+# ---------------------------------------------------------------------------
+
+scenarios:
+  base:
+    name: base
+    description: The calibration as specified — no overlay.
+  adverse:
+    name: adverse
+    description: Defaults double, house prices fall 5% a year, refinancing dries up.
+    default_multiplier: 2.0
+    prepayment_multiplier: 0.6
+    index_shift: { hpi: -0.08 }
+  severe:
+    name: severe
+    description: Defaults quadruple, a 15% annual house-price decline.
+    default_multiplier: 4.0
+    prepayment_multiplier: 0.4
+    index_shift: { hpi: -0.18 }
+
+# ---------------------------------------------------------------------------
+# emit
+# ---------------------------------------------------------------------------
+
+emit:
+  filename: "green_lion_{yyyymm}_1_synthetic_loan_tape.csv"
+  formats: [csv]
+  panel_filename: all_cutoffs.parquet
+  # The exact 71-column Hypoport header, in order.
+  column_order:
+    [loan_id, transaction_name, esma_transaction_identifier, reporting_date, closing_date,
+     originator_name, servicer_name, currency, country, origination_year, maturity_date_proxy,
+     original_balance, current_balance, repayment_type, interest_only_flag,
+     current_interest_rate_pct, rate_type, remaining_interest_fixed_period_months,
+     fixed_interest_period_end_in_months, seasoning_months, remaining_term_months,
+     legal_maturity_months, loan_part_count, debtor_count, property_type, province,
+     economic_region_nuts3, construction_year, occupancy, property_usage, employment_status,
+     self_employed_flag, borrower_type, loan_purpose, buy_to_let_flag, nhg_flag, guarantee_type,
+     oltomv_original, cltomv_current, cltimv_current, original_market_value_at_origination,
+     current_original_market_value, indexed_market_value, property_valuation_type, loan_to_income,
+     payment_due_to_income_pct, borrower_annual_income, scheduled_monthly_payment, arrears_bucket,
+     arrears_amount, days_past_due, default_crr_flag, performing_status, foreclosure_flag,
+     forbearance_flag, restructuring_flag, epc_label, epc_issue_year,
+     primary_energy_demand_kwh_m2, construction_deposit_flag, construction_deposit_pct,
+     construction_deposit_amount, interest_payment_frequency, principal_payment_frequency,
+     balance_bucket, cltomv_current_bucket, cltimv_current_bucket, oltomv_original_bucket,
+     loan_to_income_bucket, payment_due_to_income_pct_bucket, construction_year_bucket]
+
+validation:
+  non_negative_columns: [current_balance, arrears_amount, original_balance,
+                         scheduled_monthly_payment, days_past_due]
+
+# ---------------------------------------------------------------------------
+# metrics — the monthly portfolio report
+# ---------------------------------------------------------------------------
+#
+# The same machinery as the CLO and auto packs, on a mortgage book's own columns.
+# Three packs, three asset classes, one metric vocabulary — which is the claim
+# the report has to earn.
+
+metrics:
+  - name: total_balance
+    kind: sum
+    column: current_balance
+    decimals: 2
+    description: Principal outstanding across the book.
+
+  - name: active_loans
+    kind: count
+    description: Loans reporting at this cut-off.
+
+  - name: wa_interest_rate
+    kind: weighted_mean
+    column: current_interest_rate_pct
+    weight: current_balance
+    decimals: 4
+    description: Balance-weighted mortgage rate.
+
+  - name: wa_seasoning_months
+    kind: weighted_mean
+    column: seasoning_months
+    weight: current_balance
+    decimals: 2
+    description: Balance-weighted months since origination.
+
+  - name: arrears_pct
+    kind: share_where
+    column: current_balance
+    where: "arrears_bucket != 'Performing'"
+    decimals: 6
+    description: Share of balance behind on payments.
+
+  - name: max_province_share
+    kind: max_group_share
+    column: current_balance
+    group: province
+    decimals: 6
+    description: Largest single province's share of the book.
+
+  - name: effective_provinces
+    kind: effective_count
+    column: current_balance
+    group: province
+    decimals: 2
+    description: >-
+      How many provinces the book behaves as, given how the balance is spread.
+      A mortgage pool's geography is its correlation.
+
+  - name: portfolio_turnover
+    kind: turnover
+    column: current_balance
+    entity_column: loan_id
+    decimals: 6
+    description: >-
+      Balance that left the pool since the last cut-off, as a share of the
+      balance that was there. Mostly refinancing and moving house.
+
+
+# ---------------------------------------------------------------------------
+# results — what to draw
+# ---------------------------------------------------------------------------
+
+results:
+  charts:
+    - kind: series
+      title: Portfolio balance
+      metric: total_balance
+      unit: money
+      description: Principal outstanding at each cut-off.
+      explain: >-
+        The total still owed across every mortgage in the pool. Dutch mortgages
+        often pay interest only, so this can sit far flatter than an amortising
+        book — what pulls it down is borrowers refinancing away or selling up.
+
+    - kind: stacked_series
+      title: Arrears status
+      column: arrears_bucket
+      states: [Performing, 1-29 DPD, 30-59 DPD, 60-89 DPD, 90+ DPD, Defaulted]
+      unit: percent
+      description: Share of loans in each arrears bucket. Loans that have left the pool
+        are excluded.
+      explain: >-
+        DPD means "days past due", one bucket per missed month. Dutch arrears are
+        historically very low, so a healthy pool shows almost nothing beyond the
+        first band — which makes any thickening of the later bands meaningful
+        rather than noise.
+
+    - kind: series
+      title: Effective provinces
+      metric: effective_provinces
+      unit: count
+      description: Geographic diversity, adjusted for concentration.
+      explain: >-
+        Counting provinces treats a book as spread out even if most of the lending
+        is in one. This is the count adjusted for that — one divided by the sum of
+        each province's squared share of the balance. House prices and job losses
+        move regionally, so a book concentrated in one province is far more
+        correlated than its loan count suggests.
+
+    - kind: category_bar
+      title: Balance by province
+      group: province
+      column: current_balance
+      unit: money
+      description: Where the collateral is.
+      explain: >-
+        The raw geographic split behind the effective-province count above.

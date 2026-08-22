@@ -1,0 +1,813 @@
+# European auto-loan ABS — ESMA Annex 5 (underlying exposures, automobile).
+#
+# A second calibrated pack, deliberately unlike the RMBS one, to show that the
+# engine is not a mortgage generator with knobs. Everything structural differs:
+#
+#   collateral   a car, which *depreciates*, rather than a house which is
+#                indexed upward. The residual-value index is negative.
+#   product      hire purchase, PCP and lease, with a balloon payment at
+#                maturity for the PCP contracts — a shape mortgages do not have.
+#   term         36 to 72 months rather than 360, so a 24-cut-off panel covers a
+#                large part of the contract's life and the pool factor moves.
+#   losses       faster. A car is repossessed and sold in months, not years, so
+#                write-off follows default after 6 periods rather than 9, and
+#                recovery is booked as a share of the balance at write-off.
+#
+# CALIBRATION. The distributions below sit in the published ranges for European
+# prime auto ABS — Moody's and S&P European Auto ABS indices, and the ECB's
+# AnaCredit consumer-lending aggregates: ~1.2% annualised default, ~14% CPR,
+# 45% recovery, 15%/yr residual depreciation, 4-6% APR. They are *representative
+# of the asset class*, not a reproduction of any one deal, and no confidential
+# tape was used to fit them. Every number is a line in this file; change it.
+#
+# COMPLIANCE. Column names follow the ESMA Annex 5 field vocabulary and the
+# section ordering of the disclosure template, and the format hints
+# ({MONETARY}, {PERCENTAGE}, {Y/N}, {DATEFORMAT}) map onto the types below.
+# This is the *shape* a filing takes, and it is not a filing: before submitting
+# anything derived from it, check the field codes and the full 100+ field list
+# against the official ESMA XML schema for the current reporting period. What
+# this pack gives you is realistic test data in the right structure.
+
+spec_version: 1
+
+meta:
+  name: auto_abs_de
+  entity_noun: contract
+  display_order: 4
+  title: European Auto Loans — ESMA Annex 5
+  asset_class: auto
+  regulatory_template: ESMA Annex 5 — Underlying exposures, automobile
+  description: >-
+    German prime auto loans, leases and PCP contracts as a monthly panel:
+    depreciating collateral, balloon payments, fast recovery on write-off.
+  source: Calibrated to published European auto ABS ranges; see the header.
+
+entity:
+  id_column: unique_identifier
+  # Sequential, so an identifier cannot collide — including with the loans an
+  # open pool writes at later cut-offs.
+  id_format: "AUTO{deal_year}_{seq:06d}"
+  time_column: data_cut_off_date
+  calendar:
+    start: "2024-01-31"
+    periods: 24
+    freq: month_end
+
+# ---------------------------------------------------------------------------
+# deal-level facts
+# ---------------------------------------------------------------------------
+
+params:
+  deal_year: 2024
+  first_cutoff_year: 2024
+  first_cutoff_month: 1
+  # Residual value retained per year. 0.85 is a 15% annual depreciation, the
+  # middle of the published range for European prime auto collateral.
+  residual_retained_annual: 0.85
+
+constants:
+  transaction_name: AUTOBAHN 2024-1
+  originator_name: Example Auto Bank AG
+  servicer_name: Example Auto Servicing GmbH
+  currency: EUR
+  country_of_origination: DE
+  resecuritisation: N
+  valuation_type: Manufacturer residual value curve
+
+# ---------------------------------------------------------------------------
+# columns
+# ---------------------------------------------------------------------------
+
+columns:
+  # -- identifiers and dates ------------------------------------------------
+  - name: unique_identifier
+    role: static
+    dtype: str
+    description: "{ALPHANUM-28} Unique identifier for the exposure, stable across cut-offs."
+    generator: { kind: sequence, prefix: "AUTO", width: 10 }
+
+  - name: data_cut_off_date
+    role: dynamic
+    dtype: str
+    description: "{DATEFORMAT} The reporting cut-off this row describes."
+    generator: { kind: constant, value: "2024-01-31" }
+
+  - name: origination_year
+    role: static
+    dtype: int
+    description: Year the contract was written.
+    generator:
+      kind: categorical
+      values: [2019, 2020, 2021, 2022, 2023, 2024]
+      # A revolving auto pool is young: most of it was written in the last
+      # two years, and 6-year-old contracts have mostly amortised away.
+      weights: [0.04, 0.07, 0.13, 0.24, 0.34, 0.18]
+
+  - name: origination_month
+    role: static
+    dtype: int
+    description: Month the contract was written.
+    generator:
+      kind: categorical
+      values: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+  # -- obligor --------------------------------------------------------------
+  - name: geographic_region
+    role: static
+    dtype: category
+    description: "{NUTS} NUTS-1 region of the obligor's residence."
+    domain: [DE1, DE2, DE3, DE5, DE6, DE7, DE9, DEA, DEB, DEC, DED, DEE, DEF, DEG]
+    generator:
+      kind: categorical
+      # Roughly proportional to German new-car registrations by Land.
+      values: [DE1, DE2, DEA, DE9, DE7, DEB, DE5, DE6, DEE, DEF, DEG, DED, DEC, DE3]
+      weights:
+        [0.155, 0.180, 0.210, 0.095, 0.075, 0.050, 0.020, 0.025, 0.035, 0.045,
+         0.030, 0.045, 0.015, 0.020]
+
+  - name: obligor_type
+    role: static
+    dtype: category
+    domain: [Private, Corporate]
+    description: "{LIST} Whether the obligor is an individual or a business."
+    generator: { kind: categorical, values: [Private, Corporate], weights: [0.86, 0.14] }
+
+  - name: employment_status
+    role: static
+    dtype: category
+    domain: [Employed, Self-employed, Public sector, Retired, Other]
+    description: "{LIST} Employment status of the primary obligor."
+    generator:
+      kind: categorical
+      values: [Employed, Self-employed, Public sector, Retired, Other]
+      weights: [0.68, 0.11, 0.09, 0.09, 0.03]
+
+  - name: primary_income
+    role: static
+    dtype: float
+    min: 0.0
+    description: "{MONETARY} Gross annual income of the primary obligor."
+    generator:
+      kind: scipy
+      dist: lognorm
+      params: { s: 0.42, loc: 0.0, scale: 44000.0 }
+      decimals: 2
+      clip_min: 12000.0
+
+  - name: obligor_credit_quality
+    role: static
+    dtype: category
+    domain: [A, B, C, D]
+    description: "{LIST} Internal credit grade at origination, best first."
+    generator: { kind: categorical, values: [A, B, C, D], weights: [0.42, 0.36, 0.17, 0.05] }
+
+  # -- the vehicle ----------------------------------------------------------
+  - name: vehicle_manufacturer
+    role: static
+    dtype: category
+    description: "{ALPHANUM} Manufacturer of the financed vehicle."
+    generator:
+      kind: categorical
+      values: [Volkswagen, Mercedes-Benz, BMW, Audi, Opel, Ford, Skoda, Renault, Toyota, Other]
+      weights: [0.19, 0.13, 0.12, 0.11, 0.07, 0.07, 0.07, 0.05, 0.06, 0.13]
+
+  - name: vehicle_new_or_used
+    role: static
+    dtype: category
+    domain: [New, Used]
+    description: "{LIST} Whether the vehicle was new or used at origination."
+    generator: { kind: categorical, values: [New, Used], weights: [0.58, 0.42] }
+
+  - name: vehicle_fuel_type
+    role: static
+    dtype: category
+    domain: [Petrol, Diesel, Hybrid, Electric, Other]
+    description: "{LIST} Fuel type, which drives the residual value curve."
+    generator:
+      kind: categorical
+      values: [Petrol, Diesel, Hybrid, Electric, Other]
+      weights: [0.41, 0.27, 0.17, 0.13, 0.02]
+
+  - name: original_valuation_amount
+    role: static
+    dtype: float
+    min: 0.0
+    description: "{MONETARY} Value of the vehicle at origination."
+    generator:
+      kind: scipy
+      dist: lognorm
+      params: { s: 0.46, loc: 0.0, scale: 27500.0 }
+      decimals: 2
+      clip_min: 4000.0
+      clip_max: 180000.0
+
+  - name: current_valuation_amount
+    role: dynamic
+    dtype: float
+    min: 0.0
+    description: "{MONETARY} Residual value at this cut-off. Depreciates every period."
+    # Seeded by a derivation, then moved by the residual-value index.
+    generator: { kind: constant, value: 0.0 }
+
+  # -- the contract ---------------------------------------------------------
+  - name: product_type
+    role: static
+    dtype: category
+    domain: [Hire purchase, Personal contract purchase, Lease, Loan]
+    description: "{LIST} Contract type. PCP contracts carry a balloon payment."
+    generator:
+      kind: categorical
+      values: [Hire purchase, Personal contract purchase, Lease, Loan]
+      weights: [0.31, 0.34, 0.21, 0.14]
+
+  - name: original_principal_balance
+    role: static
+    dtype: float
+    min: 0.0
+    description: "{MONETARY} Amount advanced at origination."
+    generator:
+      kind: scipy
+      dist: lognorm
+      params: { s: 0.44, loc: 0.0, scale: 21500.0 }
+      decimals: 2
+      clip_min: 2500.0
+      clip_max: 150000.0
+
+  - name: current_principal_balance
+    role: dynamic
+    dtype: float
+    min: 0.0
+    description: "{MONETARY} Principal outstanding at this cut-off."
+    generator: { kind: constant, value: 0.0 }
+
+  - name: original_term_months
+    role: static
+    dtype: int
+    description: "{INTEGER} Contract term at origination, in months."
+    generator:
+      kind: categorical
+      values: [24, 36, 48, 60, 72]
+      weights: [0.07, 0.27, 0.32, 0.26, 0.08]
+
+  - name: interest_rate_type
+    role: static
+    dtype: category
+    domain: [Fixed, Floating]
+    description: "{LIST} Auto lending is overwhelmingly fixed-rate."
+    generator: { kind: categorical, values: [Fixed, Floating], weights: [0.94, 0.06] }
+
+  - name: current_interest_rate_pct
+    role: static
+    dtype: float
+    min: 0.0
+    description: "{PERCENTAGE} Annual nominal rate, in percent."
+    generator:
+      kind: scipy
+      dist: truncnorm
+      params: { a: -2.2, b: 3.4, loc: 4.9, scale: 1.35 }
+      decimals: 2
+      clip_min: 0.0
+
+  - name: payment_method
+    role: static
+    dtype: category
+    domain: [Direct debit, Standing order, Other]
+    description: "{LIST} How the instalment is collected."
+    generator:
+      kind: categorical
+      values: [Direct debit, Standing order, Other]
+      weights: [0.91, 0.06, 0.03]
+
+  - name: balloon_flag
+    role: static
+    dtype: category
+    domain: [Y, N]
+    description: "{Y/N} Whether a final balloon instalment falls due at maturity."
+    # Set by a derivation from product_type: every PCP contract has one, and
+    # nothing else does. Sampling it independently would produce PCP contracts
+    # with no balloon, which is not a product that exists.
+    generator: { kind: constant, value: "N" }
+
+  # -- performance ----------------------------------------------------------
+  - name: account_status
+    role: dynamic
+    dtype: category
+    domain: [Performing, 1-30 DPD, 31-60 DPD, 61-90 DPD, Defaulted, Charged-Off, Redeemed]
+    description: "{LIST} Arrears status at this cut-off."
+    generator:
+      kind: categorical
+      values: [Performing, 1-30 DPD, 31-60 DPD, 61-90 DPD, Defaulted]
+      weights: [0.9720, 0.0180, 0.0060, 0.0025, 0.0015]
+
+  - name: days_past_due
+    role: dynamic
+    dtype: int
+    min: 0.0
+    description: "{INTEGER} Days in arrears. Forced by the account status."
+    generator: { kind: constant, value: 0 }
+
+  - name: default_flag
+    role: dynamic
+    dtype: category
+    domain: [Y, N]
+    description: "{Y/N} Whether the exposure has defaulted."
+    generator: { kind: constant, value: "N" }
+
+  - name: arrears_amount
+    role: dynamic
+    dtype: float
+    min: 0.0
+    description: "{MONETARY} Instalments owed and unpaid."
+    generator: { kind: constant, value: 0.0 }
+
+  - name: recovery_amount
+    role: dynamic
+    dtype: float
+    min: 0.0
+    description: "{MONETARY} Proceeds recovered when the vehicle is sold after write-off."
+    generator: { kind: constant, value: 0.0 }
+
+  # -- helpers, dropped before output ---------------------------------------
+  - name: _raw_seasoning
+    role: helper
+    dtype: int
+    generator: { kind: constant, value: 0 }
+
+  - name: _origination_index
+    role: helper
+    dtype: int
+    generator: { kind: constant, value: 0 }
+
+  - name: _monthly_rate
+    role: helper
+    dtype: float
+    generator: { kind: constant, value: 0.0 }
+
+  - name: _growth_full_term
+    role: helper
+    dtype: float
+    generator: { kind: constant, value: 1.0 }
+
+  - name: _growth_to_date
+    role: helper
+    dtype: float
+    generator: { kind: constant, value: 1.0 }
+
+# ---------------------------------------------------------------------------
+# derivations
+#
+# Order matters: each one may only use names already available above it.
+# ---------------------------------------------------------------------------
+
+derivations:
+  # -- age of the contract --------------------------------------------------
+  #
+  # Origination date and term are sampled independently, so a draw can produce a
+  # contract older than its own term — a 24-month loan written in 2019. Such a
+  # contract was repaid years ago and would not be in the pool at all, and left
+  # alone it breaks the closed-form balance below: past maturity the annuity
+  # formula goes negative.
+  #
+  # Seasoning is therefore capped at one month short of maturity, and the
+  # origination date is then *recomputed from the capped seasoning* so the two
+  # still agree. A row that needed no capping comes back with exactly the date
+  # it was sampled with; only the impossible ones move.
+  - target: _raw_seasoning
+    expr: >-
+      (first_cutoff_year - origination_year) * 12
+      + (first_cutoff_month - origination_month)
+    dtype: int
+
+  - target: seasoning_months
+    expr: "max(min(_raw_seasoning, max(original_term_months - 1, 1)), 1)"
+    dtype: int
+
+  - target: _origination_index
+    expr: "first_cutoff_year * 12 + first_cutoff_month - seasoning_months"
+    dtype: int
+
+  - target: origination_year
+    expr: "int((_origination_index - 1) // 12)"
+    dtype: int
+
+  - target: origination_month
+    expr: "int((_origination_index - 1) % 12 + 1)"
+    dtype: int
+
+  - target: remaining_term_months
+    expr: "max(original_term_months - seasoning_months, 1)"
+    dtype: int
+
+  # -- balance and instalment ----------------------------------------------
+  # Closed-form annuity: after t payments of an n-month contract,
+  #   B(t) = P * ((1+r)^n - (1+r)^t) / ((1+r)^n - 1)
+  # A PCP contract amortises only to its balloon, so it is written down over a
+  # notional term that leaves the balloon outstanding at maturity.
+  - target: _monthly_rate
+    expr: "max(current_interest_rate_pct, 0.01) / 100.0 / 12.0"
+
+  - target: _growth_full_term
+    expr: "power(1.0 + _monthly_rate, original_term_months)"
+
+  - target: _growth_to_date
+    expr: "power(1.0 + _monthly_rate, seasoning_months)"
+
+  - target: scheduled_monthly_payment
+    expr: >-
+      original_principal_balance * _monthly_rate * _growth_full_term
+      / (_growth_full_term - 1.0)
+    round: 2
+    dtype: float
+
+  - target: current_principal_balance
+    expr: >-
+      max(original_principal_balance * (_growth_full_term - _growth_to_date)
+          / (_growth_full_term - 1.0), 0.0)
+    round: 2
+    dtype: float
+
+  # -- the vehicle ----------------------------------------------------------
+  - target: current_valuation_amount
+    expr: >-
+      original_valuation_amount
+      * power(residual_retained_annual, seasoning_months / 12.0)
+    round: 2
+    dtype: float
+
+  - target: down_payment_amount
+    expr: "max(original_valuation_amount - original_principal_balance, 0.0)"
+    round: 2
+    dtype: float
+
+  # -- the balloon ----------------------------------------------------------
+  - target: balloon_flag
+    kind: when
+    rules:
+      - if: "product_type == 'Personal contract purchase'"
+        then: "Y"
+    else: "N"
+
+  - target: balloon_amount
+    expr: >-
+      (original_principal_balance * 0.38 if balloon_flag == 'Y' else 0.0)
+    round: 2
+    dtype: float
+
+  # -- ratios, recomputed every period as balances and values move ---------
+  - target: current_ltv_pct
+    expr: "current_principal_balance / max(current_valuation_amount, 1.0) * 100.0"
+    round: 2
+    dtype: float
+    stage: both
+
+  - target: loan_to_income_ratio
+    expr: "original_principal_balance / max(primary_income, 1.0)"
+    round: 3
+    dtype: float
+
+  - target: current_ltv_band
+    kind: bucket
+    bucket: ltv
+    source: current_ltv_pct
+    stage: both
+
+  - target: balance_band
+    kind: bucket
+    bucket: balance
+    source: current_principal_balance
+    stage: both
+
+  # -- a date proxy, as the template expects --------------------------------
+  - target: maturity_date_proxy
+    kind: format
+    template: "{y:04d}-{m:02d}-28"
+    args:
+      y: "int(origination_year + (origination_month + original_term_months - 1) // 12)"
+      m: "int((origination_month + original_term_months - 1) % 12 + 1)"
+    dtype: str
+
+buckets:
+  ltv:
+    bins: [0.0, 40.0, 60.0, 80.0, 100.0, 120.0, 1000.0]
+    labels: ["<=40%", "40-60%", "60-80%", "80-100%", "100-120%", ">120%"]
+  balance:
+    bins: [0.0, 5000.0, 10000.0, 20000.0, 30000.0, 50000.0, 1000000.0]
+    labels: ["<=5k", "5-10k", "10-20k", "20-30k", "30-50k", ">50k"]
+
+# ---------------------------------------------------------------------------
+# lifecycle
+# ---------------------------------------------------------------------------
+
+lifecycle:
+  state_column: account_status
+  # Ordered best-first. Stress scenarios read that ordering as severity.
+  states: [Performing, 1-30 DPD, 31-60 DPD, 61-90 DPD, Defaulted, Charged-Off, Redeemed]
+  absorbing: [Defaulted]
+  terminal: [Charged-Off, Redeemed]
+
+  # Monthly transitions over the five live states, calibrated to roughly 1.2%
+  # annualised default — the published range for European prime auto. Auto
+  # arrears cure faster than mortgage arrears and roll to default sooner: the
+  # collateral is movable, so a servicer acts within months.
+  #              Perf     1-30    31-60   61-90   Def
+  transitions:
+    - [0.9880, 0.0100, 0.0012, 0.0005, 0.0003]   # from Performing
+    - [0.5800, 0.1900, 0.2000, 0.0250, 0.0050]   # from 1-30 DPD
+    - [0.2600, 0.1300, 0.1400, 0.4400, 0.0300]   # from 31-60 DPD
+    - [0.0900, 0.0400, 0.0700, 0.1600, 0.6400]   # from 61-90 DPD
+    - [0.0000, 0.0000, 0.0000, 0.0000, 1.0000]   # Defaulted (absorbing)
+
+  hazards:
+    # ~14% CPR. Auto contracts prepay faster than mortgages: the balance is
+    # small, and a trade-in settles the contract early.
+    - kind: bernoulli
+      name: prepayment
+      annual_rate: 0.14
+      to_state: Redeemed
+      excluded_states: [Defaulted]
+    # Repossess, sell, write off. Months, not years.
+    - kind: dwell_time
+      name: chargeoff
+      from_state: Defaulted
+      periods: 6
+      to_state: Charged-Off
+
+  state_fields:
+    Performing:  { days_past_due: 0,   default_flag: N }
+    1-30 DPD:    { days_past_due: 15,  default_flag: N }
+    31-60 DPD:   { days_past_due: 45,  default_flag: N }
+    61-90 DPD:   { days_past_due: 75,  default_flag: N }
+    Defaulted:   { days_past_due: 120, default_flag: Y }
+    Charged-Off: { days_past_due: 180, default_flag: Y, current_principal_balance: 0.0 }
+    Redeemed:    { days_past_due: 0,   default_flag: N, current_principal_balance: 0.0 }
+
+# ---------------------------------------------------------------------------
+# dynamics
+# ---------------------------------------------------------------------------
+
+dynamics:
+  amortisation:
+    kind: annuity
+    balance: current_principal_balance
+    rate: current_interest_rate_pct
+    payment: scheduled_monthly_payment
+    # A borrower who is not paying is not retiring principal.
+    only_when_state: [Performing, 1-30 DPD]
+
+  indices:
+    # Collateral that falls in value, which is the structural difference from a
+    # mortgage pool. -15%/yr with a little dispersion.
+    - name: residual_value
+      applies_to: [current_valuation_amount]
+      kind: constant_drift
+      annual: -0.15
+      volatility: 0.004
+
+  counters:
+    - { column: seasoning_months, step: 1 }
+    - { column: remaining_term_months, expr: "max(original_term_months - seasoning_months, 0)", clip_min: 0 }
+
+  accruals:
+    - column: arrears_amount
+      add: scheduled_monthly_payment
+      when: not_performing
+
+  # A repossessed car is sold. 45% of the balance comes back, which is the
+  # middle of the published European prime auto range.
+  recovery:
+    rate: 0.45
+    balance: current_principal_balance
+    target: recovery_amount
+    on_states: [Charged-Off]
+
+# ---------------------------------------------------------------------------
+# scenarios
+# ---------------------------------------------------------------------------
+
+scenarios:
+  base:
+    name: base
+    description: The calibration above, unstressed.
+
+  adverse:
+    name: adverse
+    description: >-
+      A consumer downturn: defaults roughly triple, prepayment slows as
+      trade-ins dry up, and used-car values fall faster.
+    default_multiplier: 3.0
+    prepayment_multiplier: 0.7
+    index_shift: { residual_value: -0.08 }
+    rate_shift: 1.0
+    rate_columns: [current_interest_rate_pct]
+
+  severe:
+    name: severe
+    description: >-
+      A used-car price correction on top of a recession — the scenario auto ABS
+      is actually sensitive to, because recovery depends on resale value.
+    default_multiplier: 7.0
+    prepayment_multiplier: 0.5
+    index_shift: { residual_value: -0.20 }
+    rate_shift: 2.5
+    rate_columns: [current_interest_rate_pct]
+
+# ---------------------------------------------------------------------------
+# output
+# ---------------------------------------------------------------------------
+
+emit:
+  filename: "autobahn_{yyyymm}_underlying_exposures.csv"
+  formats: [csv]
+  panel_filename: all_cutoffs.parquet
+  write_panel: true
+  # ESMA section order: identifiers, obligor, collateral, contract, performance.
+  column_order:
+    - unique_identifier
+    - data_cut_off_date
+    - transaction_name
+    - originator_name
+    - servicer_name
+    - currency
+    - country_of_origination
+    - resecuritisation
+    - origination_year
+    - origination_month
+    - maturity_date_proxy
+    - geographic_region
+    - obligor_type
+    - employment_status
+    - primary_income
+    - obligor_credit_quality
+    - vehicle_manufacturer
+    - vehicle_new_or_used
+    - vehicle_fuel_type
+    - valuation_type
+    - original_valuation_amount
+    - current_valuation_amount
+    - down_payment_amount
+    - product_type
+    - original_principal_balance
+    - current_principal_balance
+    - balance_band
+    - original_term_months
+    - remaining_term_months
+    - seasoning_months
+    - interest_rate_type
+    - current_interest_rate_pct
+    - scheduled_monthly_payment
+    - payment_method
+    - balloon_flag
+    - balloon_amount
+    - loan_to_income_ratio
+    - current_ltv_pct
+    - current_ltv_band
+    - account_status
+    - days_past_due
+    - default_flag
+    - arrears_amount
+    - recovery_amount
+
+validation:
+  non_negative_columns:
+    - original_principal_balance
+    - current_principal_balance
+    - original_valuation_amount
+    - current_valuation_amount
+    - down_payment_amount
+    - scheduled_monthly_payment
+    - arrears_amount
+    - recovery_amount
+    - balloon_amount
+    - days_past_due
+    - primary_income
+
+# ---------------------------------------------------------------------------
+# metrics — the monthly portfolio report
+# ---------------------------------------------------------------------------
+#
+# Here to prove the report is not a CLO feature wearing generic clothes. Every
+# figure below is the same metric machinery the CLO pack uses, pointed at an
+# auto book's own columns — including the two kinds added for the CLO's P1 tail,
+# which is the real test: if `effective_count` and `turnover` only made sense
+# for corporate loans, the abstraction would be wrong.
+#
+# Averages are weighted by balance. Unweighted, a EUR 45k car loan and a EUR 4k
+# one would count alike.
+
+metrics:
+  - name: total_balance
+    kind: sum
+    column: current_principal_balance
+    decimals: 2
+    description: Principal outstanding across the book.
+
+  - name: active_loans
+    kind: count
+    description: Loans reporting at this cut-off.
+
+  - name: wa_interest_rate
+    kind: weighted_mean
+    column: current_interest_rate_pct
+    weight: current_principal_balance
+    decimals: 4
+    description: Balance-weighted interest rate.
+
+  - name: wa_seasoning_months
+    kind: weighted_mean
+    column: seasoning_months
+    weight: current_principal_balance
+    decimals: 2
+    description: Balance-weighted months since origination.
+
+  - name: arrears_pct
+    kind: share_where
+    column: current_principal_balance
+    where: "account_status != 'Performing'"
+    decimals: 6
+    description: Share of balance behind on payments.
+
+  - name: total_arrears
+    kind: sum
+    column: arrears_amount
+    decimals: 2
+    description: Cash actually overdue, as distinct from the balance behind it.
+
+  - name: max_region_share
+    kind: max_group_share
+    column: current_principal_balance
+    group: geographic_region
+    decimals: 6
+    description: Largest single region's share of the book.
+
+  # The two kinds added for the CLO. A car loan pool is diversified across
+  # manufacturers rather than obligors, and the same arithmetic answers it.
+  - name: effective_manufacturers
+    kind: effective_count
+    column: current_principal_balance
+    group: vehicle_manufacturer
+    decimals: 2
+    description: >-
+      How many manufacturers the collateral behaves as, given how the balance
+      is spread. Falls below the plain count as one marque dominates.
+
+  - name: portfolio_turnover
+    kind: turnover
+    column: current_principal_balance
+    entity_column: unique_identifier
+    decimals: 6
+    description: >-
+      Balance that left the pool since the last cut-off — redeemed early, run
+      to term, or charged off — as a share of the balance that was there.
+
+
+# ---------------------------------------------------------------------------
+# results — what to draw
+# ---------------------------------------------------------------------------
+
+results:
+  charts:
+    - kind: series
+      title: Portfolio balance
+      metric: total_balance
+      unit: money
+      description: Principal outstanding at each cut-off.
+      explain: >-
+        The total still owed across every car loan in the pool. Unlike a corporate
+        loan, a car loan repays principal every month, so this falls steadily even
+        when nothing goes wrong — and falls faster when borrowers settle early.
+
+    - kind: stacked_series
+      title: Arrears status
+      column: account_status
+      states: [Performing, 1-30 DPD, 31-60 DPD, 61-90 DPD, Defaulted]
+      unit: percent
+      description: Share of loans in each arrears bucket. Loans that have left the pool
+        are excluded.
+      explain: >-
+        DPD means "days past due". A loan moves one bucket further out for each
+        month it misses, so 61-90 DPD means roughly three missed payments. Most
+        pools show a thin, stable tail here; a widening one is the early sign of a
+        deteriorating book.
+
+    - kind: series
+      title: Effective manufacturers
+      metric: effective_manufacturers
+      unit: count
+      description: Manufacturer diversity, adjusted for concentration.
+      explain: >-
+        Counting marques treats a pool as diversified even if most of the money is
+        in one. This is the count adjusted for that — one divided by the sum of each
+        manufacturer's squared share of the balance. It matters because used-car
+        values move by marque: a pool concentrated in one manufacturer is exposed
+        to that manufacturer's residual values, however many loans it holds.
+
+    - kind: category_bar
+      title: Balance by region
+      group: geographic_region
+      column: current_principal_balance
+      unit: money
+      description: Where the collateral is.
+      explain: >-
+        Regional concentration matters for the same reason manufacturer
+        concentration does: local economies fail together, so a pool weighted
+        heavily to one region carries a risk the loan-by-loan figures do not show.

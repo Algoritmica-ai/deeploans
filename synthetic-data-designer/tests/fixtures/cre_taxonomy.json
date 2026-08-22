@@ -1,0 +1,1093 @@
+{
+ "asset_class": "cre",
+ "template": "ESMA Annex 3 commercial real estate",
+ "field_count": 181,
+ "fields": [
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL1",
+   "field_name": "Unique Identifier",
+   "format_hint": "{ALPHANUM-28}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL2",
+   "field_name": "Original Obligor Identifier",
+   "format_hint": "{ALPHANUM-1000}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL3",
+   "field_name": "New Obligor Identifier",
+   "format_hint": "{ALPHANUM-1000}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL4",
+   "field_name": "Original Underlying Exposure Identifier",
+   "format_hint": "{ALPHANUM-1000}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL5",
+   "field_name": "New Underlying Exposure Identifier",
+   "format_hint": "{ALPHANUM-1000}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL6",
+   "field_name": "Data Cut-Off Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL7",
+   "field_name": "Pool Addition Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL8",
+   "field_name": "Date Of Restructuring",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL9",
+   "field_name": "Date Of Repurchase",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL10",
+   "field_name": "Date Of Substitution",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL11",
+   "field_name": "Redemption Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL12",
+   "field_name": "Geographic Region - Obligor",
+   "format_hint": "{NUTS}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL13",
+   "field_name": "Geographic Region Classification",
+   "format_hint": "{YEAR}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL14",
+   "field_name": "Special Scheme",
+   "format_hint": "{ALPHANUM-10000}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL15",
+   "field_name": "Origination Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL16",
+   "field_name": "Start Date Of Amortisation",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL17",
+   "field_name": "Maturity Date At Securitisation Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL18",
+   "field_name": "Maturity Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL19",
+   "field_name": "Original Term",
+   "format_hint": "{INTEGER-9999}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL20",
+   "field_name": "Duration Of Extension Option",
+   "format_hint": "{INTEGER-9999}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL21",
+   "field_name": "Nature Of Extension Option",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL22",
+   "field_name": "Currency Denomination",
+   "format_hint": "{CURRENCYCODE_3}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL23",
+   "field_name": "Current Principal Balance",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL24",
+   "field_name": "Original Principal Balance",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL25",
+   "field_name": "Original Principal Balance At Securitisation Date",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL26",
+   "field_name": "Committed Undrawn Facility Underlying Exposure Balance",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL27",
+   "field_name": "Total Other Amounts Outstanding",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL28",
+   "field_name": "Purchase Price",
+   "format_hint": "{PERCENTAGE}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL29",
+   "field_name": "Latest Utilisation Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL30",
+   "field_name": "Purpose",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL31",
+   "field_name": "Structure",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL32",
+   "field_name": "Waterfall A-B Pre Enforcement Scheduled Interest Payments",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL33",
+   "field_name": "Waterfall A-B Pre Enforcement Scheduled Principal Payments",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL34",
+   "field_name": "Principal Payment Allocation To Senior Loan",
+   "format_hint": "{PERCENTAGE}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL35",
+   "field_name": "Waterfall Type",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL36",
+   "field_name": "Defaulted Underlying Exposure Purchase Price",
+   "format_hint": "{PERCENTAGE}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL37",
+   "field_name": "Cure Payments Possible?",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL38",
+   "field_name": "Restrictions On Sale Of Subordinated Loan?",
+   "format_hint": "{Y/N}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL39",
+   "field_name": "Subordinated Loan Holder Affiliated To Obligor?",
+   "format_hint": "{Y/N}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL40",
+   "field_name": "Subordinated Loan Holder Control Of Workout Process",
+   "format_hint": "{Y/N}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL41",
+   "field_name": "Do Non-Payments On Prior Ranking Claims Constitute A Default Of The Underlying Exposure?",
+   "format_hint": "{Y/N}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL42",
+   "field_name": "Do Non-Payments On Equal Ranking Underlying Exposures Constitute Default Of Property?",
+   "format_hint": "{Y/N}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL43",
+   "field_name": "Noteholder Consent",
+   "format_hint": "{Y/N}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL44",
+   "field_name": "Noteholder Meeting Scheduled",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL45",
+   "field_name": "Syndicated",
+   "format_hint": "{Y/N}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL46",
+   "field_name": "Participation Of SSPE",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL47",
+   "field_name": "Consequence For Breach Of Financial Covenant",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL48",
+   "field_name": "Financial Information Non-Submission Penalties",
+   "format_hint": "{Y/N}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL49",
+   "field_name": "Recourse",
+   "format_hint": "{Y/N}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL50",
+   "field_name": "Recourse - 3rd Party",
+   "format_hint": "{Y/N}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL51",
+   "field_name": "Servicing Standard",
+   "format_hint": "{Y/N}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL52",
+   "field_name": "Amounts Held In Escrow",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL53",
+   "field_name": "Collection Of Escrows",
+   "format_hint": "{Y/N}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL54",
+   "field_name": "Collection Of Other Reserves",
+   "format_hint": "{Y/N}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL55",
+   "field_name": "Trigger For Escrow To Be Held",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL56",
+   "field_name": "Target Escrow Amounts / Reserves",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL57",
+   "field_name": "Escrow Account Release Conditions",
+   "format_hint": "{ALPHANUM-1000}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL58",
+   "field_name": "Conditions Of Drawing Cash Reserve",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL59",
+   "field_name": "Escrow Account Currency",
+   "format_hint": "{CURRENCYCODE_3}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL60",
+   "field_name": "Escrow Payments Currency",
+   "format_hint": "{CURRENCYCODE_3}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL61",
+   "field_name": "Total Reserve Balance",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL62",
+   "field_name": "Reserve Balance Currency",
+   "format_hint": "{CURRENCYCODE_3}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL63",
+   "field_name": "Escrow Trigger Event Occurred",
+   "format_hint": "{Y/N}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL64",
+   "field_name": "Amounts Added To Escrows In Current Period",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL65",
+   "field_name": "Revenue",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL66",
+   "field_name": "Operating Expenses At Securitisation Date",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL67",
+   "field_name": "Capital Expenditures At Securitisation Date",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL68",
+   "field_name": "Financial Statement Currency",
+   "format_hint": "{CURRENCYCODE_3}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL69",
+   "field_name": "Obligor Reporting Breach",
+   "format_hint": "{Y/N}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL70",
+   "field_name": "Debt Service Coverage Ratio Method",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL71",
+   "field_name": "Debt Service Coverage Ratio Indicator At Securitisation Date",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL72",
+   "field_name": "Most Recent Debt Service Coverage Ratio Indicator",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL73",
+   "field_name": "Debt Service Coverage Ratio At The Securitisation Date",
+   "format_hint": "{PERCENTAGE}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL74",
+   "field_name": "Current Debt Service Coverage Ratio",
+   "format_hint": "{PERCENTAGE}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL75",
+   "field_name": "Original Loan-To-Value",
+   "format_hint": "{PERCENTAGE}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL76",
+   "field_name": "Current Loan-To-Value",
+   "format_hint": "{PERCENTAGE}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL77",
+   "field_name": "Interest Coverage Ratio At The Securitisation Date",
+   "format_hint": "{PERCENTAGE}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL78",
+   "field_name": "Current Interest Coverage Ratio",
+   "format_hint": "{PERCENTAGE}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL79",
+   "field_name": "Interest Coverage Ratio Method",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL80",
+   "field_name": "Number Of Properties At Securitisation Date",
+   "format_hint": "{INTEGER-9999}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL81",
+   "field_name": "Number Of Properties At Data Cut-Off Date",
+   "format_hint": "{INTEGER-9999}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL82",
+   "field_name": "Properties Collateralised To The Underlying Exposure",
+   "format_hint": "{ALPHANUM-1000}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL83",
+   "field_name": "Property Portfolio Value At Securitisation Date",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL84",
+   "field_name": "Property Portfolio Valuation Currency At Securitisation Date",
+   "format_hint": "{CURRENCYCODE_3}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL85",
+   "field_name": "Status Of Properties",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL86",
+   "field_name": "Valuation Date At Securitisation Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL87",
+   "field_name": "Amortisation Type",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL88",
+   "field_name": "Principal Grace Period End Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL89",
+   "field_name": "Grace Days Allowed",
+   "format_hint": "{INTEGER-9999}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL90",
+   "field_name": "Scheduled Principal Payment Frequency",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL91",
+   "field_name": "Scheduled Interest Payment Frequency",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL92",
+   "field_name": "Number Of Payments Before Securitisation",
+   "format_hint": "{INTEGER-9999}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL93",
+   "field_name": "Prepayment Terms Description",
+   "format_hint": "{ALPHANUM-100}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL94",
+   "field_name": "Prepayment Lock-Out End Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL95",
+   "field_name": "Yield Maintenance End Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL96",
+   "field_name": "Prepayment Fee",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL97",
+   "field_name": "Prepayment Fee End Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL98",
+   "field_name": "Unscheduled Principal Collections",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL99",
+   "field_name": "Liquidation / Prepayment Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL100",
+   "field_name": "Liquidation / Prepayment Code",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL101",
+   "field_name": "Prepayment Interest Excess / Shortfall",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL102",
+   "field_name": "Payment Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL103",
+   "field_name": "Next Payment Adjustment Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL104",
+   "field_name": "Next Payment Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL105",
+   "field_name": "Payment Due",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL106",
+   "field_name": "Original Interest Rate",
+   "format_hint": "{PERCENTAGE}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL107",
+   "field_name": "Interest Rate At The Securitisation Date",
+   "format_hint": "{PERCENTAGE}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL108",
+   "field_name": "First Payment Adjustment Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL109",
+   "field_name": "Interest Rate Type",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL110",
+   "field_name": "Current Interest Rate",
+   "format_hint": "{PERCENTAGE}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL111",
+   "field_name": "Current Interest Rate Index",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL112",
+   "field_name": "Current Interest Rate Index Tenor",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL113",
+   "field_name": "Current Interest Rate Margin",
+   "format_hint": "{PERCENTAGE}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL114",
+   "field_name": "Interest Rate Reset Interval",
+   "format_hint": "{INTEGER-9999}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL115",
+   "field_name": "Current Index Rate",
+   "format_hint": "{PERCENTAGE}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL116",
+   "field_name": "Index Determination Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL117",
+   "field_name": "Rounding Increment",
+   "format_hint": "{PERCENTAGE}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL118",
+   "field_name": "Interest Rate Cap",
+   "format_hint": "{PERCENTAGE}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL119",
+   "field_name": "Interest Rate Floor",
+   "format_hint": "{PERCENTAGE}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL120",
+   "field_name": "Current Default Interest Rate",
+   "format_hint": "{PERCENTAGE}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL121",
+   "field_name": "Accrual Of Interest Allowed",
+   "format_hint": "{Y/N}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL122",
+   "field_name": "Day Count Convention",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL123",
+   "field_name": "Total Scheduled Principal & Interest Due",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL124",
+   "field_name": "Total Scheduled Principal & Interest Paid",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL125",
+   "field_name": "Negative Amortisation",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL126",
+   "field_name": "Deferred Interest",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL127",
+   "field_name": "Total Shortfalls In Principal & Interest Outstanding",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL128",
+   "field_name": "Date Last In Arrears",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL129",
+   "field_name": "Arrears Balance",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL130",
+   "field_name": "Number Of Days In Arrears",
+   "format_hint": "{INTEGER-9999}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL131",
+   "field_name": "Reason for Default or Foreclosure",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL132",
+   "field_name": "Default Amount",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL133",
+   "field_name": "Default Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL134",
+   "field_name": "Interest In Arrears",
+   "format_hint": "{Y/N}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL135",
+   "field_name": "Actual Default Interest",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL136",
+   "field_name": "Account Status",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL137",
+   "field_name": "Allocated Losses",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL138",
+   "field_name": "Net Proceeds Received On Liquidation",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL139",
+   "field_name": "Liquidation Expense",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL140",
+   "field_name": "Expected Timing Of Recoveries",
+   "format_hint": "{INTEGER-9999}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL141",
+   "field_name": "Cumulative Recoveries",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL142",
+   "field_name": "Enforcement Start Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL143",
+   "field_name": "Workout Strategy Code",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL144",
+   "field_name": "Modification",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL145",
+   "field_name": "Special Servicing Status",
+   "format_hint": "{Y/N}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL146",
+   "field_name": "Most Recent Special Servicer Transfer Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL147",
+   "field_name": "Most Recent Primary Servicer Return Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL148",
+   "field_name": "Non Recoverability Determined",
+   "format_hint": "{Y/N}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL149",
+   "field_name": "Covenant Breach / Trigger",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL150",
+   "field_name": "Date Of Breach",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL151",
+   "field_name": "Date Of Breach Cure",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL152",
+   "field_name": "Servicer Watchlist Code",
+   "format_hint": "{WATCHLIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL153",
+   "field_name": "Servicer Watchlist Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL154",
+   "field_name": "Interest Rate Swap Provider",
+   "format_hint": "{ALPHANUM-1000}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL155",
+   "field_name": "Interest Rate Swap Provider Legal Entity Identifier",
+   "format_hint": "{LEI}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL156",
+   "field_name": "Interest Rate Swap Maturity Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL157",
+   "field_name": "Interest Rate Swap Notional",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL158",
+   "field_name": "Currency Swap Provider",
+   "format_hint": "{ALPHANUM-1000}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL159",
+   "field_name": "Currency Swap Provider Legal Entity Identifier",
+   "format_hint": "{LEI}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL160",
+   "field_name": "Currency Swap Maturity Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL161",
+   "field_name": "Currency Swap Notional",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL162",
+   "field_name": "Exchange Rate For Swap",
+   "format_hint": "{PERCENTAGE}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL163",
+   "field_name": "Other Swap Provider",
+   "format_hint": "{ALPHANUM-1000}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL164",
+   "field_name": "Other Swap Provider Legal Entity Identifier",
+   "format_hint": "{LEI}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL165",
+   "field_name": "Obligor Must Pay Breakage On Swap",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL166",
+   "field_name": "Full Or Partial Termination Event Of Swap For Current Period",
+   "format_hint": "{LIST}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL167",
+   "field_name": "Net Periodic Payment Made By Swap Provider",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL168",
+   "field_name": "Breakage Costs Due To Underlying Exposure Swap Provider",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL169",
+   "field_name": "Shortfall In Payment Of Breakage Costs On Swap",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL170",
+   "field_name": "Breakage Costs Due From Swap Counterparty",
+   "format_hint": "{MONETARY}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL171",
+   "field_name": "Next Swap Reset Date",
+   "format_hint": "{DATEFORMAT}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL172",
+   "field_name": "Sponsor",
+   "format_hint": "{ALPHANUM-100}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL173",
+   "field_name": "Agent Bank Of Syndication Legal Entity Identifier",
+   "format_hint": "{LEI}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL174",
+   "field_name": "Servicer Legal Entity Identifier",
+   "format_hint": "{LEI}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL175",
+   "field_name": "Servicer Name",
+   "format_hint": "{ALPHANUM-100}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL176",
+   "field_name": "Originator Name",
+   "format_hint": "{ALPHANUM-100}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL177",
+   "field_name": "Originator Legal Entity Identifier",
+   "format_hint": "{LEI}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL178",
+   "field_name": "Originator Establishment Country",
+   "format_hint": "{COUNTRYCODE_2}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL179",
+   "field_name": "Original Lender Name",
+   "format_hint": "{ALPHANUM-100}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL180",
+   "field_name": "Original Lender Legal Entity Identifier",
+   "format_hint": "{LEI}"
+  },
+  {
+   "section": "Underlying exposures information section",
+   "field_code": "CREL181",
+   "field_name": "Original Lender Establishment Country",
+   "format_hint": "{COUNTRYCODE_2}"
+  }
+ ]
+}
