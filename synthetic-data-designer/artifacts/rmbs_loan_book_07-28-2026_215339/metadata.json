@@ -1,0 +1,889 @@
+{
+  "actual_num_records": 8000,
+  "buffer_size": 1000,
+  "column_statistics": [
+    {
+      "column_name": "loan_id",
+      "column_type": "sampler",
+      "distribution": null,
+      "distribution_type": "other",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 8000,
+      "pyarrow_dtype": "string",
+      "sampler_type": "uuid",
+      "simple_dtype": "string"
+    },
+    {
+      "column_name": "origination_year",
+      "column_type": "sampler",
+      "distribution": {
+        "histogram": {
+          "categories": [
+            2019,
+            2020,
+            2022,
+            2021,
+            2018,
+            2017,
+            2023,
+            2016,
+            2015,
+            2014,
+            2013,
+            2011,
+            2012,
+            2010,
+            2009,
+            2008
+          ],
+          "counts": [
+            857,
+            849,
+            833,
+            769,
+            746,
+            653,
+            645,
+            529,
+            465,
+            402,
+            328,
+            245,
+            237,
+            160,
+            151,
+            131
+          ]
+        },
+        "least_common_value": 2008,
+        "most_common_value": 2019
+      },
+      "distribution_type": "categorical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 16,
+      "pyarrow_dtype": "int64",
+      "sampler_type": "category",
+      "simple_dtype": "int"
+    },
+    {
+      "column_name": "repayment_type",
+      "column_type": "sampler",
+      "distribution": {
+        "histogram": {
+          "categories": [
+            "Annuity",
+            "InterestOnly",
+            "Linear",
+            "Savings",
+            "Bullet"
+          ],
+          "counts": [
+            6399,
+            627,
+            513,
+            252,
+            209
+          ]
+        },
+        "least_common_value": "Bullet",
+        "most_common_value": "Annuity"
+      },
+      "distribution_type": "categorical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 5,
+      "pyarrow_dtype": "string",
+      "sampler_type": "category",
+      "simple_dtype": "string"
+    },
+    {
+      "column_name": "rate_type",
+      "column_type": "sampler",
+      "distribution": {
+        "histogram": {
+          "categories": [
+            "Fixed",
+            "Variable",
+            "Hybrid"
+          ],
+          "counts": [
+            7221,
+            546,
+            233
+          ]
+        },
+        "least_common_value": "Hybrid",
+        "most_common_value": "Fixed"
+      },
+      "distribution_type": "categorical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 3,
+      "pyarrow_dtype": "string",
+      "sampler_type": "category",
+      "simple_dtype": "string"
+    },
+    {
+      "column_name": "remaining_interest_fixed_period_months",
+      "column_type": "sampler",
+      "distribution": {
+        "histogram": {
+          "categories": [
+            84,
+            60,
+            108,
+            120,
+            36,
+            180,
+            24,
+            12,
+            240
+          ],
+          "counts": [
+            1610,
+            1459,
+            1413,
+            798,
+            703,
+            633,
+            545,
+            525,
+            314
+          ]
+        },
+        "least_common_value": 240,
+        "most_common_value": 84
+      },
+      "distribution_type": "categorical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 9,
+      "pyarrow_dtype": "int64",
+      "sampler_type": "category",
+      "simple_dtype": "int"
+    },
+    {
+      "column_name": "legal_maturity_months",
+      "column_type": "sampler",
+      "distribution": {
+        "histogram": {
+          "categories": [
+            360,
+            300,
+            330,
+            240
+          ],
+          "counts": [
+            4015,
+            2347,
+            988,
+            650
+          ]
+        },
+        "least_common_value": 240,
+        "most_common_value": 360
+      },
+      "distribution_type": "categorical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 4,
+      "pyarrow_dtype": "int64",
+      "sampler_type": "category",
+      "simple_dtype": "int"
+    },
+    {
+      "column_name": "loan_part_count",
+      "column_type": "sampler",
+      "distribution": {
+        "histogram": {
+          "categories": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "counts": [
+            4451,
+            2342,
+            798,
+            409
+          ]
+        },
+        "least_common_value": 4,
+        "most_common_value": 1
+      },
+      "distribution_type": "categorical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 4,
+      "pyarrow_dtype": "int64",
+      "sampler_type": "category",
+      "simple_dtype": "int"
+    },
+    {
+      "column_name": "debtor_count",
+      "column_type": "sampler",
+      "distribution": {
+        "histogram": {
+          "categories": [
+            2,
+            1,
+            3
+          ],
+          "counts": [
+            5288,
+            2389,
+            323
+          ]
+        },
+        "least_common_value": 3,
+        "most_common_value": 2
+      },
+      "distribution_type": "categorical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 3,
+      "pyarrow_dtype": "int64",
+      "sampler_type": "category",
+      "simple_dtype": "int"
+    },
+    {
+      "column_name": "property_type",
+      "column_type": "sampler",
+      "distribution": {
+        "histogram": {
+          "categories": [
+            "House",
+            "Apartment",
+            "Townhouse",
+            "Detached",
+            "SemiDetached"
+          ],
+          "counts": [
+            3577,
+            2481,
+            991,
+            543,
+            408
+          ]
+        },
+        "least_common_value": "SemiDetached",
+        "most_common_value": "House"
+      },
+      "distribution_type": "categorical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 5,
+      "pyarrow_dtype": "string",
+      "sampler_type": "category",
+      "simple_dtype": "string"
+    },
+    {
+      "column_name": "province",
+      "column_type": "sampler",
+      "distribution": {
+        "histogram": {
+          "categories": [
+            "Zuid-Holland",
+            "Noord-Holland",
+            "Noord-Brabant",
+            "Gelderland",
+            "Utrecht",
+            "Limburg",
+            "Overijssel",
+            "Groningen",
+            "Friesland",
+            "Drenthe",
+            "Flevoland",
+            "Zeeland"
+          ],
+          "counts": [
+            1907,
+            1587,
+            1035,
+            914,
+            689,
+            504,
+            433,
+            293,
+            237,
+            202,
+            158,
+            41
+          ]
+        },
+        "least_common_value": "Zeeland",
+        "most_common_value": "Zuid-Holland"
+      },
+      "distribution_type": "categorical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 12,
+      "pyarrow_dtype": "string",
+      "sampler_type": "category",
+      "simple_dtype": "string"
+    },
+    {
+      "column_name": "economic_region_nuts3",
+      "column_type": "sampler",
+      "distribution": {
+        "histogram": {
+          "categories": [
+            "NL310",
+            "NL337",
+            "NL333",
+            "NL33A",
+            "NL33B",
+            "NL331",
+            "NL332",
+            "NL33C",
+            "NL413",
+            "NL412",
+            "NL414",
+            "NL415",
+            "NL423",
+            "NL326",
+            "NL327",
+            "NL329",
+            "NL411",
+            "NL324",
+            "NL325",
+            "NL32B",
+            "NL321",
+            "NL322",
+            "NL224",
+            "NL323",
+            "NL228",
+            "NL230",
+            "NL227",
+            "NL422",
+            "NL211",
+            "NL421",
+            "NL225",
+            "NL213",
+            "NL226",
+            "NL221",
+            "NL212",
+            "NL111",
+            "NL112",
+            "NL113",
+            "NL122",
+            "NL121",
+            "NL133",
+            "NL131",
+            "NL123",
+            "NL132",
+            "NL342",
+            "NL341"
+          ],
+          "counts": [
+            689,
+            299,
+            293,
+            278,
+            274,
+            259,
+            255,
+            249,
+            230,
+            214,
+            207,
+            203,
+            196,
+            190,
+            188,
+            181,
+            181,
+            176,
+            175,
+            172,
+            171,
+            171,
+            165,
+            163,
+            160,
+            158,
+            158,
+            156,
+            156,
+            152,
+            151,
+            145,
+            141,
+            139,
+            132,
+            104,
+            100,
+            89,
+            86,
+            86,
+            75,
+            69,
+            65,
+            58,
+            24,
+            17
+          ]
+        },
+        "least_common_value": "NL341",
+        "most_common_value": "NL310"
+      },
+      "distribution_type": "categorical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 46,
+      "pyarrow_dtype": "string",
+      "sampler_type": "subcategory",
+      "simple_dtype": "string"
+    },
+    {
+      "column_name": "construction_year",
+      "column_type": "sampler",
+      "distribution": {
+        "histogram": {
+          "categories": [
+            2000,
+            1990,
+            1980,
+            1970,
+            2010,
+            1960,
+            1945,
+            2018,
+            1920,
+            2022,
+            1900
+          ],
+          "counts": [
+            1467,
+            1243,
+            1002,
+            849,
+            757,
+            729,
+            631,
+            577,
+            346,
+            217,
+            182
+          ]
+        },
+        "least_common_value": 1900,
+        "most_common_value": 2000
+      },
+      "distribution_type": "categorical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 11,
+      "pyarrow_dtype": "int64",
+      "sampler_type": "category",
+      "simple_dtype": "int"
+    },
+    {
+      "column_name": "occupancy",
+      "column_type": "sampler",
+      "distribution": {
+        "histogram": {
+          "categories": [
+            "OwnerOccupied",
+            "TenantOccupied",
+            "Vacant",
+            "PartiallyOccupied"
+          ],
+          "counts": [
+            7027,
+            636,
+            176,
+            161
+          ]
+        },
+        "least_common_value": "PartiallyOccupied",
+        "most_common_value": "OwnerOccupied"
+      },
+      "distribution_type": "categorical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 4,
+      "pyarrow_dtype": "string",
+      "sampler_type": "category",
+      "simple_dtype": "string"
+    },
+    {
+      "column_name": "employment_status",
+      "column_type": "sampler",
+      "distribution": {
+        "histogram": {
+          "categories": [
+            "Employed",
+            "SelfEmployed",
+            "Retired",
+            "Other",
+            "Unemployed",
+            "Student"
+          ],
+          "counts": [
+            5739,
+            1109,
+            650,
+            249,
+            178,
+            75
+          ]
+        },
+        "least_common_value": "Student",
+        "most_common_value": "Employed"
+      },
+      "distribution_type": "categorical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 6,
+      "pyarrow_dtype": "string",
+      "sampler_type": "category",
+      "simple_dtype": "string"
+    },
+    {
+      "column_name": "borrower_type",
+      "column_type": "sampler",
+      "distribution": {
+        "histogram": {
+          "categories": [
+            "Consumer",
+            "Corporate"
+          ],
+          "counts": [
+            7871,
+            129
+          ]
+        },
+        "least_common_value": "Corporate",
+        "most_common_value": "Consumer"
+      },
+      "distribution_type": "categorical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 2,
+      "pyarrow_dtype": "string",
+      "sampler_type": "category",
+      "simple_dtype": "string"
+    },
+    {
+      "column_name": "loan_purpose",
+      "column_type": "sampler",
+      "distribution": {
+        "histogram": {
+          "categories": [
+            "Purchase/Refinance",
+            "Renovation",
+            "Construction",
+            "Other"
+          ],
+          "counts": [
+            6901,
+            521,
+            323,
+            255
+          ]
+        },
+        "least_common_value": "Other",
+        "most_common_value": "Purchase/Refinance"
+      },
+      "distribution_type": "categorical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 4,
+      "pyarrow_dtype": "string",
+      "sampler_type": "category",
+      "simple_dtype": "string"
+    },
+    {
+      "column_name": "epc_label",
+      "column_type": "sampler",
+      "distribution": {
+        "histogram": {
+          "categories": [
+            "B",
+            "C",
+            "A",
+            "D",
+            "E",
+            "A+",
+            "F",
+            "A++",
+            "G",
+            "A+++"
+          ],
+          "counts": [
+            1660,
+            1628,
+            1406,
+            1061,
+            643,
+            487,
+            379,
+            350,
+            233,
+            153
+          ]
+        },
+        "least_common_value": "A+++",
+        "most_common_value": "B"
+      },
+      "distribution_type": "categorical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 10,
+      "pyarrow_dtype": "string",
+      "sampler_type": "category",
+      "simple_dtype": "string"
+    },
+    {
+      "column_name": "forbearance_flag",
+      "column_type": "sampler",
+      "distribution": {
+        "histogram": {
+          "categories": [
+            "N",
+            "Y"
+          ],
+          "counts": [
+            7896,
+            104
+          ]
+        },
+        "least_common_value": "Y",
+        "most_common_value": "N"
+      },
+      "distribution_type": "categorical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 2,
+      "pyarrow_dtype": "string",
+      "sampler_type": "category",
+      "simple_dtype": "string"
+    },
+    {
+      "column_name": "restructuring_flag",
+      "column_type": "sampler",
+      "distribution": {
+        "histogram": {
+          "categories": [
+            "N",
+            "Y"
+          ],
+          "counts": [
+            7917,
+            83
+          ]
+        },
+        "least_common_value": "Y",
+        "most_common_value": "N"
+      },
+      "distribution_type": "categorical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 2,
+      "pyarrow_dtype": "string",
+      "sampler_type": "category",
+      "simple_dtype": "string"
+    },
+    {
+      "column_name": "_arrears_state",
+      "column_type": "sampler",
+      "distribution": {
+        "histogram": {
+          "categories": [
+            "Performing",
+            "1-29 DPD",
+            "30-59 DPD",
+            "60-89 DPD",
+            "Defaulted",
+            "90+ DPD"
+          ],
+          "counts": [
+            7724,
+            144,
+            63,
+            30,
+            20,
+            19
+          ]
+        },
+        "least_common_value": "90+ DPD",
+        "most_common_value": "Performing"
+      },
+      "distribution_type": "categorical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 6,
+      "pyarrow_dtype": "string",
+      "sampler_type": "category",
+      "simple_dtype": "string"
+    },
+    {
+      "column_name": "borrower_annual_income",
+      "column_type": "sampler",
+      "distribution": {
+        "max": 329270.38,
+        "mean": 71568.22,
+        "median": 64367.51,
+        "min": 11631.96,
+        "stddev": 33953.9
+      },
+      "distribution_type": "numerical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 7997,
+      "pyarrow_dtype": "double",
+      "sampler_type": "scipy",
+      "simple_dtype": "float"
+    },
+    {
+      "column_name": "original_balance",
+      "column_type": "sampler",
+      "distribution": {
+        "max": 1373301.41,
+        "mean": 324082.3,
+        "median": 298382.48,
+        "min": 61341.88,
+        "stddev": 135687.86
+      },
+      "distribution_type": "numerical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 8000,
+      "pyarrow_dtype": "double",
+      "sampler_type": "scipy",
+      "simple_dtype": "float"
+    },
+    {
+      "column_name": "oltomv_original",
+      "column_type": "sampler",
+      "distribution": {
+        "max": 103.0,
+        "mean": 83.52,
+        "median": 84.14,
+        "min": 55.01,
+        "stddev": 10.26
+      },
+      "distribution_type": "numerical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 3459,
+      "pyarrow_dtype": "double",
+      "sampler_type": "scipy",
+      "simple_dtype": "float"
+    },
+    {
+      "column_name": "current_interest_rate_pct",
+      "column_type": "sampler",
+      "distribution": {
+        "max": 6.42,
+        "mean": 3.11,
+        "median": 3.1,
+        "min": 0.78,
+        "stddev": 0.65
+      },
+      "distribution_type": "numerical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 395,
+      "pyarrow_dtype": "double",
+      "sampler_type": "gaussian",
+      "simple_dtype": "float"
+    },
+    {
+      "column_name": "_nhg_pre",
+      "column_type": "sampler",
+      "distribution": {
+        "max": 1,
+        "mean": 0.45,
+        "median": 0.0,
+        "min": 0,
+        "stddev": 0.5
+      },
+      "distribution_type": "numerical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 2,
+      "pyarrow_dtype": "int64",
+      "sampler_type": "bernoulli",
+      "simple_dtype": "int"
+    },
+    {
+      "column_name": "_construction_deposit_pre",
+      "column_type": "sampler",
+      "distribution": {
+        "max": 1,
+        "mean": 0.04,
+        "median": 0.0,
+        "min": 0,
+        "stddev": 0.19
+      },
+      "distribution_type": "numerical",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 2,
+      "pyarrow_dtype": "int64",
+      "sampler_type": "bernoulli",
+      "simple_dtype": "int"
+    },
+    {
+      "column_name": "interest_only_flag",
+      "column_type": "expression",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 2,
+      "pyarrow_dtype": "string",
+      "simple_dtype": "string"
+    },
+    {
+      "column_name": "self_employed_flag",
+      "column_type": "expression",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 2,
+      "pyarrow_dtype": "string",
+      "simple_dtype": "string"
+    },
+    {
+      "column_name": "property_usage",
+      "column_type": "expression",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 2,
+      "pyarrow_dtype": "string",
+      "simple_dtype": "string"
+    },
+    {
+      "column_name": "buy_to_let_flag",
+      "column_type": "expression",
+      "num_null": 0,
+      "num_records": 8000,
+      "num_unique": 2,
+      "pyarrow_dtype": "string",
+      "simple_dtype": "string"
+    }
+  ],
+  "config_hash": "sha256:916b8ec6435677a7d033eed29f49b6309dda88197b402c85bec8c08da0de31fa",
+  "config_hash_algo": "sha256",
+  "config_hash_version": 1,
+  "dataset_name": "rmbs_loan_book",
+  "file_paths": {
+    "parquet-files": [
+      "parquet-files/batch_00000.parquet",
+      "parquet-files/batch_00001.parquet",
+      "parquet-files/batch_00002.parquet",
+      "parquet-files/batch_00003.parquet",
+      "parquet-files/batch_00004.parquet",
+      "parquet-files/batch_00005.parquet",
+      "parquet-files/batch_00006.parquet",
+      "parquet-files/batch_00007.parquet"
+    ]
+  },
+  "num_completed_batches": 8,
+  "original_target_num_records": 8000,
+  "target_num_records": 8000,
+  "total_num_batches": 8
+}

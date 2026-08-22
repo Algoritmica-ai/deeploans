@@ -1,0 +1,992 @@
+{
+  "data_designer": {
+    "columns": [
+      {
+        "name": "loan_id",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "uuid",
+        "params": {
+          "prefix": "TMP_",
+          "short_form": true,
+          "uppercase": true,
+          "sampler_type": "uuid"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "origination_year",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "category",
+        "params": {
+          "values": [
+            2008,
+            2009,
+            2010,
+            2011,
+            2012,
+            2013,
+            2014,
+            2015,
+            2016,
+            2017,
+            2018,
+            2019,
+            2020,
+            2021,
+            2022,
+            2023
+          ],
+          "weights": [
+            0.02,
+            0.02,
+            0.02,
+            0.03,
+            0.03,
+            0.04,
+            0.05,
+            0.06,
+            0.07,
+            0.08,
+            0.09,
+            0.1,
+            0.11,
+            0.1,
+            0.1,
+            0.08
+          ],
+          "sampler_type": "category"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "repayment_type",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "category",
+        "params": {
+          "values": [
+            "Annuity",
+            "Linear",
+            "InterestOnly",
+            "Bullet",
+            "Savings"
+          ],
+          "weights": [
+            0.8,
+            0.06,
+            0.08,
+            0.03,
+            0.03
+          ],
+          "sampler_type": "category"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "rate_type",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "category",
+        "params": {
+          "values": [
+            "Fixed",
+            "Variable",
+            "Hybrid"
+          ],
+          "weights": [
+            0.9,
+            0.07,
+            0.03
+          ],
+          "sampler_type": "category"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "remaining_interest_fixed_period_months",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "category",
+        "params": {
+          "values": [
+            12,
+            24,
+            36,
+            60,
+            84,
+            108,
+            120,
+            180,
+            240
+          ],
+          "weights": [
+            0.06,
+            0.07,
+            0.09,
+            0.18,
+            0.2,
+            0.18,
+            0.1,
+            0.08,
+            0.04
+          ],
+          "sampler_type": "category"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "legal_maturity_months",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "category",
+        "params": {
+          "values": [
+            240,
+            300,
+            330,
+            360
+          ],
+          "weights": [
+            0.08,
+            0.3,
+            0.12,
+            0.5
+          ],
+          "sampler_type": "category"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "loan_part_count",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "category",
+        "params": {
+          "values": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "weights": [
+            0.55,
+            0.3,
+            0.1,
+            0.05
+          ],
+          "sampler_type": "category"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "debtor_count",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "category",
+        "params": {
+          "values": [
+            1,
+            2,
+            3
+          ],
+          "weights": [
+            0.3,
+            0.66,
+            0.04
+          ],
+          "sampler_type": "category"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "property_type",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "category",
+        "params": {
+          "values": [
+            "House",
+            "Apartment",
+            "Townhouse",
+            "Detached",
+            "SemiDetached"
+          ],
+          "weights": [
+            0.45,
+            0.3,
+            0.13,
+            0.07,
+            0.05
+          ],
+          "sampler_type": "category"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "province",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "category",
+        "params": {
+          "values": [
+            "Zuid-Holland",
+            "Noord-Holland",
+            "Noord-Brabant",
+            "Gelderland",
+            "Utrecht",
+            "Limburg",
+            "Overijssel",
+            "Groningen",
+            "Friesland",
+            "Drenthe",
+            "Flevoland",
+            "Zeeland"
+          ],
+          "weights": [
+            0.23,
+            0.205,
+            0.135,
+            0.115,
+            0.085,
+            0.06,
+            0.055,
+            0.035,
+            0.03,
+            0.025,
+            0.02,
+            0.005
+          ],
+          "sampler_type": "category"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "economic_region_nuts3",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "subcategory",
+        "params": {
+          "category": "province",
+          "values": {
+            "Zuid-Holland": [
+              "NL331",
+              "NL332",
+              "NL333",
+              "NL337",
+              "NL33A",
+              "NL33B",
+              "NL33C"
+            ],
+            "Noord-Holland": [
+              "NL321",
+              "NL322",
+              "NL323",
+              "NL324",
+              "NL325",
+              "NL326",
+              "NL327",
+              "NL329",
+              "NL32B"
+            ],
+            "Noord-Brabant": [
+              "NL411",
+              "NL412",
+              "NL413",
+              "NL414",
+              "NL415"
+            ],
+            "Gelderland": [
+              "NL221",
+              "NL224",
+              "NL225",
+              "NL226",
+              "NL227",
+              "NL228"
+            ],
+            "Utrecht": [
+              "NL310"
+            ],
+            "Limburg": [
+              "NL421",
+              "NL422",
+              "NL423"
+            ],
+            "Overijssel": [
+              "NL211",
+              "NL212",
+              "NL213"
+            ],
+            "Groningen": [
+              "NL111",
+              "NL112",
+              "NL113"
+            ],
+            "Friesland": [
+              "NL121",
+              "NL122",
+              "NL123"
+            ],
+            "Drenthe": [
+              "NL131",
+              "NL132",
+              "NL133"
+            ],
+            "Flevoland": [
+              "NL230"
+            ],
+            "Zeeland": [
+              "NL341",
+              "NL342"
+            ]
+          },
+          "sampler_type": "subcategory"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "construction_year",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "category",
+        "params": {
+          "values": [
+            1900,
+            1920,
+            1945,
+            1960,
+            1970,
+            1980,
+            1990,
+            2000,
+            2010,
+            2018,
+            2022
+          ],
+          "weights": [
+            0.02,
+            0.04,
+            0.08,
+            0.09,
+            0.11,
+            0.13,
+            0.15,
+            0.18,
+            0.1,
+            0.07,
+            0.03
+          ],
+          "sampler_type": "category"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "occupancy",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "category",
+        "params": {
+          "values": [
+            "OwnerOccupied",
+            "TenantOccupied",
+            "Vacant",
+            "PartiallyOccupied"
+          ],
+          "weights": [
+            0.88,
+            0.08,
+            0.02,
+            0.02
+          ],
+          "sampler_type": "category"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "employment_status",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "category",
+        "params": {
+          "values": [
+            "Employed",
+            "SelfEmployed",
+            "Retired",
+            "Unemployed",
+            "Student",
+            "Other"
+          ],
+          "weights": [
+            0.72,
+            0.14,
+            0.08,
+            0.02,
+            0.01,
+            0.03
+          ],
+          "sampler_type": "category"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "borrower_type",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "category",
+        "params": {
+          "values": [
+            "Consumer",
+            "Corporate"
+          ],
+          "weights": [
+            0.985,
+            0.015
+          ],
+          "sampler_type": "category"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "loan_purpose",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "category",
+        "params": {
+          "values": [
+            "Purchase/Refinance",
+            "Construction",
+            "Renovation",
+            "Other"
+          ],
+          "weights": [
+            0.86,
+            0.04,
+            0.07,
+            0.03
+          ],
+          "sampler_type": "category"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "epc_label",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "category",
+        "params": {
+          "values": [
+            "A+++",
+            "A++",
+            "A+",
+            "A",
+            "B",
+            "C",
+            "D",
+            "E",
+            "F",
+            "G"
+          ],
+          "weights": [
+            0.02,
+            0.04,
+            0.06,
+            0.18,
+            0.21,
+            0.2,
+            0.13,
+            0.08,
+            0.05,
+            0.03
+          ],
+          "sampler_type": "category"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "forbearance_flag",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "category",
+        "params": {
+          "values": [
+            "N",
+            "Y"
+          ],
+          "weights": [
+            0.985,
+            0.015
+          ],
+          "sampler_type": "category"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "restructuring_flag",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "category",
+        "params": {
+          "values": [
+            "N",
+            "Y"
+          ],
+          "weights": [
+            0.99,
+            0.01
+          ],
+          "sampler_type": "category"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "_arrears_state",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "category",
+        "params": {
+          "values": [
+            "Performing",
+            "1-29 DPD",
+            "30-59 DPD",
+            "60-89 DPD",
+            "90+ DPD",
+            "Defaulted"
+          ],
+          "weights": [
+            0.965,
+            0.018,
+            0.008,
+            0.004,
+            0.003,
+            0.002
+          ],
+          "sampler_type": "category"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "borrower_annual_income",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "scipy",
+        "params": {
+          "dist_name": "lognorm",
+          "dist_params": {
+            "s": 0.45,
+            "scale": 65000.0
+          },
+          "decimal_places": 2,
+          "sampler_type": "scipy"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "original_balance",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "scipy",
+        "params": {
+          "dist_name": "lognorm",
+          "dist_params": {
+            "s": 0.4,
+            "scale": 300000.0
+          },
+          "decimal_places": 2,
+          "sampler_type": "scipy"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "oltomv_original",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "scipy",
+        "params": {
+          "dist_name": "truncnorm",
+          "dist_params": {
+            "a": -2.5,
+            "b": 1.5,
+            "loc": 85.0,
+            "scale": 12.0
+          },
+          "decimal_places": 2,
+          "sampler_type": "scipy"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "current_interest_rate_pct",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "gaussian",
+        "params": {
+          "mean": 3.1,
+          "stddev": 0.65,
+          "decimal_places": 2,
+          "sampler_type": "gaussian"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "_nhg_pre",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "bernoulli",
+        "params": {
+          "p": 0.45,
+          "sampler_type": "bernoulli"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "_construction_deposit_pre",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "sampler",
+        "skip": null,
+        "propagate_skip": true,
+        "sampler_type": "bernoulli",
+        "params": {
+          "p": 0.04,
+          "sampler_type": "bernoulli"
+        },
+        "conditional_params": {},
+        "convert_to": null
+      },
+      {
+        "name": "interest_only_flag",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "expression",
+        "skip": null,
+        "propagate_skip": true,
+        "expr": "{{ 'Y' if repayment_type in ['InterestOnly','Bullet'] else 'N' }}",
+        "dtype": "str"
+      },
+      {
+        "name": "self_employed_flag",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "expression",
+        "skip": null,
+        "propagate_skip": true,
+        "expr": "{{ 'Y' if employment_status == 'SelfEmployed' else 'N' }}",
+        "dtype": "str"
+      },
+      {
+        "name": "property_usage",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "expression",
+        "skip": null,
+        "propagate_skip": true,
+        "expr": "{{ 'OwnerOccupied' if occupancy == 'OwnerOccupied' else 'BuyToLet' }}",
+        "dtype": "str"
+      },
+      {
+        "name": "buy_to_let_flag",
+        "drop": false,
+        "allow_resize": false,
+        "column_type": "expression",
+        "skip": null,
+        "propagate_skip": true,
+        "expr": "{{ 'Y' if property_usage == 'BuyToLet' else 'N' }}",
+        "dtype": "str"
+      }
+    ],
+    "model_configs": [
+      {
+        "alias": "nvidia-text",
+        "model": "nvidia/nemotron-3-nano-30b-a3b",
+        "inference_parameters": {
+          "generation_type": "chat-completion",
+          "max_parallel_requests": 4,
+          "timeout": null,
+          "extra_body": null,
+          "temperature": 1.0,
+          "top_p": 1.0,
+          "max_tokens": null
+        },
+        "provider": "nvidia",
+        "skip_health_check": false
+      },
+      {
+        "alias": "nvidia-reasoning",
+        "model": "nvidia/nemotron-3-super-120b-a12b",
+        "inference_parameters": {
+          "generation_type": "chat-completion",
+          "max_parallel_requests": 4,
+          "timeout": null,
+          "extra_body": {
+            "reasoning_effort": "medium"
+          },
+          "temperature": 1.0,
+          "top_p": 0.95,
+          "max_tokens": null
+        },
+        "provider": "nvidia",
+        "skip_health_check": false
+      },
+      {
+        "alias": "nvidia-vision",
+        "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+        "inference_parameters": {
+          "generation_type": "chat-completion",
+          "max_parallel_requests": 4,
+          "timeout": null,
+          "extra_body": null,
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "max_tokens": null
+        },
+        "provider": "nvidia",
+        "skip_health_check": false
+      },
+      {
+        "alias": "nvidia-embedding",
+        "model": "nvidia/llama-3.2-nv-embedqa-1b-v2",
+        "inference_parameters": {
+          "generation_type": "embedding",
+          "max_parallel_requests": 4,
+          "timeout": null,
+          "extra_body": {
+            "input_type": "query"
+          },
+          "encoding_format": "float",
+          "dimensions": null
+        },
+        "provider": "nvidia",
+        "skip_health_check": false
+      },
+      {
+        "alias": "openai-text",
+        "model": "gpt-4.1",
+        "inference_parameters": {
+          "generation_type": "chat-completion",
+          "max_parallel_requests": 4,
+          "timeout": null,
+          "extra_body": null,
+          "temperature": 0.85,
+          "top_p": 0.95,
+          "max_tokens": null
+        },
+        "provider": "openai",
+        "skip_health_check": false
+      },
+      {
+        "alias": "openai-reasoning",
+        "model": "gpt-5",
+        "inference_parameters": {
+          "generation_type": "chat-completion",
+          "max_parallel_requests": 4,
+          "timeout": null,
+          "extra_body": {
+            "reasoning_effort": "medium"
+          },
+          "temperature": null,
+          "top_p": null,
+          "max_tokens": null
+        },
+        "provider": "openai",
+        "skip_health_check": false
+      },
+      {
+        "alias": "openai-vision",
+        "model": "gpt-5",
+        "inference_parameters": {
+          "generation_type": "chat-completion",
+          "max_parallel_requests": 4,
+          "timeout": null,
+          "extra_body": {
+            "reasoning_effort": "medium"
+          },
+          "temperature": null,
+          "top_p": null,
+          "max_tokens": null
+        },
+        "provider": "openai",
+        "skip_health_check": false
+      },
+      {
+        "alias": "openai-embedding",
+        "model": "text-embedding-3-large",
+        "inference_parameters": {
+          "generation_type": "embedding",
+          "max_parallel_requests": 4,
+          "timeout": null,
+          "extra_body": null,
+          "encoding_format": "float",
+          "dimensions": null
+        },
+        "provider": "openai",
+        "skip_health_check": false
+      },
+      {
+        "alias": "openrouter-text",
+        "model": "nvidia/nemotron-3-nano-30b-a3b",
+        "inference_parameters": {
+          "generation_type": "chat-completion",
+          "max_parallel_requests": 4,
+          "timeout": null,
+          "extra_body": null,
+          "temperature": 1.0,
+          "top_p": 1.0,
+          "max_tokens": null
+        },
+        "provider": "openrouter",
+        "skip_health_check": false
+      },
+      {
+        "alias": "openrouter-reasoning",
+        "model": "openai/gpt-oss-20b",
+        "inference_parameters": {
+          "generation_type": "chat-completion",
+          "max_parallel_requests": 4,
+          "timeout": null,
+          "extra_body": null,
+          "temperature": 0.35,
+          "top_p": 0.95,
+          "max_tokens": null
+        },
+        "provider": "openrouter",
+        "skip_health_check": false
+      },
+      {
+        "alias": "openrouter-vision",
+        "model": "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+        "inference_parameters": {
+          "generation_type": "chat-completion",
+          "max_parallel_requests": 4,
+          "timeout": null,
+          "extra_body": null,
+          "temperature": 0.6,
+          "top_p": 0.95,
+          "max_tokens": null
+        },
+        "provider": "openrouter",
+        "skip_health_check": false
+      },
+      {
+        "alias": "openrouter-embedding",
+        "model": "openai/text-embedding-3-large",
+        "inference_parameters": {
+          "generation_type": "embedding",
+          "max_parallel_requests": 4,
+          "timeout": null,
+          "extra_body": null,
+          "encoding_format": "float",
+          "dimensions": null
+        },
+        "provider": "openrouter",
+        "skip_health_check": false
+      }
+    ],
+    "tool_configs": [],
+    "seed_config": null,
+    "constraints": null,
+    "profilers": null,
+    "processors": null
+  },
+  "library_version": "0.6.0"
+}

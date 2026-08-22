@@ -1,0 +1,24 @@
+synthetic-data-designer
+Copyright 2026 Sriram Krishnan
+
+This product includes software derived from the deeploans project:
+
+    deeploans — https://github.com/Algoritmica-ai/deeploans
+    Copyright Algoritmica.ai
+    Licensed under the Apache License, Version 2.0
+
+Specifically, the residential-mortgage domain logic in `packs/rmbs_nl_green_lion.yaml`
+(province and NUTS-3 distributions, EPC label mix, delinquency transition matrix,
+prepayment and charge-off calibration, the 71-column ESMA Annex 2 layout) is a
+declarative re-expression of the hardcoded Python in
+`deeploans/synthetic-data-designer/data_designer_loan_book.py` and
+`deeploans/synthetic-data-designer/age_to_panel.py`.
+
+The generalised engine, spec format, profiler, and validation layers in `src/sdd/`
+are original work.
+
+The test fixture `tests/fixtures/cre_taxonomy.json` is the ESMA Annex 3
+commercial-real-estate field taxonomy as extracted by the deeploans ETL
+pipelines, with the long regulatory prose removed to keep the fixture small.
+It is used to exercise the structure parser against genuine regulatory
+metadata.
