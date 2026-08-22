@@ -1,0 +1,108 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+# The distribution name. NOT `sdd`: that is taken on PyPI by an unrelated
+# video-detection library, so `pip install sdd` installs someone else's package
+# and this one could never be published under it. The *import* name stays `sdd`
+# — `from sdd import api` — which is the part users type most.
+name = "synthetic-data-designer"
+version = "0.1.0"
+description = "Spec-driven synthetic data designer for structured finance loan tapes and panels"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { file = "LICENSE" }
+authors = [{ name = "Sriram Krishnan" }]
+keywords = ["synthetic-data", "structured-finance", "securitisation", "esma", "abs", "rmbs"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Financial and Insurance Industry",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2.1",
+    "pyarrow>=14.0",
+    "scipy>=1.11",
+    "pydantic>=2.6",
+    "pyyaml>=6.0",
+    "duckdb>=0.10",
+    "typer>=0.12",
+    # Excel in and out: schemas and samples arrive as workbooks, and a workbook
+    # is one of the five things a run can be downloaded as.
+    "openpyxl>=3.1",
+    # The known-ceiling benchmark scores models against the best achievable
+    # result. Core rather than an extra because it is the headline feature, and
+    # a `pip install` that cannot run the first example in the README is a bad
+    # first contact.
+    "scikit-learn>=1.3",
+]
+
+[project.optional-dependencies]
+# NVIDIA NeMo Data Designer sampling backend (upstream deeploans lineage).
+nemo = ["data-designer>=0.6.0"]
+# Deep-generative polish step (CTGAN / TVAE via SDV).
+deep = ["sdv>=1.17"]
+# Local web UI: upload a tape, edit the spec, run it, inspect the result.
+web = ["fastapi>=0.110", "uvicorn[standard]>=0.29", "python-multipart>=0.0.9"]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    # Upper-bounded deliberately. CI resolved 0.16.4 while this machine had
+    # 0.15.15, and 0.16 formats Python inside Markdown where 0.15 does not - so
+    # the build failed on a file the local gate called clean, with no way to
+    # reproduce it. A formatter that changes underneath you is not a gate.
+    "ruff>=0.6,<0.17",
+    # The web tests drive the app through fastapi's TestClient, which needs httpx.
+    "fastapi>=0.110",
+    "python-multipart>=0.0.9",
+    "httpx>=0.27",
+]
+
+[project.scripts]
+sdd = "sdd.cli:app"
+
+[project.urls]
+Homepage = "https://github.com/sriramarun/synthetic-data-designer"
+Issues = "https://github.com/sriramarun/synthetic-data-designer/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/sdd"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"packs" = "sdd/packs"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests", "scripts"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "C4", "SIM", "RUF"]
+ignore = [
+    "E501",    # line length is handled by the formatter
+    "B008",    # typer uses function calls in argument defaults by design
+    "RUF012",  # mutable class attrs; pydantic models handle this themselves
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["E402"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q --strict-markers -m 'not release'"
+# Several tests import `tests.conftest` for the packs directory. `python -m
+# pytest` puts the working directory on sys.path and bare `pytest` does not, so
+# without this the suite passes locally and fails in CI — which is exactly what
+# it did. Pinning it here makes both invocations behave the same.
+pythonpath = ["."]
+markers = [
+    "slow: tests that generate large datasets (deselect with '-m \"not slow\"')",
+    "upstream: tests that require the upstream deeploans checkout + data-designer",
+    "release: the section 31 release scenarios; run with -m release, and add --release-target=<url> to run them against a deployment instead of this working tree",
+]
