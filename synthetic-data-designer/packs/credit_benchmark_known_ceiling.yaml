@@ -1,0 +1,312 @@
+# ---------------------------------------------------------------------------
+# Credit benchmark — a portfolio whose maximum achievable score is known
+# ---------------------------------------------------------------------------
+#
+# Every other pack here answers "does this look like real data?". This one
+# answers a question real data cannot: **how good could any model possibly be?**
+#
+# Each borrower is assigned a hidden `risk_tier` that decides how likely they are
+# to fall behind. The tier is never written to the output — it is a `helper`
+# column, dropped before emit — so a model has to infer it from three noisy
+# observables, exactly as a real scorecard infers creditworthiness it cannot see
+# directly.
+#
+# Because the generating process is declared here in full, two numbers can be
+# computed that no real dataset can offer:
+#
+#   the ORACLE score   — what a model that could see `risk_tier` would achieve.
+#                        Nothing can beat it. An absolute upper bound.
+#   the BAYES ceiling  — the best possible score from the observables alone,
+#                        obtained by inverting the emission model below.
+#                        This is the honest target.
+#
+# A model's result is then readable: 0.84 against a ceiling of 0.87 says the
+# model captured most of the available signal. 0.84 with no ceiling says
+# nothing at all, because you never learn whether 0.87 or 0.99 was available.
+#
+# `notebooks/known_ceiling.ipynb` computes both and scores a model against them.
+#
+# **The tuning knobs.** `_noise_*` widths decide how much the observables reveal.
+# Widen them and the Bayes ceiling falls toward chance; narrow them and it rises
+# toward the oracle. That is the dial that makes this a measuring instrument:
+# you can manufacture a problem of known difficulty and check an evaluation
+# pipeline reports the difficulty correctly.
+
+meta:
+  name: credit_benchmark_known_ceiling
+  title: Credit Benchmark — Known Ceiling
+  asset_class: consumer_unsecured
+  entity_noun: loan
+  display_order: 1
+  featured: true
+  description: >-
+    A consumer loan panel with a hidden risk driver, built so the best
+    achievable model score can be computed rather than guessed. For measuring
+    a credit or risk model against the maximum any model could reach.
+  source: >-
+    Not calibrated to any real portfolio. The parameters are chosen to make the
+    measurement clean, not to resemble a particular lender's book.
+
+entity:
+  id_column: loan_id
+  time_column: as_of_date
+  calendar: {start: "2024-01-31", periods: 18, freq: month_end}
+
+columns:
+  - name: loan_id
+    role: static
+    dtype: str
+    description: Loan identifier.
+    generator: {kind: sequence, prefix: "L", width: 8}
+
+  - name: as_of_date
+    role: dynamic
+    dtype: date
+    description: Reporting cut-off.
+    generator: {kind: constant, value: "2024-01-31"}
+
+  # -- the hidden truth ------------------------------------------------------
+  #
+  # `helper` means generated, used, and dropped before the file is written. This
+  # is the column a model is trying to recover and can never see.
+  - name: risk_tier
+    role: helper
+    dtype: category
+    domain: [A, B, C, D, E]
+    description: HIDDEN. The borrower's true risk, which drives everything below.
+    generator:
+      kind: categorical
+      values: [A, B, C, D, E]
+      weights: [0.30, 0.28, 0.22, 0.13, 0.07]
+
+  # Independent measurement error on each observable. Independence matters: it
+  # is what makes combining the three signals worth more than reading the best
+  # one, and therefore what puts the Bayes ceiling above any single feature.
+  - {name: _noise_score, role: helper, dtype: float, generator: {kind: gaussian, mean: 0.0, stddev: 46.0}}
+  - {name: _noise_util, role: helper, dtype: float, generator: {kind: gaussian, mean: 0.0, stddev: 13.0}}
+  - {name: _noise_dti, role: helper, dtype: float, generator: {kind: gaussian, mean: 0.0, stddev: 7.5}}
+
+  # -- what a model may see --------------------------------------------------
+  - name: bureau_score
+    role: derived
+    dtype: float
+    description: Credit bureau score. A noisy reading of the hidden tier.
+
+  - name: revolving_utilisation_pct
+    role: derived
+    dtype: float
+    description: Revolving credit used, per cent. A second noisy reading.
+
+  - name: debt_to_income_pct
+    role: derived
+    dtype: float
+    description: Debt service over income, per cent. A third noisy reading.
+
+  - name: region
+    role: static
+    dtype: category
+    domain: [North, South, East, West]
+    description: >-
+      A decoy. Independent of the hidden tier and of the outcome, so any model
+      that appears to gain from it has found noise.
+    generator: {kind: categorical, values: [North, South, East, West], weights: [0.28, 0.26, 0.24, 0.22]}
+
+  - name: current_balance
+    role: dynamic
+    dtype: float
+    min: 0.0
+    description: Outstanding principal. Independent of the hidden tier.
+    generator:
+      kind: gaussian
+      mean: 18000
+      stddev: 5200
+      clip_min: 2000
+      clip_max: 45000
+      decimals: 2
+
+  - name: arrears_state
+    role: dynamic
+    dtype: category
+    domain: [Performing, "1-29 DPD", "30-59 DPD", "60-89 DPD", Defaulted]
+    description: Arrears bucket at this cut-off.
+    generator: {kind: constant, value: Performing}
+
+# -- the emission model, stated so it can be inverted ------------------------
+#
+# Each observable is its tier's centre plus independent Gaussian noise. Written
+# out in full because the notebook reads these exact numbers back to compute the
+# Bayes ceiling: change a centre here and the ceiling moves, which is the point.
+derivations:
+  - target: _centre_score
+    kind: when
+    dtype: float
+    rules:
+      - {if: "risk_tier == 'A'", then: 786}
+      - {if: "risk_tier == 'B'", then: 731}
+      - {if: "risk_tier == 'C'", then: 676}
+      - {if: "risk_tier == 'D'", then: 621}
+    else: 566
+  - {target: bureau_score, kind: expr, expr: "_centre_score + _noise_score", dtype: float, round: 0}
+
+  - target: _centre_util
+    kind: when
+    dtype: float
+    rules:
+      - {if: "risk_tier == 'A'", then: 18}
+      - {if: "risk_tier == 'B'", then: 30}
+      - {if: "risk_tier == 'C'", then: 44}
+      - {if: "risk_tier == 'D'", then: 58}
+    else: 72
+  - {target: revolving_utilisation_pct, kind: expr, expr: "_centre_util + _noise_util", dtype: float, round: 2}
+
+  - target: _centre_dti
+    kind: when
+    dtype: float
+    rules:
+      - {if: "risk_tier == 'A'", then: 14}
+      - {if: "risk_tier == 'B'", then: 21}
+      - {if: "risk_tier == 'C'", then: 28}
+      - {if: "risk_tier == 'D'", then: 35}
+    else: 43
+  - {target: debt_to_income_pct, kind: expr, expr: "_centre_dti + _noise_dti", dtype: float, round: 2}
+
+lifecycle:
+  state_column: arrears_state
+  states: [Performing, "1-29 DPD", "30-59 DPD", "60-89 DPD", Defaulted]
+  terminal: [Defaulted]
+  # Baseline monthly transitions for a mid-tier borrower. The coupling below
+  # scales the *worsening* half of each row per borrower, so a tier-A loan slips
+  # about a third as often as this and a tier-E loan four and a half times as
+  # often.
+  transitions:
+    - [0.972, 0.028, 0.000, 0.000]
+    - [0.520, 0.330, 0.150, 0.000]
+    - [0.240, 0.170, 0.290, 0.300]
+    - [0.120, 0.060, 0.120, 0.700]
+  hazards:
+    - {kind: bernoulli, name: charge_off, annual_rate: 0.0001, to_state: Defaulted}
+
+# The hidden tier reaches the outcome through here. The chain never migrates —
+# the matrix is the identity, so a borrower keeps the tier they were born with —
+# and it exists only to carry `coupling.stress`, which is what makes the tier
+# drive how fast a loan deteriorates.
+secondary_chains:
+  - name: tier
+    lifecycle:
+      state_column: risk_tier
+      states: [A, B, C, D, E]
+      transitions:
+        - [1, 0, 0, 0, 0]
+        - [0, 1, 0, 0, 0]
+        - [0, 0, 1, 0, 0]
+        - [0, 0, 0, 1, 0]
+        - [0, 0, 0, 0, 1]
+    coupling:
+      stress: {A: 0.35, B: 0.70, C: 1.40, D: 2.60, E: 4.50}
+
+metrics:
+  - {name: active_loans, kind: count, description: Loans reporting at this cut-off.}
+  - name: total_balance
+    kind: sum
+    column: current_balance
+    decimals: 2
+    description: Principal outstanding across the book.
+  - name: arrears_pct
+    kind: share_where
+    column: current_balance
+    where: "arrears_state != 'Performing'"
+    decimals: 6
+    description: Share of balance behind on payments.
+  - name: wa_bureau_score
+    kind: weighted_mean
+    column: bureau_score
+    weight: current_balance
+    decimals: 2
+    description: Balance-weighted bureau score. Flat by construction — the score is
+      set at origination and never revised, so it cannot drift with the outcome.
+
+results:
+  charts:
+    - kind: stacked_series
+      title: Arrears ladder
+      column: arrears_state
+      states: [Performing, "1-29 DPD", "30-59 DPD", "60-89 DPD"]
+      unit: percent
+      description: Share of loans in each arrears bucket, month by month.
+      explain: >-
+        This is the fan-out the benchmark exists to measure. Every loan starts performing;
+        the hidden risk tier decides how quickly it slips. A model is asked to predict who
+        ends up in the lower bands, using only the three noisy readings it can see — never
+        the tier itself. How well any model could possibly do that is computable, which is
+        what makes this pack a measuring instrument rather than a dataset.
+
+    - kind: series
+      title: Balance behind on payments
+      metric: arrears_pct
+      unit: percent
+      description: The bad outcome accumulating over the panel.
+      explain: >-
+        Rises steadily because arrears is an absorbing direction here — loans fall behind
+        faster than they cure. The final level is the base rate a model is scored against;
+        a rare outcome makes the task harder and pulls the ceiling down.
+
+emit:
+  filename: "credit_benchmark_{yyyymm}.csv"
+  formats: [csv]
+
+# ---------------------------------------------------------------------------
+# benchmark — how to compute the best achievable score
+# ---------------------------------------------------------------------------
+#
+# This block is what makes the pack an instrument rather than a dataset. It
+# states the generating process precisely enough to invert: which column is
+# hidden, which observables are noisy readings of it, where each reading's
+# centre and width are declared, and what counts as a bad outcome.
+#
+#   sdd.benchmark.ceiling(spec, panel)  ->  ceiling, oracle
+#
+# Change any centre or noise width above and the ceiling moves accordingly,
+# which is the dial: you can manufacture a problem of known difficulty and check
+# that an evaluation pipeline reports that difficulty correctly.
+benchmark:
+  latent: risk_tier
+  observables:
+    - {column: bureau_score, centres: _centre_score, noise: _noise_score}
+    - {column: revolving_utilisation_pct, centres: _centre_util, noise: _noise_util}
+    - {column: debt_to_income_pct, centres: _centre_dti, noise: _noise_dti}
+  label_states: ["60-89 DPD", Defaulted]
+
+  # Which measurements decide whether a model passed. Declared here so every
+  # model is judged on the same figures, chosen before anyone saw a result.
+  #
+  # ROC-AUC alone is the usual mistake in credit. Defaults are rare, so a model
+  # can rank well and still be useless for pricing: `pr_auc` says whether it
+  # finds the rare bad ones, and `calibration_error` says whether a predicted 3%
+  # actually happens 3% of the time.
+  evaluation:
+    metrics: [roc_auc, pr_auc, ks, brier, calibration_error]
+    primary: roc_auc
+
+  # What a model that learned correctly looks like — written down before anyone
+  # runs one. Judged afterwards, "the model uses sensible drivers" is a
+  # conversation; declared here it is a check that passes or fails and cannot be
+  # renegotiated once someone has seen their score.
+  #
+  # None of this changes a generated row. The data is identical with this block
+  # or without it. What changes is whether a result can be marked.
+  expected_behaviour:
+    # Which way each driver should push. A model can score well overall with one
+    # relationship inverted, and an AUC will never show it.
+    directionality:
+      bureau_score: decreasing_risk
+      revolving_utilisation_pct: increasing_risk
+      debt_to_income_pct: increasing_risk
+
+    # Noise by construction. A model whose output moves with either has found
+    # something that is not there — visible only because the generator knows
+    # they are noise, which on a real portfolio nobody does.
+    irrelevant_features: [region, current_balance]
+
+    # Share of the *available* signal, not a raw score. Absolute AUCs cannot be
+    # compared across datasets with different ceilings; this can.
+    min_signal_captured: 0.85

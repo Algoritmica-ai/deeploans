@@ -1,0 +1,679 @@
+/* Synthetic Data Designer — one stylesheet, no build step, no CDN.
+ *
+ * The tool runs on a laptop against a local server, often with no internet, so
+ * everything here is self-contained. Restrained and dense on purpose: this is a
+ * tool for people who read numbers all day, so tabular figures everywhere, one
+ * accent colour, and nothing that moves unless the movement means something.
+ */
+
+:root {
+  --bg:        #f6f6f4;
+  --panel:     #ffffff;
+  --panel-2:   #fbfbfa;
+  --ink:       #1c1c1e;
+  --ink-2:     #5c5c66;
+  --ink-3:     #8b8b95;
+  --line:      #e3e3e0;
+  --line-2:    #efefec;
+  --accent:    #2f6f5e;
+  --accent-2:  #eaf3ef;
+  --good:      #2c7a4b;
+  --good-bg:   #e7f4ec;
+  --warn:      #97671a;
+  --warn-bg:   #fbf1de;
+  --bad:       #a83226;
+  --bad-bg:    #fbe9e6;
+  --radius:    10px;
+  --shadow:    0 1px 2px rgba(20, 20, 25, .05), 0 6px 18px -12px rgba(20, 20, 25, .25);
+  --mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+}
+
+/* Dark is available and no longer automatic.
+ *
+ * Behind `prefers-color-scheme` the page followed the operating system, so the
+ * same build looked like two different products depending on whose machine it
+ * was opened on — and the screenshots in the user guide, captured in light,
+ * matched neither for anyone running a dark desktop. Light is the design; dark
+ * is opt-in by setting `data-theme="dark"` on the root element. */
+:root[data-theme="dark"] {
+  --bg:      #131316;
+  --panel:   #1b1b1f;
+  --panel-2: #202026;
+  --ink:     #ececf0;
+  --ink-2:   #a6a6b0;
+  --ink-3:   #74747e;
+  --line:    #2d2d34;
+  --line-2:  #26262c;
+  --accent:  #6fbfa5;
+  --accent-2:#1d2b28;
+  --good:    #6cc08a;
+  --good-bg: #17281d;
+  --warn:    #d9a441;
+  --warn-bg: #2a2216;
+  --bad:     #e0796c;
+  --bad-bg:  #2c1a18;
+  --shadow:  0 1px 2px rgba(0, 0, 0, .4), 0 8px 22px -14px rgba(0, 0, 0, .8);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font: 14px/1.5 var(--sans);
+  color: var(--ink);
+  background: var(--bg);
+  padding-bottom: 64px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.spacer { flex: 1; }
+[hidden] { display: none !important; }
+
+a { color: var(--accent); text-decoration: none; font-weight: 540; }
+a:hover { text-decoration: underline; }
+
+/* ------------------------------------------------------------------ topbar */
+
+.topbar {
+  position: sticky; top: 0; z-index: 20;
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 20px;
+  background: color-mix(in srgb, var(--panel) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--line);
+}
+.brand { display: flex; align-items: center; gap: 9px; }
+.brand .mark {
+  width: 15px; height: 15px; border-radius: 4px;
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 45%, #7aa6ff));
+}
+.brand .title { font-weight: 620; letter-spacing: -.01em; }
+
+.tag {
+  font: 11px/1 var(--mono);
+  padding: 4px 7px; border-radius: 5px;
+  background: var(--panel-2); border: 1px solid var(--line);
+  color: var(--ink-2); white-space: nowrap;
+}
+.tag.subtle { max-width: 40vw; overflow: hidden; text-overflow: ellipsis; }
+.tag.ok  { color: var(--good); background: var(--good-bg); border-color: transparent; }
+.tag.err { color: var(--bad);  background: var(--bad-bg);  border-color: transparent; }
+
+/* -------------------------------------------------------------------- shell */
+
+.shell {
+  display: grid;
+  grid-template-columns: 232px minmax(0, 1fr);
+  gap: 28px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px 20px 40px;
+}
+main { min-width: 0; display: flex; flex-direction: column; gap: 18px; }
+.view { display: flex; flex-direction: column; gap: 18px; }
+
+/* --------------------------------------------------------------- step rail */
+
+.rail {
+  position: sticky; top: 68px; align-self: start;
+  display: flex; flex-direction: column; gap: 2px;
+}
+.rail .step {
+  display: flex; align-items: center; gap: 11px;
+  padding: 9px 11px; border: 0; border-radius: 8px;
+  background: transparent; color: var(--ink-2);
+  font: inherit; text-align: left; width: 100%; cursor: pointer;
+}
+.rail .step:hover:not(:disabled) { background: var(--panel-2); color: var(--ink); }
+.rail .step:disabled { opacity: .42; cursor: default; }
+.rail .step[aria-current="true"] { background: var(--panel); color: var(--ink); box-shadow: var(--shadow); }
+.rail .step .n {
+  flex: none; width: 22px; height: 22px; border-radius: 50%;
+  display: grid; place-items: center;
+  font: 600 11px/1 var(--sans);
+  border: 1px solid var(--line); background: var(--panel-2); color: var(--ink-2);
+}
+.rail .step[aria-current="true"] .n { background: var(--accent); border-color: var(--accent); color: #fff; }
+.rail .step.complete .n {
+  background: var(--accent-2); border-color: transparent; color: var(--accent); font-size: 0;
+}
+.rail .step.complete .n::after { content: "✓"; font-size: 11px; }
+.rail .step .s { display: flex; flex-direction: column; min-width: 0; }
+.rail .step .s b { font-weight: 570; font-size: 13px; }
+.rail .step .s i { font-style: normal; font-size: 11px; color: var(--ink-3); }
+
+/* The source link sits under the flow rather than in it. Quieter than a step,
+   and behind a rule, so the numbered sequence still reads as six things and not
+   as seven with an odd one at the end. */
+.rail-link {
+  display: flex; align-items: center; gap: 9px;
+  margin-top: 10px; padding: 9px 11px;
+  border-top: 1px solid var(--line);
+  color: var(--ink-3); text-decoration: none;
+  font-size: 12px;
+}
+.rail-link:hover { color: var(--ink); }
+.rail-link svg { flex: none; opacity: .85; }
+
+/* --------------------------------------------------------------- headings */
+
+.head h1 { font-size: 21px; letter-spacing: -.015em; margin: 2px 0 5px; }
+.head p  { margin: 0; color: var(--ink-2); max-width: 74ch; }
+
+/* ------------------------------------------------------------------- cards */
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 16px 18px 18px;
+  box-shadow: var(--shadow);
+}
+.card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; flex-wrap: wrap; }
+.card h2 { font-size: 14px; font-weight: 620; margin: 0; letter-spacing: -.005em; }
+.hint { color: var(--ink-2); margin: 0 0 14px; max-width: 82ch; font-size: 13px; }
+
+.grid { display: grid; gap: 14px; }
+.grid.two   { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.grid.three { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+/* ------------------------------------------------------------------ inputs */
+
+.field { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.field .lbl { font-size: 12px; font-weight: 560; color: var(--ink); }
+.field .sub { font-size: 11.5px; color: var(--ink-3); line-height: 1.45; }
+
+input[type=text], input[type=number], input[type=search], select, textarea {
+  font: inherit; color: var(--ink);
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 7px; padding: 7px 9px; width: 100%;
+}
+input:focus-visible, select:focus-visible, textarea:focus-visible, .drop:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 1px;
+}
+input[disabled], select[disabled] { opacity: .55; }
+textarea { font: 12px/1.55 var(--mono); min-height: 460px; resize: vertical; white-space: pre; }
+.search { width: auto; min-width: 180px; padding: 5px 9px; font-size: 12.5px; }
+.check { display: inline-flex; align-items: center; gap: 6px; font-size: 12.5px; color: var(--ink-2); }
+.check input { width: auto; }
+
+.slider { display: flex; align-items: center; gap: 10px; }
+.slider input[type=range] { flex: 1; accent-color: var(--accent); padding: 0; background: none; border: 0; }
+.slider output {
+  font: 12px/1 var(--mono); min-width: 60px; text-align: right;
+  color: var(--ink); padding: 5px 6px; border-radius: 5px; background: var(--panel-2);
+  border: 1px solid var(--line);
+}
+
+/* ------------------------------------------------------------------ buttons */
+
+.btn {
+  font: inherit; font-size: 13px; font-weight: 540;
+  padding: 8px 15px; border-radius: 8px; cursor: pointer;
+  border: 1px solid var(--line); background: var(--panel); color: var(--ink);
+}
+.btn:hover:not(:disabled) { border-color: var(--ink-3); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.primary:hover:not(:disabled) { filter: brightness(1.07); }
+.btn.ghost { background: transparent; }
+.btn.sm { padding: 5px 10px; font-size: 12px; }
+.btn:disabled { opacity: .45; cursor: not-allowed; }
+
+/* --------------------------------------------------------------- drop zone */
+
+.drop {
+  border: 1.5px dashed var(--line); border-radius: 9px;
+  padding: 26px 16px; text-align: center; cursor: pointer;
+  display: flex; flex-direction: column; gap: 5px; align-items: center;
+  background: var(--panel-2); transition: border-color .12s, background .12s;
+}
+.drop:hover, .drop.over { border-color: var(--accent); background: var(--accent-2); }
+.drop strong { font-size: 13px; font-weight: 560; }
+.drop .formats { font: 11px/1 var(--mono); color: var(--ink-3); letter-spacing: .02em; }
+
+.badge {
+  font: 10.5px/1 var(--sans); font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+  padding: 4px 7px; border-radius: 5px; background: var(--panel-2);
+  border: 1px solid var(--line); color: var(--ink-3);
+}
+.badge.req  { color: var(--accent); background: var(--accent-2); border-color: transparent; }
+.badge.good { color: var(--good); background: var(--good-bg); border-color: transparent; }
+.badge.warn { color: var(--warn); background: var(--warn-bg); border-color: transparent; }
+.badge.bad  { color: var(--bad);  background: var(--bad-bg);  border-color: transparent; }
+.badge.role { text-transform: none; letter-spacing: 0; font-family: var(--mono); font-weight: 500; }
+
+/* ------------------------------------------------------------------- notes */
+
+.note {
+  border: 1px solid var(--line); border-left: 3px solid var(--ink-3);
+  border-radius: 7px; padding: 9px 12px; margin-top: 10px;
+  font-size: 12.5px; color: var(--ink-2); background: var(--panel-2);
+}
+.note strong { color: var(--ink); font-weight: 570; }
+.note.good { border-left-color: var(--good); background: var(--good-bg); color: var(--ink); }
+.note.warn { border-left-color: var(--warn); background: var(--warn-bg); color: var(--ink); }
+.note.bad  { border-left-color: var(--bad);  background: var(--bad-bg);  color: var(--ink); }
+.note ul { margin: 6px 0 0; padding-left: 18px; }
+.note code, code.inline {
+  font: 11.5px var(--mono); background: color-mix(in srgb, var(--ink) 7%, transparent);
+  padding: 1px 5px; border-radius: 4px;
+}
+
+.spin {
+  display: inline-block; width: 11px; height: 11px; margin-right: 6px;
+  border: 2px solid var(--line); border-top-color: var(--accent);
+  border-radius: 50%; animation: spin .7s linear infinite; vertical-align: -1px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ------------------------------------------------------------------- packs */
+
+.pack-list { display: flex; flex-direction: column; gap: 8px; }
+.pack {
+  display: flex; align-items: center; gap: 12px; width: 100%;
+  padding: 11px 13px; border: 1px solid var(--line); border-radius: 8px;
+  background: var(--panel-2); cursor: pointer; text-align: left; font: inherit; color: var(--ink);
+}
+.pack:hover { border-color: var(--accent); }
+.pack .pack-text { min-width: 0; }
+.pack .name { font-weight: 570; font-size: 13.5px; }
+.pack .m { color: var(--ink-3); font-size: 11.5px; margin-top: 3px; }
+.pack .pack-id {
+  flex: none;
+  font: 10.5px/1 var(--mono); font-weight: 400; color: var(--ink-3);
+  background: color-mix(in srgb, var(--ink) 6%, transparent);
+  padding: 4px 7px; border-radius: 4px; white-space: nowrap;
+}
+/* On a narrow screen the identifier is the first thing to go: the title says
+   what the pack is, and the id is only needed at a command line. */
+@media (max-width: 620px) {
+  .pack .pack-id { display: none; }
+}
+
+/* ------------------------------------------------------------------- stats */
+
+.stats { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(132px, 1fr)); }
+.stat {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: var(--radius); padding: 11px 13px; box-shadow: var(--shadow);
+}
+.stat .k { font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3); }
+.stat .v {
+  font-size: 19px; font-weight: 600; margin-top: 3px;
+  font-variant-numeric: tabular-nums; letter-spacing: -.02em;
+}
+.stat .v.sm { font-size: 13px; font-family: var(--mono); font-weight: 500; letter-spacing: 0; }
+.stat .v.good { color: var(--good); }
+.stat .v.bad { color: var(--bad); }
+
+/* ------------------------------------------------------------------ tables */
+
+.scroll { overflow: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--panel-2); }
+.scroll.tall { max-height: 520px; }
+
+table.grid-table { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 12.5px; }
+.grid-table th, .grid-table td {
+  padding: 7px 10px; border-bottom: 1px solid var(--line-2); text-align: left; white-space: nowrap;
+}
+.grid-table thead th {
+  position: sticky; top: 0; z-index: 2; background: var(--panel);
+  font-size: 10.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-3);
+  border-bottom: 1px solid var(--line); font-weight: 600;
+}
+.grid-table thead th.sortable { cursor: pointer; user-select: none; }
+.grid-table thead th.sortable:hover { color: var(--ink); }
+.grid-table thead th .dir { color: var(--accent); margin-left: 3px; }
+.grid-table tbody tr:hover td { background: color-mix(in srgb, var(--accent) 6%, transparent); }
+.grid-table td.num, .grid-table th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.grid-table td.nul { color: var(--ink-3); font-style: italic; }
+.grid-table td input[type=text], .grid-table td select { padding: 4px 7px; font-size: 12px; min-width: 92px; }
+.grid-table td code { font: 11.5px var(--mono); }
+
+.pager { display: flex; align-items: center; gap: 10px; margin-top: 10px; font-size: 12.5px; color: var(--ink-2); }
+
+/* -------------------------------------------------------------------- tabs */
+
+.tabs { display: flex; gap: 2px; overflow-x: auto; border-bottom: 1px solid var(--line); }
+.tab {
+  font: inherit; font-size: 13px; font-weight: 520;
+  padding: 8px 13px; border: 0; border-bottom: 2px solid transparent;
+  background: none; color: var(--ink-3); cursor: pointer; white-space: nowrap;
+}
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+.tabpane { display: flex; flex-direction: column; gap: 16px; }
+
+/* ------------------------------------------------------------ method cards */
+
+.method-list { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(258px, 1fr)); }
+.method {
+  border: 1px solid var(--line); border-radius: 9px; padding: 12px 14px;
+  background: var(--panel-2); cursor: pointer; text-align: left; font: inherit; color: var(--ink);
+  display: flex; flex-direction: column; gap: 5px;
+}
+.method:hover:not(:disabled) { border-color: var(--accent); }
+.method[aria-pressed="true"] {
+  border-color: var(--accent); background: var(--accent-2);
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+.method:disabled { opacity: .5; cursor: not-allowed; }
+.method .m-name { font-weight: 600; font-size: 13px; display: flex; align-items: center; gap: 7px; }
+.method .m-desc { font-size: 12px; color: var(--ink-2); line-height: 1.45; }
+.method .m-need { font: 10.5px/1.35 var(--mono); color: var(--warn); }
+
+/* ----------------------------------------------------------------- columns */
+
+.col-row {
+  border: 1px solid var(--line); border-radius: 8px; padding: 11px 13px;
+  margin-bottom: 8px; background: var(--panel-2);
+}
+.col-head { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 9px; }
+.col-head .cname { font: 12.5px var(--mono); font-weight: 500; }
+.col-params { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); }
+.col-review { margin-top: 9px; font-size: 11.5px; color: var(--warn); }
+
+/* ------------------------------------------------------------------ matrix */
+
+.matrix { overflow: auto; }
+.matrix table { border-collapse: collapse; font-size: 12px; }
+.matrix th, .matrix td { padding: 3px 5px; }
+.matrix th.rowhdr {
+  text-align: right; font-weight: 520; color: var(--ink-2); font-size: 11.5px;
+  padding-right: 9px; white-space: nowrap;
+}
+.matrix thead th { font-size: 10.5px; color: var(--ink-3); text-transform: uppercase; letter-spacing: .04em; }
+.matrix input { width: 78px; text-align: right; font: 11.5px var(--mono); padding: 4px 6px; }
+.matrix td.diag input { background: var(--accent-2); }
+.matrix td.sum { font: 11.5px var(--mono); padding-left: 10px; }
+.matrix td.sum.ok  { color: var(--good); }
+.matrix td.sum.off { color: var(--bad); font-weight: 600; }
+
+/* ---------------------------------------------------------------- progress */
+
+.progress-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 9px; }
+.pstage { font: 12.5px var(--mono); color: var(--ink-2); }
+.peta { font-size: 12px; color: var(--ink-3); }
+.ppct { font: 600 13px var(--mono); font-variant-numeric: tabular-nums; }
+.bar { height: 6px; border-radius: 3px; background: var(--line-2); overflow: hidden; }
+.bar i {
+  display: block; height: 100%; border-radius: 3px;
+  background: linear-gradient(90deg, var(--accent), color-mix(in srgb, var(--accent) 55%, #7aa6ff));
+  transition: width .35s ease;
+}
+
+.stages { list-style: none; margin: 18px 0 0; padding: 0; display: flex; flex-direction: column; gap: 1px; }
+.stages li { display: flex; align-items: center; gap: 10px; padding: 7px 4px; font-size: 13px; color: var(--ink-3); }
+.stages li .dot {
+  width: 16px; height: 16px; border-radius: 50%; flex: none;
+  border: 1.5px solid var(--line); display: grid; place-items: center; font-size: 9px;
+}
+.stages li.active { color: var(--ink); }
+.stages li.active .dot { border-color: var(--accent); border-right-color: transparent; animation: spin .8s linear infinite; }
+.stages li.done { color: var(--ink-2); }
+.stages li.done .dot { border-color: transparent; background: var(--accent-2); color: var(--accent); }
+.stages li.done .dot::after { content: "✓"; }
+
+/* ------------------------------------------------------------------ charts */
+
+.chart-host { width: 100%; overflow: hidden; }
+.chart-host svg { width: 100%; height: auto; display: block; }
+.chart-host text { fill: var(--ink-3); font: 10.5px var(--sans); }
+.chart-host .axis { stroke: var(--line); stroke-width: 1; }
+.chart-host .empty { color: var(--ink-3); font-size: 12.5px; padding: 22px 4px; }
+.legend {
+  display: flex; flex-wrap: wrap; gap: 10px 16px; margin-top: 10px;
+  font-size: 11.5px; color: var(--ink-2);
+}
+.legend span { display: inline-flex; align-items: center; gap: 6px; }
+.legend i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+.chart-stats { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 8px; font: 11.5px var(--mono); color: var(--ink-3); }
+
+/* --------------------------------------------------------------- downloads */
+
+.download-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(238px, 1fr)); }
+.dl {
+  display: flex; flex-direction: column; gap: 5px; text-align: left;
+  padding: 15px 16px; border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--panel); box-shadow: var(--shadow); cursor: pointer;
+  font: inherit; color: var(--ink); text-decoration: none;
+}
+.dl:hover { border-color: var(--accent); }
+.dl .dl-name { font-weight: 600; font-size: 14px; display: flex; align-items: center; gap: 8px; }
+.dl .dl-ext {
+  font: 10px/1 var(--mono); text-transform: uppercase; letter-spacing: .06em;
+  padding: 3px 6px; border-radius: 4px; background: var(--accent-2); color: var(--accent);
+}
+.dl .dl-desc { font-size: 12px; color: var(--ink-2); line-height: 1.45; }
+.dl.busy { opacity: .6; pointer-events: none; }
+
+/* -------------------------------------------------------------- footer bar */
+
+.footer-bar {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
+  background: color-mix(in srgb, var(--panel) 92%, transparent);
+  backdrop-filter: blur(10px); border-top: 1px solid var(--line);
+}
+.footer-inner {
+  max-width: 1400px; margin: 0 auto; padding: 10px 20px;
+  display: flex; align-items: center; gap: 12px;
+}
+.status {
+  font-size: 12.5px; color: var(--ink-2); min-width: 0;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+/* ------------------------------------------------------------- responsive */
+
+@media (max-width: 900px) {
+  .shell { grid-template-columns: 1fr; gap: 16px; padding: 16px 14px 32px; }
+  .rail { position: static; flex-direction: row; overflow-x: auto; gap: 6px; padding-bottom: 4px; }
+  .rail .step { width: auto; }
+  .rail .step .s i { display: none; }
+  textarea { min-height: 320px; }
+}
+
+/* --------------------------------------------------------------- configure
+   Five collapsible groups instead of six blind tabs. Tabs hide their contents
+   behind a click and give no clue what is inside, so the only way to know
+   whether a setting mattered was to open all six. A group states what it holds
+   and reports what it currently is, so an unopened one is an answered question
+   rather than an unread page. */
+
+.outcome {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
+  background: var(--panel-2);
+  border-radius: 8px;
+  padding: 14px 18px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.outcome strong { color: var(--ink); font-variant-numeric: tabular-nums; }
+.outcome .muted { color: var(--ink-2); }
+
+details.group {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+details.group > summary {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "title state" "sub state";
+  align-items: center;
+  gap: 2px 16px;
+  padding: 14px 18px 14px 40px;
+  cursor: pointer;
+  position: relative;
+  list-style: none;
+  user-select: none;
+}
+details.group > summary::-webkit-details-marker { display: none; }
+details.group > summary::before {
+  content: "";
+  position: absolute;
+  left: 18px;
+  top: 50%;
+  width: 7px; height: 7px;
+  border-right: 1.5px solid var(--ink-2);
+  border-bottom: 1.5px solid var(--ink-2);
+  transform: translateY(-70%) rotate(-45deg);
+  transition: transform .15s ease;
+}
+details.group[open] > summary::before { transform: translateY(-25%) rotate(45deg); }
+details.group > summary:hover { background: var(--panel-2); }
+details.group > summary:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+.g-title { grid-area: title; font-weight: 600; font-size: 15px; color: var(--ink); }
+.g-sub   { grid-area: sub;   font-size: 12.5px; color: var(--ink-2); }
+.g-state {
+  grid-area: state;
+  font-size: 12px;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+}
+.g-state.changed { color: var(--accent); }
+
+.g-body { padding: 4px 18px 20px; border-top: 1px solid var(--line); }
+.g-body > .hint:first-child { margin-top: 12px; }
+
+.sub-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: .02em;
+  color: var(--ink);
+  margin: 22px 0 4px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+}
+.g-body > .sub-head:first-child { margin-top: 12px; padding-top: 0; border-top: 0; }
+
+/* ------------------------------------------------------------ featured pack
+   One pack is the one to try first, and it gets its own colour rather than the
+   accent — the accent already means "this is the action" everywhere else on the
+   page, and reusing it here would say only that a pack is a button.
+
+   Exactly one pack may carry this. Two things both labelled "start here" tell a
+   reader nothing, which is what happened when a second featured pack was added
+   and both went purple. The ordering that decides which one is in the packs'
+   own `display_order`, and `_check_single_feature` in the loader enforces it. */
+
+:root {
+  --feature:    #6b4fa8;
+  --feature-bg: #f3effa;
+  --feature-line: #d6c9ef;
+}
+:root[data-theme="dark"] {
+  --feature:    #b49ce8;
+  --feature-bg: #221c30;
+  --feature-line: #3b3054;
+}
+
+.pack.featured {
+  background: var(--feature-bg);
+  border-color: var(--feature-line);
+}
+.pack.featured:hover { border-color: var(--feature); }
+.pack.featured .name { color: var(--feature); }
+
+.pack .name { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+.pack .star {
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--feature);
+  border: 1px solid var(--feature-line);
+  background: var(--panel);
+  border-radius: 999px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
+
+/* ------------------------------------------------------- chart hover + help
+   A line with an axis tells you the shape and refuses to tell you the number.
+   These two put the number and the vocabulary within reach without cluttering
+   the chart itself: one appears on hover, the other on request. */
+
+.chart-host { position: relative; }
+
+.hover-zone { cursor: crosshair; outline: none; }
+.hover-zone:focus-visible { fill: var(--accent); fill-opacity: .07; }
+.hover-dot { fill: var(--panel); stroke: var(--accent); stroke-width: 2; pointer-events: none; }
+
+.chart-tip {
+  position: absolute;
+  z-index: 5;
+  pointer-events: none;
+  min-width: 108px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+.chart-tip b { display: block; color: var(--ink); font-weight: 600; }
+.chart-tip span { display: flex; justify-content: space-between; gap: 14px; }
+.chart-tip span b { display: inline; }
+
+.help-wrap { position: relative; display: inline-flex; margin-left: 8px; }
+
+.help-btn {
+  width: 17px; height: 17px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--panel-2);
+  color: var(--ink-3);
+  font-family: var(--sans);
+  font-size: 11px;
+  font-style: italic;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+}
+.help-btn:hover { color: var(--accent); border-color: var(--accent); }
+.help-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.chart-help {
+  position: absolute;
+  top: 24px;
+  left: -10px;
+  z-index: 6;
+  width: min(360px, 74vw);
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  font-size: 12.5px;
+  line-height: 1.6;
+  color: var(--ink-2);
+  text-align: left;
+  font-weight: 400;
+}
+.chart-help strong { display: block; color: var(--ink); margin-bottom: 5px; font-size: 13px; }
+.chart-help p { margin: 0; }
+
+/* A pack the server could not load. Shown rather than hidden: the picker is
+   where you would go to find out something is broken, and an absence explains
+   nothing. */
+.pack.broken { cursor: default; opacity: .85; border-style: dashed; }
+.pack.broken .name { color: var(--warn); }
+.pack.broken .m { color: var(--ink-2); white-space: normal; line-height: 1.5; }
+.star.warn { color: var(--warn); border-color: var(--warn); }

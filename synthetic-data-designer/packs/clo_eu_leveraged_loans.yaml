@@ -1,0 +1,1810 @@
+# European CLO — Leveraged Loans
+# ==============================
+#
+# The collateral portfolio of a CLO: several hundred senior secured loans to
+# European sub-investment-grade companies, observed monthly. It is *not* a CLO
+# waterfall model. There are no tranches here, no OC or IC tests and no equity
+# distributions — this generates the assets a CLO owns, not the liabilities it
+# issues.
+#
+# Four things make this different from the mortgage and auto packs:
+#
+# **Bullet, not amortising.** A leveraged loan repays its principal at maturity.
+# The balance sits flat for years and then goes to zero, so the pack uses the
+# `bullet` amortisation kind rather than an annuity schedule.
+#
+# **An open, trading portfolio.** A CLO manager buys and sells during a defined
+# reinvestment period and then stops. New facilities join every month until the
+# window closes, which is `originations` with an `end_period`.
+#
+# **A credit ladder, not a delinquency ladder.** A corporate loan does not go
+# 30 then 60 then 90 days past due on its way down. It goes on a watchlist, then
+# distressed, then defaults — and default is followed by a recovery process
+# lasting months.
+#
+# **Loans mature.** With terms of five to eight years and a three-year window,
+# maturity is a real exit route rather than an edge case, so it is modelled as a
+# condition on the facility's own remaining term.
+#
+# CALIBRATION. Every number below is a demo assumption chosen to produce
+# plausible, well-behaved data. None of it is an estimate of any real market,
+# any real manager's book, or any rating agency's methodology, and the pack must
+# not be described as satisfying a particular indenture. Obligor and transaction
+# names are synthetic by construction.
+
+spec_version: 1
+
+meta:
+  name: clo_eu_leveraged_loans
+  entity_noun: facility
+  display_order: 2
+  featured: false
+  title: European CLO — Leveraged Loans
+  asset_class: clo
+  regulatory_template: none — portfolio analytics, not a disclosure template
+  description: >-
+    An open portfolio of European leveraged loans as a monthly panel: bullet
+    repayment, credit migration through watchlist and distress, default with a
+    recovery lag, refinancing, manager trading and maturity, with new collateral
+    acquired throughout the reinvestment period.
+  source: >-
+    Demo calibration. Directional only — not derived from, or validated against,
+    any licensed vendor dataset.
+
+entity:
+  id_column: facility_id
+  id_format: "FAC{deal_year}_{seq:05d}"
+  time_column: reporting_date
+  calendar:
+    start: "2026-01-31"
+    periods: 36
+    freq: month_end
+
+  # The deal has a size. Without this the portfolio is worth whatever 500
+  # independent draws happen to sum to, which is not how a CLO is arranged.
+  #
+  # `entities: 500` pins the target to the default run size, so asking the UI
+  # for 1,000 facilities buys a EUR 1bn portfolio of the same-sized loans rather
+  # than the same portfolio cut into smaller ones.
+  targets:
+    - column: original_facility_amount
+      total: 500_000_000
+      entities: 500
+
+params:
+  deal_year: 2026
+  first_cutoff_year: 2026
+  first_cutoff_month: 1
+  reinvestment_months: 24
+
+constants:
+  clo_id: "SYNCLO-2026-1"
+  transaction_name: "Synthetic CLO Europe 2026-1"
+  manager_name: "Synthetic Credit Managers LLP"
+  currency: "EUR"
+  deal_closing_date: "2026-01-31"
+  reinvestment_end_date: "2028-01-31"
+  payment_frequency: "Quarterly"
+  amortisation_type: "Bullet"
+  reference_rate: "3M EURIBOR"
+
+# ---------------------------------------------------------------------------
+# columns
+# ---------------------------------------------------------------------------
+#
+# The obligor is a `group`: one company, several facilities, and the company's
+# own attributes generated once and shared. Concentration limits are stated per
+# obligor, so this is what makes them measurable.
+
+columns:
+  # -- deal and reporting ---------------------------------------------------
+  - name: clo_id
+    role: static
+    dtype: str
+    description: Identifier of the synthetic transaction.
+    generator: {kind: constant, value: "SYNCLO-2026-1"}
+
+  - name: transaction_name
+    role: static
+    dtype: str
+    description: Deal name. Synthetic by construction.
+    generator: {kind: constant, value: "Synthetic CLO Europe 2026-1"}
+
+  - name: manager_name
+    role: static
+    dtype: str
+    description: Collateral manager. Synthetic by construction.
+    generator: {kind: constant, value: "Synthetic Credit Managers LLP"}
+
+  - name: reporting_date
+    role: dynamic
+    dtype: str
+    description: The monthly cut-off this row describes.
+    generator: {kind: constant, value: "2026-01-31"}
+
+  - name: currency
+    role: static
+    dtype: category
+    description: Facility currency.
+    domain: [EUR, GBP]
+    generator:
+      kind: categorical
+      values: [EUR, GBP]
+      weights: [0.86, 0.14]
+
+  # -- facility identity ----------------------------------------------------
+  - name: facility_id
+    role: static
+    dtype: str
+    description: Unique facility identifier, stable across cut-offs.
+    generator: {kind: sequence, prefix: "FAC", width: 9}
+
+  - name: facility_type
+    role: static
+    dtype: category
+    description: Instrument type. Term Loan B dominates a European CLO pool.
+    domain: [Term Loan B, Term Loan A, Revolver, Second Lien Term Loan]
+    generator:
+      kind: categorical
+      values: [Term Loan B, Term Loan A, Revolver, Second Lien Term Loan]
+      weights: [0.78, 0.08, 0.06, 0.08]
+
+  - name: original_facility_amount
+    role: static
+    dtype: float
+    min: 0.0
+    description: Size of the facility at origination.
+    generator:
+      kind: scipy
+      dist: lognorm
+      params: {s: 0.62, loc: 0.0, scale: 3100000.0}
+      decimals: 2
+      clip_min: 400000.0
+      clip_max: 40000000.0
+
+  - name: original_term_months
+    role: static
+    dtype: int
+    description: Contractual term. Five to eight years is typical.
+    generator:
+      kind: categorical
+      values: [60, 72, 84, 96]
+      weights: [0.16, 0.34, 0.38, 0.12]
+
+  - name: spread_bps
+    role: static
+    dtype: float
+    min: 0.0
+    description: Margin over the reference rate, in basis points.
+    generator:
+      kind: gaussian
+      mean: 395.0
+      stddev: 78.0
+      decimals: 0
+      clip_min: 200.0
+      clip_max: 900.0
+
+  - name: interest_rate_floor_pct
+    role: static
+    dtype: float
+    min: 0.0
+    description: Contractual floor under the reference rate.
+    generator:
+      kind: categorical
+      values: [0.0, 0.5, 0.75, 1.0]
+      weights: [0.44, 0.20, 0.20, 0.16]
+
+  - name: reference_rate_pct
+    role: dynamic
+    dtype: float
+    description: Prevailing reference rate. Moves under a scenario rate shift.
+    generator: {kind: constant, value: 2.85}
+
+  - name: acquisition_price
+    role: static
+    dtype: float
+    min: 0.0
+    description: Price paid, per 100 of par.
+    generator:
+      kind: gaussian
+      mean: 99.1
+      stddev: 1.6
+      decimals: 3
+      clip_min: 88.0
+      clip_max: 101.0
+
+  - name: current_market_price
+    role: dynamic
+    dtype: float
+    min: 0.0
+    description: Mark, per 100 of par. Drifts and wobbles; falls under stress.
+    # Bounded to the same range as the `loan_price` index that moves it after
+    # period 0. Left at its old 20-103 the opening book could print a facility
+    # at 103 which the index then pulled to 101 in the very next month — a
+    # discontinuity with no cause, and one that contradicts the reason for the
+    # ceiling: a leveraged loan is callable at par, so a price much above 100
+    # simply invites the borrower to refinance.
+    generator:
+      kind: gaussian
+      mean: 99.0
+      stddev: 1.9
+      decimals: 3
+      clip_min: 40.0
+      clip_max: 101.0
+
+  # -- seniority and eligibility -------------------------------------------
+  - name: senior_secured_flag
+    role: static
+    dtype: category
+    description: Senior secured. Second liens are not.
+    domain: ["Y", "N"]
+    generator: {kind: constant, value: "Y"}
+
+  - name: covenant_lite_flag
+    role: static
+    dtype: category
+    description: Facility without maintenance covenants.
+    domain: ["Y", "N"]
+    generator: {kind: categorical, values: ["Y", "N"], weights: [0.81, 0.19]}
+
+  # -- credit state ---------------------------------------------------------
+  - name: credit_state
+    role: dynamic
+    dtype: category
+    description: Where the facility sits on the credit ladder.
+    domain: [Performing, Watchlist, Distressed, Defaulted,
+             Recovered, Prepaid, Sold, Matured]
+    generator:
+      kind: categorical
+      values: [Performing, Watchlist, Distressed]
+      weights: [0.945, 0.045, 0.010]
+
+  - name: rating_noise
+    role: helper
+    dtype: float
+    description: Idiosyncratic spread of ratings within a credit state.
+    generator: {kind: uniform, low: 0.0, high: 1.0}
+
+  - name: rating_at_cutoff
+    role: dynamic
+    dtype: str
+    description: >-
+      Letter grade. Derived from credit state and a per-facility offset, not
+      migrated by a rating transition matrix — see the note on `derivations`.
+    generator: {kind: constant, value: "B"}
+
+  # -- balances and dates, all filled by derivations -------------------------
+  - name: seasoning_months
+    role: dynamic
+    dtype: int
+    description: Months since origination.
+    generator: {kind: constant, value: 0}
+
+  - name: current_balance
+    role: dynamic
+    dtype: float
+    min: 0.0
+    description: Principal outstanding. Bullet, so flat until maturity.
+    generator: {kind: constant, value: 0.0}
+
+  - name: recovery_amount
+    role: dynamic
+    dtype: float
+    min: 0.0
+    description: Proceeds recovered after a default is resolved.
+    generator: {kind: constant, value: 0.0}
+
+  # -- derived columns, declared so they reach the output --------------------
+  # A derivation writes into a column; it does not create one. Anything not
+  # declared here never reaches disk, silently.
+  - name: origination_date
+    role: static
+    dtype: str
+    description: Contract start, back-dated from seasoning at the first cut-off.
+    generator: {kind: constant, value: "2026-01-31"}
+
+  - name: acquisition_date
+    role: static
+    dtype: str
+    description: When the portfolio bought the facility.
+    generator: {kind: constant, value: "2026-01-31"}
+
+  - name: maturity_date
+    role: static
+    dtype: str
+    description: Contractual maturity.
+    generator: {kind: constant, value: "2031-01-31"}
+
+  - name: months_to_maturity
+    role: dynamic
+    dtype: int
+    description: Months remaining. Drives the maturity exit.
+    generator: {kind: constant, value: 0}
+
+  - name: months_in_portfolio
+    role: dynamic
+    dtype: int
+    description: Months since acquisition.
+    generator: {kind: constant, value: 0}
+
+  - name: ebitda_eur
+    role: static
+    dtype: float
+    min: 0.0
+    description: Revenue times margin.
+    generator: {kind: constant, value: 0.0}
+
+  - name: enterprise_value_eur
+    role: static
+    dtype: float
+    min: 0.0
+    description: A multiple of EBITDA, varying with leverage.
+    generator: {kind: constant, value: 0.0}
+
+  - name: interest_coverage_ratio
+    role: dynamic
+    dtype: float
+    min: 0.0
+    description: EBITDA over cash interest.
+    generator: {kind: constant, value: 0.0}
+
+  - name: all_in_coupon_pct
+    role: dynamic
+    dtype: float
+    min: 0.0
+    description: Reference rate (floored) plus spread.
+    generator: {kind: constant, value: 0.0}
+
+  - name: current_par
+    role: dynamic
+    dtype: float
+    min: 0.0
+    description: Par held. Equals the outstanding balance for a bullet loan.
+    generator: {kind: constant, value: 0.0}
+
+  - name: market_value
+    role: dynamic
+    dtype: float
+    min: 0.0
+    description: Par times price over 100.
+    generator: {kind: constant, value: 0.0}
+
+  - name: rating_bucket
+    role: dynamic
+    dtype: str
+    description: Coarse grouping of the letter grade.
+    generator: {kind: constant, value: "B"}
+
+  - name: credit_factor
+    role: dynamic
+    dtype: int
+    min: 0.0
+    description: >-
+      Numeric stand-in for the letter grade, so grades can be averaged.
+      Derived from this pack's own rating chain — see the derivation.
+    generator: {kind: constant, value: 0}
+
+  - name: watchlist_flag
+    role: dynamic
+    dtype: category
+    domain: ["Y", "N"]
+    description: On the manager's watchlist.
+    generator: {kind: constant, value: "N"}
+
+  - name: distressed_flag
+    role: dynamic
+    dtype: category
+    domain: ["Y", "N"]
+    description: Distressed.
+    generator: {kind: constant, value: "N"}
+
+  - name: default_flag
+    role: dynamic
+    dtype: category
+    domain: ["Y", "N"]
+    description: In default or resolved out of it.
+    generator: {kind: constant, value: "N"}
+
+  - name: ccc_flag
+    role: dynamic
+    dtype: category
+    domain: ["Y", "N"]
+    description: Rated CCC+ or below. A limit every CLO indenture carries.
+    generator: {kind: constant, value: "N"}
+
+  - name: second_lien_flag
+    role: static
+    dtype: category
+    domain: ["Y", "N"]
+    description: Second lien facility.
+    generator: {kind: constant, value: "N"}
+
+  - name: defaulted_obligation_flag
+    role: dynamic
+    dtype: category
+    domain: ["Y", "N"]
+    description: Currently a defaulted obligation.
+    generator: {kind: constant, value: "N"}
+
+  - name: currency_eligible_flag
+    role: dynamic
+    dtype: category
+    domain: ["Y", "N"]
+    description: Denominated in the deal currency.
+    generator: {kind: constant, value: "Y"}
+
+  - name: maturity_eligible_flag
+    role: dynamic
+    dtype: category
+    domain: ["Y", "N"]
+    description: Matures before the deal's own stated maturity.
+    generator: {kind: constant, value: "Y"}
+
+  - name: eligible_asset_flag
+    role: dynamic
+    dtype: category
+    domain: ["Y", "N"]
+    description: Passes every eligibility test above.
+    generator: {kind: constant, value: "Y"}
+
+  - name: expected_recovery_pct
+    role: dynamic
+    dtype: float
+    min: 0.0
+    description: Expected recovery on default, by seniority.
+    generator: {kind: constant, value: 0.0}
+
+  - name: par_at_default
+    role: dynamic
+    dtype: float
+    description: >-
+      Par outstanding when the facility defaulted, stamped once. Needed because
+      a resolved facility carries no par: the workout has closed it out, so the
+      loss has to be measured against what was owed going in.
+    generator: {kind: constant, value: null}
+
+  - name: newly_defaulted_par
+    role: dynamic
+    dtype: float
+    min: 0.0
+    description: >-
+      Par that defaulted in this period only. A flow, so it can be accumulated;
+      `par_at_default` is a stock and would be counted again every month.
+    generator: {kind: constant, value: 0.0}
+
+  - name: realised_loss
+    role: dynamic
+    dtype: float
+    min: 0.0
+    description: Par lost, booked when a default resolves.
+    generator: {kind: constant, value: 0.0}
+
+  - name: default_date
+    role: dynamic
+    dtype: str
+    description: Cut-off the facility defaulted on. Stamped once, never rewritten.
+    generator: {kind: constant, value: null}
+
+  - name: recovery_date
+    role: dynamic
+    dtype: str
+    description: Cut-off the default resolved. Stamped once, never rewritten.
+    generator: {kind: constant, value: null}
+
+  - name: sale_date
+    role: dynamic
+    dtype: str
+    description: Cut-off the manager sold the facility. Stamped once.
+    generator: {kind: constant, value: null}
+
+  - name: industry_concentration_bucket
+    role: dynamic
+    dtype: str
+    description: Coarse industry grouping for concentration reporting.
+    generator: {kind: constant, value: "Other"}
+
+# ---------------------------------------------------------------------------
+# derivations
+# ---------------------------------------------------------------------------
+#
+# `stage: book` runs once at the first cut-off; `period` runs every month;
+# `both` runs at both. Order matters — a derivation may only read what already
+# exists, and the loader enforces it.
+
+derivations:
+  # -- seasoning and dates, fixed at origination ----------------------------
+  # Facilities are acquired part-way through their lives, so the opening
+  # portfolio is not all brand new. Capped one month short of the term so no
+  # facility is born already past its own maturity.
+  - target: _raw_seasoning
+    expr: "int(round(rating_noise * 30))"
+    dtype: int
+    stage: book
+
+  - target: seasoning_months
+    expr: "max(min(_raw_seasoning, original_term_months - 1), 0)"
+    dtype: int
+    stage: book
+
+  - target: _origination_index
+    expr: "first_cutoff_year * 12 + (first_cutoff_month - 1) - seasoning_months"
+    dtype: int
+    stage: book
+
+  - target: origination_date
+    kind: format
+    template: "{y:04d}-{m:02d}-28"
+    args:
+      y: "int(_origination_index // 12)"
+      m: "int(_origination_index % 12 + 1)"
+    dtype: str
+    stage: book
+
+  - target: _maturity_index
+    expr: "_origination_index + original_term_months"
+    dtype: int
+    stage: book
+
+  - target: maturity_date
+    kind: format
+    template: "{y:04d}-{m:02d}-28"
+    args:
+      y: "int(_maturity_index // 12)"
+      m: "int(_maturity_index % 12 + 1)"
+    dtype: str
+    stage: book
+
+  - target: acquisition_date
+    expr: "reporting_date"
+    dtype: str
+    stage: book
+
+  - target: months_to_maturity
+    expr: "max(original_term_months - seasoning_months, 0)"
+    dtype: int
+    stage: book
+
+  - target: months_in_portfolio
+    expr: "0"
+    dtype: int
+    stage: book
+
+  # -- obligor financials ---------------------------------------------------
+  - target: ebitda_eur
+    expr: "round(revenue_eur * ebitda_margin_pct / 100.0, 0)"
+    dtype: float
+    stage: book
+
+  - target: enterprise_value_eur
+    expr: "round(ebitda_eur * clip(11.0 - leverage_ratio * 0.45, 4.5, 12.0), 0)"
+    dtype: float
+    stage: book
+
+  # -- balance: bullet, so it does not amortise -----------------------------
+  - target: current_balance
+    expr: "original_facility_amount"
+    dtype: float
+    stage: book
+
+  # -- coupon, recomputed every period so a rate shift reaches it -----------
+  - target: all_in_coupon_pct
+    expr: "round(max(float(reference_rate_pct), float(interest_rate_floor_pct)) + float(spread_bps) / 100.0, 4)"
+    dtype: float
+    stage: both
+
+  - target: interest_coverage_ratio
+    expr: "round(ebitda_eur / max(current_balance * all_in_coupon_pct / 100.0, 1.0), 2)"
+    dtype: float
+    stage: both
+
+  # -- par and mark ---------------------------------------------------------
+  - target: current_par
+    expr: "current_balance"
+    dtype: float
+    stage: both
+
+  - target: market_value
+    expr: "round(current_par * current_market_price / 100.0, 2)"
+    dtype: float
+    stage: both
+
+  # -- rating -------------------------------------------------------------
+  # `rating_at_cutoff` is no longer derived: it is a migrating chain of its own,
+  # declared under `secondary_chains` below. `rating_bucket` still follows from
+  # whatever the chain produced.
+  - target: rating_bucket
+    kind: when
+    stage: both
+    rules:
+      - {if: "isin(rating_at_cutoff, ['BB', 'BB-'])", then: "BB"}
+      - {if: "isin(rating_at_cutoff, ['B+', 'B', 'B-'])", then: "B"}
+      - {if: "rating_at_cutoff == 'D'", then: "D"}
+    else: "CCC"
+
+  # -- credit factor --------------------------------------------------------
+  #
+  # A number standing for how likely a grade is to default, so that grades can
+  # be averaged. Ratings are labels — the mean of "B+" and "CCC" is not a
+  # thing — and a portfolio still needs a single figure for its credit quality.
+  #
+  # **Where these numbers come from, and why it matters.** They are not any
+  # agency's table. Each is the probability that this pack's *own* rating chain
+  # reaches D within five years, starting from that grade, multiplied by 10,000
+  # and rounded. Take the `transitions` matrix under `secondary_chains` below,
+  # raise it to the 60th power, and read the column for D: that is this column.
+  # Anyone can reproduce them from this file alone.
+  #
+  # Two consequences worth stating. They are *internally consistent* — the
+  # factor and the migration behaviour are the same model, so a book that
+  # downgrades faster genuinely reads worse. And they are *substitutable*: this
+  # is ordinary pack data, so anyone holding a licence to an agency's published
+  # factors can paste them in here and change nothing else.
+  - target: credit_factor
+    kind: when
+    stage: both
+    dtype: int
+    rules:
+      - {if: "rating_at_cutoff == 'BB'", then: 618}
+      - {if: "rating_at_cutoff == 'BB-'", then: 854}
+      - {if: "rating_at_cutoff == 'B+'", then: 1195}
+      - {if: "rating_at_cutoff == 'B'", then: 1717}
+      - {if: "rating_at_cutoff == 'B-'", then: 2522}
+      - {if: "rating_at_cutoff == 'CCC+'", then: 3562}
+      - {if: "rating_at_cutoff == 'CCC'", then: 4575}
+      - {if: "rating_at_cutoff == 'CCC-'", then: 5611}
+    else: 10000
+
+  # -- flags, all read off the state or the rating --------------------------
+  - target: watchlist_flag
+    kind: when
+    stage: both
+    rules: [{if: "credit_state == 'Watchlist'", then: "Y"}]
+    else: "N"
+
+  - target: distressed_flag
+    kind: when
+    stage: both
+    rules: [{if: "credit_state == 'Distressed'", then: "Y"}]
+    else: "N"
+
+  - target: default_flag
+    kind: when
+    stage: both
+    rules: [{if: "isin(credit_state, ['Defaulted', 'Recovered'])", then: "Y"}]
+    else: "N"
+
+  - target: defaulted_obligation_flag
+    kind: when
+    stage: both
+    rules: [{if: "credit_state == 'Defaulted'", then: "Y"}]
+    else: "N"
+
+  - target: ccc_flag
+    kind: when
+    stage: both
+    rules: [{if: "isin(rating_bucket, ['CCC', 'D'])", then: "Y"}]
+    else: "N"
+
+  - target: second_lien_flag
+    kind: when
+    stage: book
+    rules: [{if: "facility_type == 'Second Lien Term Loan'", then: "Y"}]
+    else: "N"
+
+  - target: senior_secured_flag
+    kind: when
+    stage: book
+    rules: [{if: "facility_type == 'Second Lien Term Loan'", then: "N"}]
+    else: "Y"
+
+  - target: expected_recovery_pct
+    kind: when
+    stage: both
+    rules: [{if: "second_lien_flag == 'Y'", then: 25.0}]
+    else: 62.0
+
+  # -- eligibility ----------------------------------------------------------
+  - target: currency_eligible_flag
+    kind: when
+    stage: both
+    rules: [{if: "currency == 'EUR'", then: "Y"}]
+    else: "N"
+
+  - target: maturity_eligible_flag
+    kind: when
+    stage: both
+    rules: [{if: "months_to_maturity <= 84", then: "Y"}]
+    else: "N"
+
+  - target: eligible_asset_flag
+    kind: when
+    stage: both
+    rules:
+      - {if: "credit_state == 'Defaulted'", then: "N"}
+      - {if: "currency_eligible_flag == 'N'", then: "N"}
+      - {if: "maturity_eligible_flag == 'N'", then: "N"}
+    else: "Y"
+
+  - target: industry_concentration_bucket
+    kind: when
+    stage: book
+    rules:
+      - {if: "isin(industry, ['Software', 'Telecommunications', 'Media'])", then: "TMT"}
+      - {if: "isin(industry, ['Healthcare'])", then: "Healthcare"}
+      - {if: "isin(industry, ['Industrials', 'Chemicals', 'Packaging', 'Energy'])",
+         then: "Industrial"}
+      - {if: "isin(industry, ['Retail', 'Consumer Products', 'Food & Beverage'])",
+         then: "Consumer"}
+    else: "Other"
+
+  # -- event dates, stamped once and never rewritten ------------------------
+  # `coalesce` returns the first non-null value, so once a date is written the
+  # rule stops overwriting it. Without this every date would be rewritten to the
+  # current cut-off each month and the actual event date would be lost.
+  - target: default_date
+    expr: "coalesce(default_date, where(credit_state == 'Defaulted', reporting_date, None))"
+    dtype: str
+    stage: period
+
+  - target: recovery_date
+    expr: "coalesce(recovery_date, where(credit_state == 'Recovered', reporting_date, None))"
+    dtype: str
+    stage: period
+
+  - target: sale_date
+    expr: "coalesce(sale_date, where(credit_state == 'Sold', reporting_date, None))"
+    dtype: str
+    stage: period
+
+  - target: par_at_default
+    expr: "coalesce(par_at_default, where(credit_state == 'Defaulted', current_par, None))"
+    dtype: float
+    stage: period
+
+  - target: newly_defaulted_par
+    expr: "round(where(default_date == reporting_date, current_par, 0.0), 2)"
+    dtype: float
+    stage: period
+
+  - target: realised_loss
+    expr: >-
+      round(where(credit_state == 'Recovered',
+                  max(coalesce(par_at_default, 0.0) - recovery_amount, 0.0), 0.0), 2)
+    dtype: float
+    stage: period
+
+# ---------------------------------------------------------------------------
+# groups — the obligor behind the facilities
+# ---------------------------------------------------------------------------
+#
+# 500 facilities across roughly 225 companies, so a typical obligor carries two
+# and a few carry several. Industry, country and financials belong to the
+# company, not to each loan: three facilities lent to the same business must
+# agree about what that business is.
+#
+# `new_group_rate: 0.6` means three in five acquisitions bring a new obligor and
+# two in five are additional lending to a company the portfolio already holds,
+# which is how a manager actually builds a book.
+
+groups:
+  - name: obligor
+    key: obligor_id
+    ratio: 0.45
+    id_format: "OBL{seq:05d}"
+    new_group_rate: 0.6
+    size:
+      kind: zipf
+      concentration: 1.6
+      max_members: 6
+    columns:
+      - name: industry
+        dtype: category
+        description: Industry of the borrowing company.
+        domain: [Business Services, Healthcare, Software, Telecommunications,
+                 Industrials, Consumer Products, Retail, Media, Chemicals,
+                 Transportation, Food & Beverage, Financial Services, Energy,
+                 Packaging, Other]
+        generator:
+          kind: categorical
+          values: [Business Services, Healthcare, Software, Telecommunications,
+                   Industrials, Consumer Products, Retail, Media, Chemicals,
+                   Transportation, Food & Beverage, Financial Services, Energy,
+                   Packaging, Other]
+          weights: [0.115, 0.105, 0.100, 0.070, 0.085, 0.075, 0.060, 0.055,
+                    0.055, 0.050, 0.050, 0.045, 0.040, 0.040, 0.055]
+
+      - name: obligor_country
+        dtype: category
+        description: Country of the borrowing company.
+        domain: [United Kingdom, France, Germany, Netherlands, Spain, Italy,
+                 Sweden, Ireland, Luxembourg, Other Europe]
+        generator:
+          kind: categorical
+          values: [United Kingdom, France, Germany, Netherlands, Spain, Italy,
+                   Sweden, Ireland, Luxembourg, Other Europe]
+          weights: [0.20, 0.17, 0.15, 0.09, 0.07, 0.07, 0.05, 0.05, 0.05, 0.10]
+
+      - name: public_private_flag
+        dtype: category
+        description: Whether the company is publicly listed.
+        domain: ["Y", "N"]
+        generator: {kind: categorical, values: ["Y", "N"], weights: [0.22, 0.78]}
+
+      - name: revenue_eur
+        dtype: float
+        min: 0.0
+        description: Annual revenue of the company.
+        generator:
+          kind: scipy
+          dist: lognorm
+          params: {s: 0.78, loc: 0.0, scale: 420000000.0}
+          decimals: 0
+          clip_min: 25000000.0
+          clip_max: 12000000000.0
+
+      - name: ebitda_margin_pct
+        dtype: float
+        description: EBITDA as a share of revenue, in per cent.
+        generator:
+          kind: gaussian
+          mean: 18.5
+          stddev: 6.0
+          decimals: 2
+          clip_min: 3.0
+          clip_max: 45.0
+
+      - name: leverage_ratio
+        dtype: float
+        min: 0.0
+        description: Net debt to EBITDA, the defining feature of a leveraged loan.
+        generator:
+          kind: scipy
+          dist: lognorm
+          params: {s: 0.30, loc: 0.0, scale: 4.9}
+          decimals: 2
+          clip_min: 1.5
+          clip_max: 11.0
+
+    # How the obligor's own numbers move together.
+    #
+    # Each attribute above is drawn from its own generator, so without this a
+    # company's revenue, margin and leverage vary independently — and a book
+    # where the most indebted borrowers are neither larger nor smaller nor more
+    # profitable than anyone else is one nobody has seen.
+    #
+    # Reimposed by reordering the obligor table, which cannot change any
+    # column's own distribution: every range and clip declared above survives
+    # exactly, and only the pairing changes.
+    #
+    # **These are declared assumptions, directional only** — the same standing
+    # as the rest of this pack's calibration. They are not fitted to a vendor
+    # dataset, and §21 is explicit that vendor-derived parameters must not go
+    # into the public pack. The reasoning behind each:
+    #
+    #   margin x leverage  +0.35  the strongest and the most defensible. A
+    #                             lender advances more turns of EBITDA against
+    #                             durable margins, so the two rise together.
+    #   revenue x margin   -0.15  the larger borrowers in this market skew
+    #                             toward lower-margin industrials and retail.
+    #   revenue x leverage -0.10  size buys slightly better terms.
+    correlation_target:
+      columns: [revenue_eur, ebitda_margin_pct, leverage_ratio]
+      matrix:
+        - [1.00, -0.15, -0.10]
+        - [-0.15, 1.00, 0.35]
+        - [-0.10, 0.35, 1.00]
+
+# ---------------------------------------------------------------------------
+# lifecycle
+# ---------------------------------------------------------------------------
+#
+# A credit ladder, not a delinquency ladder. A corporate loan does not go 30
+# then 60 then 90 days past due — it goes on a watchlist, becomes distressed,
+# and defaults. Default is followed by a workout lasting months.
+#
+# Four states are terminal and each is reached a different way:
+#
+#   Prepaid    a flat chance of refinancing              (bernoulli)
+#   Sold       a flat chance the manager trades out      (bernoulli)
+#   Recovered  a fixed lag after default resolves        (dwell_time)
+#   Matured    the facility's own term runs out          (condition)
+#
+# The matrix covers only the four states a facility can sit in. Every row sums
+# to 1. These are demo assumptions, not observed estimates.
+
+lifecycle:
+  state_column: credit_state
+  states: [Performing, Watchlist, Distressed, Defaulted,
+           Recovered, Prepaid, Sold, Matured]
+  terminal: [Recovered, Prepaid, Sold, Matured]
+  absorbing: [Defaulted]
+
+  initial_distribution:
+    Performing: 0.945
+    Watchlist: 0.045
+    Distressed: 0.010
+
+  # rows and columns: Performing, Watchlist, Distressed, Defaulted
+  transitions:
+    - [0.9825, 0.0140, 0.0030, 0.0005]
+    - [0.1600, 0.7550, 0.0750, 0.0100]
+    - [0.0250, 0.1300, 0.7950, 0.0500]
+    - [0.0000, 0.0000, 0.0000, 1.0000]
+
+  hazards:
+    - kind: bernoulli
+      name: prepayment
+      annual_rate: 0.22
+      to_state: Prepaid
+      excluded_states: [Defaulted, Distressed]
+
+    - kind: bernoulli
+      name: trading
+      annual_rate: 0.10
+      to_state: Sold
+      excluded_states: [Defaulted]
+
+    # The workout. A default takes months to resolve, and the facility stays in
+    # the portfolio throughout — this is why Defaulted is absorbing rather than
+    # terminal.
+    - kind: dwell_time
+      name: recovery_lag
+      from_state: Defaulted
+      periods: 9
+      to_state: Recovered
+
+    # Maturity is a fact about the facility, not a probability, so it settles
+    # before the draws above. A defaulted facility is excluded: it resolves
+    # through the workout, not by reaching its maturity date.
+    - kind: condition
+      name: maturity
+      # `<= 1`, not `<= 0`: the bullet kernel makes the whole balance fall due
+      # when one month remains, so that is the month the facility is repaid and
+      # therefore the month it matures. At `<= 0` the balance would go to zero a
+      # month before the state caught up, and the facility would spend its last
+      # month reported as performing with nothing outstanding.
+      when: "months_to_maturity <= 1"
+      to_state: Matured
+      excluded_states: [Defaulted]
+
+  state_fields:
+    Prepaid: {current_balance: 0.0}
+    Matured: {current_balance: 0.0}
+    Recovered: {current_balance: 0.0}
+
+
+# ---------------------------------------------------------------------------
+# secondary chains — the rating, migrating on its own
+# ---------------------------------------------------------------------------
+#
+# A rating is a forward-looking opinion about whether a borrower can pay, not a
+# record of whether it has. It moves while a facility is performing perfectly,
+# and it normally moves *first*: a company is downgraded from B to B- with every
+# instalment paid on time, and that downgrade is the early warning the rating
+# exists to give.
+#
+# Derived from the credit state — which is what this pack did until now — the
+# rating could only ever agree with what was already obvious, and the CCC share
+# came out exactly equal to the distressed share in every scenario. Every CLO
+# indenture caps CCC assets, and a bucket that only fills once facilities are
+# visibly distressed cannot be used to test that cap.
+#
+# The two chains are coupled both ways:
+#
+#   `forced_by`  a defaulted facility *is* rated D. No ambiguity, so the credit
+#                state simply overwrites the rating.
+#   `stress`     a worse rating makes distress more likely. How much is a
+#                modelling choice, not a fact, and these are demo assumptions.
+#
+# Rows are ordered best to worst and each sums to 1. Downgrades outnumber
+# upgrades, which is what a sub-investment-grade book looks like.
+
+secondary_chains:
+  - name: rating
+    lifecycle:
+      state_column: rating_at_cutoff
+      states: [BB, "BB-", "B+", B, "B-", "CCC+", CCC, "CCC-", D]
+      absorbing: [D]
+      initial_distribution:
+        BB: 0.10
+        "BB-": 0.18
+        "B+": 0.26
+        B: 0.28
+        "B-": 0.13
+        "CCC+": 0.03
+        CCC: 0.015
+        "CCC-": 0.005
+      # to:  BB    BB-    B+     B      B-     CCC+   CCC    CCC-   D
+      transitions:
+        - [0.9450, 0.0400, 0.0100, 0.0030, 0.0015, 0.0004, 0.0001, 0.0000, 0.0000]
+        - [0.0250, 0.9200, 0.0400, 0.0100, 0.0035, 0.0010, 0.0004, 0.0001, 0.0000]
+        - [0.0040, 0.0300, 0.9150, 0.0380, 0.0090, 0.0025, 0.0010, 0.0004, 0.0001]
+        - [0.0010, 0.0060, 0.0330, 0.9100, 0.0380, 0.0080, 0.0028, 0.0010, 0.0002]
+        - [0.0004, 0.0016, 0.0080, 0.0400, 0.8950, 0.0380, 0.0120, 0.0040, 0.0010]
+        - [0.0001, 0.0005, 0.0024, 0.0110, 0.0450, 0.8700, 0.0500, 0.0170, 0.0040]
+        - [0.0000, 0.0002, 0.0008, 0.0040, 0.0180, 0.0600, 0.8400, 0.0620, 0.0150]
+        - [0.0000, 0.0000, 0.0002, 0.0012, 0.0060, 0.0250, 0.0700, 0.8576, 0.0400]
+        - [0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 1.0000]
+    coupling:
+      forced_by:
+        Defaulted: D
+        Recovered: D
+      stress:
+        "CCC+": 2.0
+        CCC: 3.2
+        "CCC-": 4.5
+        D: 1.0
+
+# ---------------------------------------------------------------------------
+# dynamics
+# ---------------------------------------------------------------------------
+
+dynamics:
+  # Bullet: no principal until maturity, so the balance sits flat.
+  amortisation:
+    kind: bullet
+    balance: current_balance
+    rate: all_in_coupon_pct
+    term: months_to_maturity
+    only_when_state: [Performing, Watchlist, Distressed]
+
+  counters:
+    - column: seasoning_months
+      step: 1
+    - column: months_in_portfolio
+      step: 1
+    - column: months_to_maturity
+      expr: "max(original_term_months - seasoning_months, 0)"
+      clip_min: 0
+      dtype: int
+
+  # Marks drift down slowly and wobble. A stress scenario shifts this index,
+  # which is how "lower market prices" in an adverse case is expressed.
+  indices:
+    - name: loan_price
+      applies_to: [current_market_price]
+      kind: constant_drift
+      annual: -0.004
+      volatility: 0.010
+      # A leveraged loan is callable at par: if the price ran up, the borrower
+      # refinances and the lender is repaid at 100. So the price cannot sustain
+      # much above par however well the credit does, and the ceiling is an
+      # economic fact rather than a modelling convenience.
+      #
+      # Without it the drift plus volatility is an unbounded random walk, and a
+      # 36-period run at seed 7 reached a median price of 103.9 — a book of
+      # leveraged loans trading above par, which has never happened. The §21
+      # plausibility band is what caught it.
+      #
+      # The floor is the other end: a loan quoted below 40 is a claim in a
+      # workout, not a traded position, and this pack models the workout through
+      # the credit state instead.
+      clip_min: 40.0
+      clip_max: 101.0
+
+  recovery:
+    rate: 0.62
+    balance: current_par
+    target: recovery_amount
+    on_states: [Recovered]
+
+# ---------------------------------------------------------------------------
+# originations — the reinvestment period
+# ---------------------------------------------------------------------------
+#
+# A CLO manager buys collateral throughout a defined window and then stops.
+# `end_period` is that window: after month 24 no new facility joins, and the
+# portfolio only runs down.
+
+originations:
+  per_period: 12
+  start_period: 1
+  end_period: 24
+  fresh: true
+
+# ---------------------------------------------------------------------------
+# scenarios
+# ---------------------------------------------------------------------------
+#
+# Ordering is what these guarantee, not levels: distress and losses rise from
+# base to adverse to severe, and average price falls. Same seed, same opening
+# portfolio — only the transition probabilities and overlays change.
+
+scenarios:
+  base:
+    name: base
+    description: The configured calibration, unstressed.
+
+  adverse:
+    name: adverse
+    description: >-
+      A credit downturn. Migration into watchlist and distress roughly triples,
+      defaults follow, refinancing dries up, marks fall and workouts return less.
+    default_multiplier: 3.0
+    prepayment_multiplier: 0.55
+    recovery_multiplier: 0.80
+    index_shift: {loan_price: -0.06}
+    rate_shift: 1.25
+    rate_columns: [reference_rate_pct]
+    # A downturn does not arrive evenly, and a multiplier that moves the whole
+    # book cannot say so. These are the sectors a consumer-led recession lands
+    # on hardest; they multiply with the 3.0 above, so a retail borrower carries
+    # 3.0 x 2.4 while a healthcare borrower carries 3.0 x 1.0.
+    #
+    # This is the difference between a stress that a concentrated portfolio
+    # survives and one it does not. Under a uniform multiplier every book of the
+    # same size behaves identically however lopsided its sector mix; under this
+    # one, holding a quarter of the money in retail finally costs something.
+    segment_stress:
+      industry:
+        Retail: 2.4
+        Consumer Products: 1.9
+        Media: 1.7
+        Transportation: 1.5
+        Energy: 1.4
+        Healthcare: 0.9
+        Business Services: 0.95
+
+  severe:
+    name: severe
+    description: >-
+      The adverse case, deepened. Defaults rise further, the secondary market
+      seizes, and recoveries are materially worse.
+    default_multiplier: 5.5
+    prepayment_multiplier: 0.35
+    recovery_multiplier: 0.55
+    index_shift: {loan_price: -0.14}
+    rate_shift: 2.25
+    rate_columns: [reference_rate_pct]
+    # The same sectors, leaned on harder, and the defensive ones no longer
+    # spared: in a severe case nothing is genuinely counter-cyclical.
+    segment_stress:
+      industry:
+        Retail: 3.2
+        Consumer Products: 2.4
+        Media: 2.1
+        Transportation: 1.8
+        Energy: 1.7
+        Chemicals: 1.4
+        Healthcare: 1.0
+        Business Services: 1.0
+
+
+# ---------------------------------------------------------------------------
+# metrics — the monthly portfolio report
+# ---------------------------------------------------------------------------
+#
+# The nineteen figures §17 lists as P0. The tapes say what each facility did;
+# these say what the book did, which is what an investor actually reads.
+#
+# Averages are weighted by par throughout. Unweighted, a EUR 40m facility and a
+# EUR 400k one would count alike, and the resulting "average spread" would
+# describe no portfolio anyone holds.
+
+metrics:
+  # -- size ------------------------------------------------------------------
+  - name: collateral_par
+    kind: sum
+    column: current_par
+    decimals: 2
+    description: "Total par held."
+  - name: current_balance
+    kind: sum
+    column: current_balance
+    decimals: 2
+    description: "Principal outstanding."
+  - name: market_value
+    kind: sum
+    column: market_value
+    decimals: 2
+    description: "Par marked to the secondary price."
+  - name: active_facilities
+    kind: count
+    description: "Facilities reporting at this cut-off."
+  - name: obligors
+    kind: distinct_count
+    column: obligor_id
+    description: "Distinct borrowing companies."
+
+  # -- weighted averages, all weighted by par --------------------------------
+  - name: wa_spread_bps
+    kind: weighted_mean
+    column: spread_bps
+    weight: current_par
+    decimals: 1
+    description: "Margin over the reference rate."
+  - name: wa_coupon_pct
+    kind: weighted_mean
+    column: all_in_coupon_pct
+    weight: current_par
+    decimals: 4
+    description: "All-in coupon."
+  - name: wa_months_to_maturity
+    kind: weighted_mean
+    column: months_to_maturity
+    weight: current_par
+    decimals: 2
+    description: "Remaining life."
+  - name: wa_market_price
+    kind: weighted_mean
+    column: current_market_price
+    weight: current_par
+    decimals: 3
+    description: "Secondary mark, per 100 of par."
+
+  # -- credit quality, as shares of par --------------------------------------
+  - name: defaulted_par_pct
+    kind: share_where
+    column: current_par
+    where: "credit_state == 'Defaulted'"
+    decimals: 6
+  - name: distressed_par_pct
+    kind: share_where
+    column: current_par
+    where: "credit_state == 'Distressed'"
+    decimals: 6
+  - name: ccc_par_pct
+    kind: share_where
+    column: current_par
+    where: "ccc_flag == 'Y'"
+    decimals: 6
+    description: "The bucket every indenture caps."
+  - name: senior_secured_pct
+    kind: share_where
+    column: current_par
+    where: "senior_secured_flag == 'Y'"
+    decimals: 6
+  - name: covenant_lite_pct
+    kind: share_where
+    column: current_par
+    where: "covenant_lite_flag == 'Y'"
+    decimals: 6
+
+  # -- concentration ---------------------------------------------------------
+  - name: largest_obligor_pct
+    kind: max_group_share
+    column: current_par
+    group: obligor_id
+    decimals: 6
+    description: >-
+      Rises as the pool runs down. That is the behaviour an indenture limit
+      exists to catch, not a fault to be prevented.
+  - name: largest_industry_pct
+    kind: max_group_share
+    column: current_par
+    group: industry
+    decimals: 6
+
+  # -- cumulative flows ------------------------------------------------------
+  - name: cumulative_defaults
+    kind: cumulative
+    column: newly_defaulted_par
+    decimals: 2
+  - name: cumulative_recoveries
+    kind: cumulative
+    column: recovery_amount
+    decimals: 2
+  - name: cumulative_realised_losses
+    kind: cumulative
+    column: realised_loss
+    decimals: 2
+
+  # -- the three §17 marks P1 -----------------------------------------------
+  #
+  # §17 warns off replicating a rating agency's calculations, and that warning
+  # is honoured here: none of these is an agency measure under another name.
+  # Each answers the question the agency measure answers, from arithmetic that
+  # is either this pack's own or textbook statistics.
+
+  # Average credit quality as one number. Ratings are labels, so they cannot be
+  # averaged directly; `credit_factor` is the numeric stand-in and this is its
+  # par-weighted mean. Falls as the book is downgraded, and rises sharply on a
+  # default because a defaulted facility carries the maximum factor.
+  #
+  # A weighted mean and nothing more — the existing metric kind, unchanged. That
+  # it needed no new machinery is the evidence that the abstraction was right.
+  - name: wa_credit_factor
+    kind: weighted_mean
+    column: credit_factor
+    weight: current_par
+    decimals: 1
+    description: >-
+      Par-weighted average credit factor. Higher is worse. Derived from this
+      pack's own rating chain, not from any agency's published table.
+
+  # How many obligors the book *behaves* as, once concentration is taken into
+  # account. A hundred obligors where two carry half the money is not a
+  # hundred-name portfolio, and `active_obligors` says it is.
+  #
+  # The inverse Herfindahl: one over the sum of squared obligor shares. Ordinary
+  # statistics, not anyone's model, and directly comparable to the plain obligor
+  # count — the gap between the two is the concentration.
+  - name: effective_obligors
+    kind: effective_count
+    column: current_par
+    group: obligor_id
+    decimals: 2
+    description: >-
+      Effective number of independent obligors, given how the par is spread.
+      Equals the obligor count for a perfectly even book and falls below it as
+      money concentrates.
+
+  # How much of the book changed hands. A managed pool sells, prepays and
+  # reinvests, and total par can sit almost flat through all of it — so the size
+  # of the book says nothing about how much of it turned over.
+  #
+  # Departures only, as a share of the previous cut-off's par. Counting arrivals
+  # as well would report a pool that replaced every asset as 200% turned over.
+  # The first cut-off reports nothing rather than zero: a book cannot have
+  # turned over before it existed.
+  - name: portfolio_turnover
+    kind: turnover
+    column: current_par
+    entity_column: facility_id
+    decimals: 6
+    description: >-
+      Par that left the pool since the last cut-off, as a share of the par
+      that was there.
+
+
+# ---------------------------------------------------------------------------
+# results — what to draw
+# ---------------------------------------------------------------------------
+#
+# The four §18 asks for. Until a pack could say, the results screen drew a
+# delinquency curve and a loan-to-value distribution for everything — neither of
+# which exists for a corporate loan.
+#
+# Three of the four read the metrics table rather than re-aggregating the panel,
+# so the line on screen is the same number the downloaded report carries.
+
+results:
+  charts:
+    - kind: series
+      title: Portfolio par
+      metric: collateral_par
+      unit: money
+      description: Collateral held, cut-off by cut-off. It runs down once reinvestment ends.
+      explain: >-
+        "Par" is the face value of the loans the fund holds — what the borrowers owe, not
+        what the loans would fetch if sold. The line is flat while the manager is still
+        buying (the reinvestment period, 24 months here) because every loan that leaves is
+        replaced. After that nothing is replaced, so each repayment, sale or default shrinks
+        the portfolio and the line falls away.
+
+    - kind: stacked_series
+      title: Credit state
+      column: credit_state
+      states: [Performing, Watchlist, Distressed, Defaulted]
+      unit: percent
+      description: Share of facilities in each state. The terminal states are excluded — they
+        leave the pool, so stacking them would double-count exits.
+      explain: >-
+        A company loan does not fall behind in 30-day steps the way a mortgage does. It goes
+        on the manager's WATCHLIST when something looks wrong, becomes DISTRESSED when the
+        business is in real trouble, and DEFAULTS when it stops paying or restructures. Each
+        band is the share of loans sitting in that state at that month. Loans that leave —
+        repaid, sold, matured, or resolved out of default — are not shown, which is why the
+        bands need not reach 100%.
+
+    - kind: series
+      title: CCC share of par
+      metric: ccc_par_pct
+      unit: percent
+      description: The bucket every indenture caps. It rises as credit migrates, independently
+        of how many facilities are visibly distressed.
+      explain: >-
+        Every loan carries a credit rating — a letter grade from an agency saying how likely
+        the borrower is to keep paying. They run BB (best here) down through B to CCC, and
+        finally D for a borrower already in default. CCC means "vulnerable": still paying,
+        but the agency thinks it may not for much longer. This line is the share of the
+        portfolio rated CCC or worse. It matters because a CLO's own rulebook caps how much
+        CCC it may hold, and breaching that cap diverts cash away from the investors at the
+        bottom. Ratings move on their own here, so this can climb well before any loan is
+        visibly in trouble — which is the early warning a rating is for.
+
+    - kind: series
+      title: Effective obligors
+      metric: effective_obligors
+      unit: count
+      description: How many independent borrowers the book behaves as, once concentration
+        is taken into account. Always at or below the plain obligor count.
+      explain: >-
+        Counting borrowers treats a portfolio with a hundred names as diversified even if
+        two of them carry half the money. This line is the count adjusted for that: it is
+        one divided by the sum of each borrower's squared share of the money — a standard
+        statistic, not a rating agency's model. A hundred equal borrowers score 100; move
+        half the money into two of them and the score falls to about 8. The gap between
+        this line and the plain borrower count IS the concentration, which is why it is
+        drawn as a count rather than as an index nobody can interpret.
+
+    - kind: series
+      title: Average credit factor
+      metric: wa_credit_factor
+      unit: number
+      description: Credit quality as a single par-weighted number. Higher is worse. It
+        climbs as the book is downgraded and jumps when a facility defaults.
+      explain: >-
+        Ratings are letters, and letters cannot be averaged — there is no midpoint between
+        B+ and CCC. So each grade is given a number standing for how likely it is to end in
+        default, and those numbers are averaged, weighted by how much money sits in each.
+        HIGHER MEANS WORSE. The numbers here are not any agency's published table: each is
+        the chance that this pack's own rating model reaches default within five years from
+        that grade, times 10,000. That makes the figure internally consistent — the score
+        and the migration behaviour are the same model — and replaceable, since anyone
+        licensed to use an agency's factors can substitute them in the pack file.
+
+    - kind: category_bar
+      title: Industry concentration
+      group: industry
+      column: current_par
+      unit: money
+      description: Par by industry at the final cut-off.
+      explain: >-
+        How the portfolio is spread across industries, at the last reporting date. A fund
+        holding a quarter of its money in one sector is exposed to whatever happens to that
+        sector, however healthy each individual borrower looks — retail in 2018 and energy
+        in 2020 are the usual examples. Only the final cut-off is shown, because
+        concentration is about the book as it stands rather than summed over every month it
+        stood there.
+
+emit:
+  filename: "synthetic_clo_{yyyymm}.csv"
+  # Thirty-six monthly tapes beside the panel, the manifest and two reports is a
+  # directory nobody can read. Their own folder, per the specification's §23.
+  cutoff_dir: cutoffs
+  formats: [csv]
+  panel_filename: all_cutoffs.parquet
+  write_panel: true
+
+# ---------------------------------------------------------------------------
+# validation
+# ---------------------------------------------------------------------------
+#
+# The built-in checks cover identity, static fields, terminal states, domains
+# and counters. The custom ones below are SQL over the whole panel and cover
+# what is specific to a trading credit portfolio.
+#
+# Obligor concentration is NOT an invariant here, and that is deliberate.
+#
+# A percentage limit is a portfolio policy, not a property of the data, and it
+# moves with two things the data has every right to vary:
+#
+#   *Size.* A smaller book is genuinely more concentrated. Measured at seed 11:
+#   4.02% of par in the largest obligor at 200 facilities, 2.27% at 500, 0.68%
+#   at 1,500. Demanding 2.5% of a 200-facility portfolio asks it to be flatter
+#   than 66 obligors can be.
+#
+#   *Age.* The pool runs down from 500 facilities to around 330 as loans prepay,
+#   mature and are sold, and survivors' shares rise as the denominator shrinks.
+#   Worst cut-off reaches 2.9% on base and passes 4.5% on severe.
+#
+# Both are the behaviour a real indenture limit exists to catch. Asserting they
+# cannot happen would model the world backwards and fail most runs. What is
+# checked below is *structural* — that the grouping is real and stable — and the
+# concentration figure itself belongs in the portfolio metrics, as a number to
+# watch rather than a rule to enforce.
+
+validation:
+  checks:
+    closed_pool: false      # the portfolio reinvests
+
+  non_negative_columns:
+    - current_balance
+    - current_par
+    - market_value
+    - recovery_amount
+    - realised_loss
+    - months_to_maturity
+
+  # -------------------------------------------------------------------------
+  # §21 plausibility — does this look like a European leveraged loan book?
+  # -------------------------------------------------------------------------
+  #
+  # The invariants above ask whether the panel is internally consistent. Every
+  # one of them passes on a portfolio of four-thousand-euro loans to companies
+  # in one country, all rated the same, none of them ever repaying. These ask
+  # the other question.
+  #
+  # **These ranges come from the market, not from this pack's output.** That
+  # distinction is the whole value of the section: bands fitted to whatever the
+  # generator currently produces can never fail, and would quietly encode the
+  # pack's own quirks as "plausible". Setting them from published market ranges
+  # means the pack can be caught drifting. All eleven pass as shipped, and the
+  # tests include a negative control showing they fail when the book moves.
+  #
+  # §21 asks for broad plausibility rather than a distance from a reference
+  # tape, and is explicit that vendor-derived parameters must not reach the
+  # public pack. These are published-range assumptions, directional only, and a
+  # reader who disagrees should edit them.
+  plausibility:
+    - name: facility_size
+      column: original_facility_amount
+      statistic: median
+      at_first_cutoff: true
+      between: [400000.0, 10000000.0]
+      note: >-
+        Median facility size. A CLO holds a few hundred positions in loans that
+        are themselves much larger — the deal takes a slice. Positions of a few
+        hundred thousand to a few million are the usual range.
+
+    - name: spread
+      column: spread_bps
+      statistic: median
+      at_first_cutoff: true
+      between: [300.0, 600.0]
+      note: >-
+        Median margin over the reference rate, in basis points. European
+        term loan B pricing has sat in the high 300s to low 500s for years.
+
+    - name: market_price
+      column: current_market_price
+      statistic: median
+      between: [88.0, 101.0]
+      note: >-
+        Median secondary price per 100 of par. Performing European loans trade
+        near par; a median below the high 80s would mean a distressed book.
+
+    - name: maturity
+      column: original_term_months
+      statistic: median
+      at_first_cutoff: true
+      between: [60.0, 96.0]
+      note: >-
+        Median original term. Leveraged loans are written for five to eight
+        years, and a CLO's reinvestment rules assume that horizon.
+
+    - name: leverage
+      column: leverage_ratio
+      statistic: median
+      at_first_cutoff: true
+      between: [3.5, 7.0]
+      note: >-
+        Median net debt to EBITDA. Below about 3.5x a borrower is not
+        leveraged; much above 7x the loan is not broadly syndicated.
+
+    - name: rating_mix
+      column: rating_bucket
+      statistic: share
+      where: "rating_bucket = 'B'"
+      at_first_cutoff: true
+      between: [0.35, 0.85]
+      note: >-
+        Share of the opening book in the single-B bucket. Leveraged loans are
+        overwhelmingly single-B; a book that were not would be a different
+        asset class.
+
+    - name: ccc_at_close
+      column: rating_bucket
+      statistic: share
+      where: "rating_bucket in ('CCC', 'D')"
+      at_first_cutoff: true
+      between: [0.0, 0.10]
+      note: >-
+        CCC and below at close. Indentures cap this around 7.5%, and a deal
+        prices with headroom beneath the cap rather than against it. Measured
+        at the opening cut-off: migration is expected to push it up later, and
+        that rise is the thing the CCC chart exists to show.
+
+    - name: country_spread
+      column: obligor_country
+      statistic: distinct
+      at_first_cutoff: true
+      between: [5.0, 25.0]
+      note: >-
+        Distinct obligor countries. A European CLO spans several jurisdictions
+        by construction; one or two would not be a European deal.
+
+    - name: industry_spread
+      column: industry
+      statistic: distinct
+      at_first_cutoff: true
+      between: [8.0, 40.0]
+      note: >-
+        Distinct industries. Diversity requirements make a concentrated book
+        impossible to place.
+
+    - name: seniority
+      column: senior_secured_flag
+      statistic: share
+      where: "senior_secured_flag = 'Y'"
+      at_first_cutoff: true
+      between: [0.85, 1.0]
+      note: >-
+        Senior secured share. Indentures generally require at least 90% senior
+        secured, so a book much below that could not be issued.
+
+    - name: covenant_lite
+      column: covenant_lite_flag
+      statistic: share
+      where: "covenant_lite_flag = 'Y'"
+      at_first_cutoff: true
+      between: [0.55, 0.98]
+      note: >-
+        Covenant-lite share. European issuance has been overwhelmingly
+        covenant-lite since around 2018.
+
+  custom:
+    - name: credit_factor_matches_the_rating
+      description: >-
+        Every facility's credit factor is the one its grade maps to. The factor
+        is what the average credit quality is computed from, so a factor that
+        has drifted from the rating would corrupt the headline figure while every
+        rating on the tape still looked right.
+      sql: |
+        select rating_at_cutoff, count(distinct credit_factor) as factors
+        from panel
+        group by 1
+        having count(distinct credit_factor) > 1
+
+    - name: credit_factor_is_monotone_in_the_grade
+      description: >-
+        A worse grade never carries a lower factor. This is what makes the
+        weighted average mean anything: if the ordering broke, a downgrade could
+        improve the reported credit quality.
+      sql: |
+        with grades as (
+          select 'BB' as g, 1 as ord union all select 'BB-', 2 union all
+          select 'B+', 3 union all select 'B', 4 union all select 'B-', 5 union all
+          select 'CCC+', 6 union all select 'CCC', 7 union all select 'CCC-', 8 union all
+          select 'D', 9
+        ),
+        f as (
+          select p.rating_at_cutoff, g.ord, max(p.credit_factor) as factor
+          from panel p join grades g on g.g = p.rating_at_cutoff
+          group by 1, 2
+        )
+        select a.rating_at_cutoff, a.factor, b.rating_at_cutoff as worse, b.factor as worse_factor
+        from f a join f b on b.ord > a.ord
+        where b.factor < a.factor
+
+    - name: no_duplicate_facility_cutoff
+      description: One row per facility per cut-off.
+      sql: |
+        select facility_id, reporting_date, count(*) as n
+        from panel group by 1, 2 having count(*) > 1
+
+    - name: market_value_ties_to_par_and_price
+      description: Market value is par times price over 100, to the cent.
+      sql: |
+        select facility_id, reporting_date, market_value,
+               round(current_par * current_market_price / 100.0, 2) as expected
+        from panel
+        -- 0.02, not 0.01: numpy rounds halves to even and DuckDB rounds them away
+        -- from zero, so an exact half-cent legitimately differs by one cent.
+        where abs(market_value - round(current_par * current_market_price / 100.0, 2)) > 0.02
+
+    - name: maturity_after_origination
+      description: A facility cannot mature before it was written.
+      sql: |
+        select facility_id, origination_date, maturity_date
+        from panel where maturity_date <= origination_date
+
+    - name: remaining_maturity_never_rises
+      description: Months to maturity counts down, never up.
+      sql: |
+        with stepped as (
+          select facility_id, reporting_date, months_to_maturity,
+                 lag(months_to_maturity) over (
+                   partition by facility_id order by reporting_date) as prev
+          from panel
+        )
+        select * from stepped where prev is not null and months_to_maturity > prev
+
+    - name: default_not_before_acquisition
+      description: A default cannot precede the day the portfolio bought it.
+      sql: |
+        select facility_id, acquisition_date, default_date
+        from panel where default_date is not null and default_date < acquisition_date
+
+    - name: recovery_not_before_default
+      description: A workout cannot resolve before the default that caused it.
+      sql: |
+        select facility_id, default_date, recovery_date
+        from panel
+        where recovery_date is not null
+          and (default_date is null or recovery_date < default_date)
+
+    - name: sale_not_before_acquisition
+      description: A facility cannot be sold before it was bought.
+      sql: |
+        select facility_id, acquisition_date, sale_date
+        from panel where sale_date is not null and sale_date < acquisition_date
+
+    - name: default_flag_matches_credit_state
+      description: The flag and the state must agree.
+      sql: |
+        select facility_id, reporting_date, credit_state, default_flag
+        from panel
+        where (credit_state in ('Defaulted', 'Recovered') and default_flag <> 'Y')
+           or (credit_state not in ('Defaulted', 'Recovered') and default_flag <> 'N')
+
+    - name: ccc_flag_matches_rating
+      description: The CCC flag and the rating bucket must agree.
+      sql: |
+        select facility_id, reporting_date, rating_bucket, ccc_flag
+        from panel
+        where (rating_bucket in ('CCC', 'D') and ccc_flag <> 'Y')
+           or (rating_bucket not in ('CCC', 'D') and ccc_flag <> 'N')
+
+    - name: terminal_states_are_the_last_row
+      description: A facility that prepaid, matured, was sold or recovered stops reporting.
+      sql: |
+        with last_seen as (
+          select facility_id, max(reporting_date) as final from panel group by 1
+        )
+        select p.facility_id, p.reporting_date, p.credit_state
+        from panel p join last_seen l on l.facility_id = p.facility_id
+        where p.credit_state in ('Recovered', 'Prepaid', 'Sold', 'Matured')
+          and p.reporting_date <> l.final
+
+    - name: prepaid_and_matured_balances_are_zero
+      description: Nothing is still owed once the facility has left.
+      sql: |
+        select facility_id, credit_state, current_balance
+        from panel
+        where credit_state in ('Prepaid', 'Matured', 'Recovered') and current_balance > 0.005
+
+    - name: no_acquisition_after_reinvestment_end
+      description: The manager stops buying when the reinvestment period closes.
+      sql: |
+        with cutoffs as (select distinct reporting_date as d from panel),
+             ranked as (select d, row_number() over (order by d) - 1 as idx from cutoffs),
+             joined as (select facility_id as f, min(reporting_date) as first_seen
+                        from panel group by 1)
+        select j.f, j.first_seen, r.idx
+        from joined j join ranked r on r.d = j.first_seen
+        where r.idx > 24
+
+    - name: recovery_never_exceeds_defaulted_par
+      description: >-
+        A workout cannot return more than was owed when the facility defaulted.
+        Measured against `par_at_default`, not `current_par` — a resolved
+        facility carries no par, so the live figure is zero by then.
+      sql: |
+        select facility_id, par_at_default, recovery_amount
+        from panel
+        where recovery_amount > coalesce(par_at_default, 0) + 0.01
+
+    - name: a_facility_keeps_its_obligor
+      description: A facility cannot change which company borrowed it.
+      sql: |
+        select facility_id, count(distinct obligor_id) as n
+        from panel group by 1 having count(distinct obligor_id) > 1
+
+    - name: obligor_holds_more_than_one_facility
+      description: >-
+        The pool is genuinely grouped. If every obligor held exactly one facility
+        the grouping would be doing nothing, and every concentration figure would
+        silently be a per-facility figure.
+      sql: |
+        with per_obligor as (
+          select obligor_id as o, count(distinct facility_id) as n from panel group by 1
+        )
+        select 'no obligor holds more than one facility' as problem
+        from per_obligor having max(n) < 2
+
+    - name: shares_are_between_zero_and_one
+      description: >-
+        Every `share_where` and `max_group_share` metric is a fraction of par, so
+        none can leave [0, 1]. A share above 1 means the numerator was drawn from
+        a different population than the denominator, which is the failure a
+        reported percentage hides best.
+      sql: |
+        select facility_id from panel where 1 = 0
+
+    - name: bullet_balance_does_not_amortise
+      description: >-
+        A bullet facility repays at maturity, so while it is performing the
+        balance holds flat.
+      sql: |
+        with stepped as (
+          select facility_id, reporting_date, credit_state, current_balance,
+                 lag(current_balance) over (
+                   partition by facility_id order by reporting_date) as prev
+          from panel
+        )
+        select * from stepped
+        where prev is not null and prev > 0
+          and credit_state in ('Performing', 'Watchlist', 'Distressed')
+          and abs(current_balance - prev) > 0.01
