@@ -23,7 +23,7 @@ switched off.
 
 Enable with::
 
-    pip install 'sdd[deep]'
+    pip install -e '.[deep]'
 """
 
 from __future__ import annotations
@@ -50,7 +50,7 @@ def _require_sdv() -> Any:
     except ImportError as exc:  # pragma: no cover - depends on the extra
         raise DeepUnavailable(
             "the deep polish step needs SDV, which is not installed.\n"
-            "  pip install 'sdd[deep]'\n"
+            "  pip install -e '.[deep]'\n"
             "Generation works without it; the polish step only refines an existing sample."
         ) from exc
     import sdv
