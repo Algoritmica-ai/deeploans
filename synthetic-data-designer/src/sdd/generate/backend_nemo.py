@@ -8,7 +8,7 @@ outputs, embeddings) alongside the samplers.
 
 Enable with::
 
-    pip install 'sdd[nemo]'
+    pip install -e '.[nemo]'
     sdd run <spec> --backend nemo
 
 The contract is identical either way: same spec in, same columns out. Only the
@@ -56,7 +56,7 @@ def _require_nemo() -> tuple[Any, Any]:
     except ImportError as exc:  # pragma: no cover - depends on the extra
         raise NemoUnavailable(
             "the 'nemo' backend needs NVIDIA NeMo Data Designer, which is not installed.\n"
-            "  pip install 'sdd[nemo]'\n"
+            "  pip install -e '.[nemo]'\n"
             "The default numpy backend needs no extra dependencies and produces the "
             "same columns."
         ) from exc
