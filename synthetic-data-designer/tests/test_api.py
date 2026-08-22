@@ -296,7 +296,9 @@ def test_the_nemo_backend_explains_how_to_install_it():
 
     from sdd.generate.backend_nemo import NemoUnavailable, sample_columns_nemo
 
-    with pytest.raises(NemoUnavailable, match=r"pip install 'sdd\[nemo\]'"):
+    # Same reason as the deep extra below: the command in the message has to be
+    # one that works, and `sdd` on PyPI is an unrelated package.
+    with pytest.raises(NemoUnavailable, match=r"pip install -e '\.\[nemo\]'"):
         sample_columns_nemo(api.load(PACK), 10)
 
 
@@ -312,5 +314,41 @@ def test_the_deep_polish_explains_how_to_install_it():
 
     from sdd.polish import DeepUnavailable, polish_book
 
-    with pytest.raises(DeepUnavailable, match=r"pip install 'sdd\[deep\]'"):
+    # The command has to be one that works. `sdd` on PyPI is an unrelated
+    # video-detection library, so the old message sent a stuck user to install
+    # someone else's package.
+    with pytest.raises(DeepUnavailable, match=r"pip install -e '\.\[deep\]'"):
         polish_book(pd.DataFrame({"a": [1]}), api.load(PACK), seed_data=pd.DataFrame({"a": [1]}))
+
+
+def test_no_install_instruction_names_the_taken_package():
+    """`pip install sdd` fetches somebody else's library.
+
+    `sdd` on PyPI is an unrelated video-detection package, so any instruction
+    naming it sends a user to install the wrong thing. The import name is still
+    `sdd`; the *distribution* is `synthetic-data-designer`.
+
+    Checked by reading the source rather than by triggering each message,
+    because the two tests that do trigger them **skip whenever the optional
+    package happens to be installed** — which is why the NeMo message survived
+    a sweep, passed locally, and failed on all three CI versions. A test that
+    only runs in some environments cannot guard a string that appears in all of
+    them.
+    """
+    import re
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[1]
+    pattern = re.compile(r"""pip install\s+['"]?sdd\[""")
+
+    offenders = []
+    for path in list(root.rglob("*.py")) + list(root.rglob("*.js")) + list(root.rglob("*.md")):
+        if any(part in (".git", ".venv", "node_modules", "__pycache__") for part in path.parts):
+            continue
+        if pattern.search(path.read_text(encoding="utf-8", errors="ignore")):
+            offenders.append(str(path.relative_to(root)))
+
+    assert not offenders, (
+        f"these tell a user to install the wrong package: {offenders}. "
+        "Use `pip install -e '.[extra]'`, which installs this checkout."
+    )
