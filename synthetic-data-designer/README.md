@@ -1,7 +1,9 @@
 # synthetic-data-designer
 
-**Generate loan portfolios where the maximum achievable model score is computable —
-then measure your model against it.**
+**Generate controlled datasets where the maximum achievable performance from the
+permitted observables is computable — then measure your model against it.**
+
+> **A process that cannot recover a known answer is not ready for an unknown one.**
 
 A credit model scores **0.84** on a lender's book. Is that good? Nobody knows. Real
 data has a ceiling too — some borrowers default for reasons nothing in the file
@@ -24,20 +26,51 @@ benchmark.compare(spec, panel, my_model_scores)
                         ceiling  0.8987   oracle 0.9162
 ```
 
-`0.84` becomes **"0.84 against a ceiling of 0.87"** — a statement about the *model*
-rather than a number floating free. That is the difference between a synthetic
-dataset and a **measuring instrument**, and it is what real data structurally cannot
-give you.
+### Two numbers, and why the oracle is higher
 
-**Stated precisely**, because the claim is only worth making if it survives scrutiny:
-the ceiling is *the theoretical maximum predictive performance achievable from the
-declared observable variables, under this benchmark's data-generating process, for
-this outcome and metric.* It is not a universal bound, and a model beating it means
-the ceiling is wrong or the model saw something it should not have — which is why
-that case is reported rather than celebrated.
+The obvious question on seeing that last line is why the oracle sits *above* the
+ceiling. They answer different things, and the gap between them is the useful part:
+
+```
+   0.9162   ORACLE     what a model that could SEE the hidden risk driver scores
+      │
+      │  information loss — signal the permitted observables do not carry.
+      │  No model closes this. It is a property of the data.
+      ▼
+   0.8987   CEILING    the best obtainable from the observables a model may use
+      │
+      │  model inefficiency — available signal the model failed to extract.
+      │  This is the part a better model can close.
+      ▼
+   0.8923   YOUR MODEL
+```
+
+That split is worth more than either number alone. It separates **"buy a better
+model"** from **"buy better data"** — usually the more expensive question to get
+wrong.
+
+### What the claim does and does not say
+
+The ceiling is *the maximum achievable under this benchmark's declared
+data-generating process, from the declared observable information set, for this
+outcome and this metric.*
+
+That qualification is not throat-clearing. The obvious technical objection is
+**"maximum according to what hypothesis class?"** — and the answer is that there is
+no hypothesis class involved: the ceiling is the Bayes-optimal score given the
+observables, derived by inverting a generating process written down in the pack. It
+is not a universal bound, and it says nothing about any other dataset.
+
+A model that beats it has not done something impressive. Either the ceiling is wrong
+or the model saw something it should not have, which is why that case is reported as
+a failure rather than a result.
 
 **New to any of this?** [`docs/WHAT-IS-SDD.md`](docs/WHAT-IS-SDD.md) explains the
 whole tool from zero — no jargon without a definition, no finance background assumed.
+Every field of the spec is in [`docs/SPEC-REFERENCE.md`](docs/SPEC-REFERENCE.md) —
+including [`reference_spec.yaml`](docs/reference_spec.yaml), a runnable file showing
+every option in one place — and [`docs/AUTHORING-WITH-AN-LLM.md`](docs/AUTHORING-WITH-AN-LLM.md)
+is a procedure for turning a prospectus into one.
 
 ### ▶ Start here — the worked example
 
@@ -52,6 +85,32 @@ looks excellent and is not.
 No GPU, no API keys, nothing to sign. Outputs are committed, so you can read it
 without running it. Further reading: **[how the ceiling works](docs/KNOWN-CEILING.md)**.
 
+### What comes back
+
+`benchmark.compare()` returns a verdict, not a number:
+
+| | |
+|---|---|
+| `achieved` | your model's score |
+| `ceiling` · `oracle` | the two bounds above |
+| `captured` | share of *available* signal found — the figure that compares across datasets |
+| `metrics` | roc_auc · pr_auc · ks · brier · calibration_error, as the pack declares |
+| `behaviour` | directionality per driver, decoy dependence, signal-captured bar — each pass or fail |
+| `beat_the_ceiling` | flagged as a **problem**: impossible, so something is wrong |
+| `passed` | all of the above, as one answer |
+
+### Benchmark packs
+
+One today, and it is deliberately not a list of ambitions:
+
+| pack | latent driver | outcome | ceiling |
+|---|---|---|---|
+| `credit_benchmark_known_ceiling` | borrower risk tier | 60+ DPD or default | computed per run |
+
+The abstraction underneath — *latent truth → observables → outcome → ceiling* — is
+not credit-specific, and fraud, churn or collections would each be a pack rather than
+a rewrite. None of them exist yet, so none of them are listed as though they do.
+
 ### What that buys you
 
 - **Measure a credit or risk model properly.** Not "is 0.84 good?" but "the model
@@ -59,8 +118,8 @@ without running it. Further reading: **[how the ceiling works](docs/KNOWN-CEILIN
 - **Compare across datasets.** Raw AUC is not comparable between portfolios, because
   their ceilings differ. Share-of-available-signal is.
 - **Rehearse a validation process** — leakage checks, out-of-time splits, challenger
-  comparison — on a problem whose answer is known, before real data is involved. A
-  process that cannot recover a known answer is not ready for an unknown one.
+  comparison — on a problem whose answer is known, before real data is involved.
+  That is the line at the top of this page, made operational.
 - **Catch what looks like success.** A model that beats the ceiling is impossible, so
   the instrument reports it. On real data, a leaking model just looks excellent.
 - **Start on day one**, on a laptop, with nothing to sign.
@@ -101,7 +160,12 @@ You can use SDD on its own and never touch the rest.
 
 ---
 
-## And the generator underneath
+## The generator underneath
+
+Everything above rests on this: to manufacture a controlled experiment you first
+need something that can build a portfolio and age it convincingly. That engine is
+the rest of this page, and it is useful on its own — most of the packs here are
+ordinary asset-class generators with no benchmark attached.
 
 **Give it a structure and some sample data. It works out how the data behaves, then
 generates a synthetic portfolio and ages it forward in time.**
