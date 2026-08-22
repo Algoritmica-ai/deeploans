@@ -58,7 +58,7 @@ def ui(
         from sdd.web.app import serve
     except ImportError as exc:
         typer.secho(
-            "the web UI needs a couple of extra packages:\n  pip install 'sdd[web]'",
+            "the web UI needs a couple of extra packages:\n  pip install -e '.[web]'",
             fg=typer.colors.RED,
         )
         raise typer.Exit(1) from exc

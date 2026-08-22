@@ -17,6 +17,11 @@
 
 const VIEWS = ["upload", "review", "configure", "generate", "results", "download"];
 
+// Where the code lives. Referenced from the shared-instance notice, which tells
+// a visitor how to run this privately and therefore has to say where to get it.
+const SOURCE_URL =
+  "https://github.com/Algoritmica-ai/deeploans/tree/main/synthetic-data-designer";
+
 const state = {
   view: "upload",
   source: null,          // token tying the uploaded schema + sample together
@@ -395,8 +400,10 @@ function describeInstance(meta) {
     "restarts, so download what you generate before you leave." +
     (bounds.length ? ` Limited to ${bounds.join(", ")}.` : "") +
     "<br><br>Do not upload confidential data. To use your own tapes privately, run it on " +
-    "your own machine: <code class=\"inline\">pip install 'sdd[web]'</code> then " +
-    "<code class=\"inline\">sdd ui</code> — then nothing leaves it.",
+    "your own machine — clone the repository, then " +
+    "<code class=\"inline\">pip install -e '.[web]'</code> and " +
+    "<code class=\"inline\">sdd ui</code>. Nothing leaves it. " +
+    `<a href="${SOURCE_URL}" target="_blank" rel="noopener noreferrer">Source</a>.`,
     "warn", true));
 }
 
@@ -894,7 +901,7 @@ function renderMethods() {
       el("div", { class: "m-desc", text: description }),
       blocked ? el("div", { class: "m-need", text:
         needsDeep && needsSample ? `Unavailable — ${requirement}.`
-        : needsDeep ? "Unavailable — install the deep extra: pip install 'sdd[deep]'."
+        : needsDeep ? "Unavailable — install the deep extra: pip install -e '.[deep]'."
         : "Unavailable — upload sample data in step 1." }) : null,
     ]));
   }
