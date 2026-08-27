@@ -89,6 +89,8 @@ Start with the data bible: [`notebooks/00_data_bible.ipynb`](notebooks/00_data_b
 
 ## What's in here
 
+![Deeploans OS components](../Deeploans%20OS%20components.svg)
+
 | Component | Location | Description |
 |-----------|----------|-------------|
 | Framework (`credit_fm`) | `src/credit_fm/` | KVT tokenizer, three-branch model, data layer, training, utils |
