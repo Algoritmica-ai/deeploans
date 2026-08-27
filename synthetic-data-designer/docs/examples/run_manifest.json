@@ -1,0 +1,36 @@
+{
+  "generated_by": "sdd 0.1.0",
+  "generated_at": "2026-08-27T08:24:06+0530",
+  "python": "3.13.11",
+  "platform": "macOS-26.5.2-arm64-arm-64bit-Mach-O",
+  "spec": {
+    "name": "clo_eu_leveraged_loans",
+    "asset_class": "clo",
+    "hash": "21f57408318b056f",
+    "base_hash": "2c5f554dcba43ccf",
+    "version": 1
+  },
+  "inputs": {
+    "entities": 500,
+    "periods": 36,
+    "seed": 42,
+    "scenario": null
+  },
+  "outputs": {
+    "files": 36,
+    "panel": "/var/folders/2d/mmdglhts2bd1h4t90ry1v52m0000gn/T/tmptlyxy8dq/all_cutoffs.parquet",
+    "surviving_entities": 297,
+    "originated": 288
+  },
+  "timings": {
+    "book_seconds": 0.04,
+    "ageing_seconds": 1.73,
+    "total_seconds": 1.99
+  },
+  "validation_passed": true,
+  "library_versions": {
+    "numpy": "2.4.1",
+    "pandas": "2.3.3",
+    "scipy": "1.17.1"
+  }
+}

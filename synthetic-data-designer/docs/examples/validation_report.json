@@ -1,0 +1,590 @@
+{
+  "spec": "clo_eu_leveraged_loans",
+  "passed": true,
+  "total": 59,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "ids_unique_per_period",
+      "description": "Each entity appears at most once per cut-off.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "group_stable::obligor.industry",
+      "description": "industry belongs to the obligor, so every member shares it.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "group_stable::obligor.obligor_country",
+      "description": "obligor_country belongs to the obligor, so every member shares it.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "group_stable::obligor.public_private_flag",
+      "description": "public_private_flag belongs to the obligor, so every member shares it.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "group_stable::obligor.revenue_eur",
+      "description": "revenue_eur belongs to the obligor, so every member shares it.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "group_stable::obligor.ebitda_margin_pct",
+      "description": "ebitda_margin_pct belongs to the obligor, so every member shares it.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "group_stable::obligor.leverage_ratio",
+      "description": "leverage_ratio belongs to the obligor, so every member shares it.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "plausibility::facility_size",
+      "description": "Median facility size. A CLO holds a few hundred positions in loans that are themselves much larger \u2014 the deal takes a slice. Positions of a few hundred thousand to a few million are the usual range.",
+      "passed": true,
+      "violations": 0,
+      "sample": [
+        {
+          "statistic": "median",
+          "column": "original_facility_amount",
+          "observed": 841321.545,
+          "expected_between": [
+            400000.0,
+            10000000.0
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "plausibility::spread",
+      "description": "Median margin over the reference rate, in basis points. European term loan B pricing has sat in the high 300s to low 500s for years.",
+      "passed": true,
+      "violations": 0,
+      "sample": [
+        {
+          "statistic": "median",
+          "column": "spread_bps",
+          "observed": 398.5,
+          "expected_between": [
+            300.0,
+            600.0
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "plausibility::market_price",
+      "description": "Median secondary price per 100 of par. Performing European loans trade near par; a median below the high 80s would mean a distressed book.",
+      "passed": true,
+      "violations": 0,
+      "sample": [
+        {
+          "statistic": "median",
+          "column": "current_market_price",
+          "observed": 96.65,
+          "expected_between": [
+            88.0,
+            101.0
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "plausibility::maturity",
+      "description": "Median original term. Leveraged loans are written for five to eight years, and a CLO's reinvestment rules assume that horizon.",
+      "passed": true,
+      "violations": 0,
+      "sample": [
+        {
+          "statistic": "median",
+          "column": "original_term_months",
+          "observed": 72.0,
+          "expected_between": [
+            60.0,
+            96.0
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "plausibility::leverage",
+      "description": "Median net debt to EBITDA. Below about 3.5x a borrower is not leveraged; much above 7x the loan is not broadly syndicated.",
+      "passed": true,
+      "violations": 0,
+      "sample": [
+        {
+          "statistic": "median",
+          "column": "leverage_ratio",
+          "observed": 4.7,
+          "expected_between": [
+            3.5,
+            7.0
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "plausibility::rating_mix",
+      "description": "Share of the opening book in the single-B bucket. Leveraged loans are overwhelmingly single-B; a book that were not would be a different asset class.",
+      "passed": true,
+      "violations": 0,
+      "sample": [
+        {
+          "statistic": "share",
+          "column": "rating_bucket",
+          "observed": 0.678,
+          "expected_between": [
+            0.35,
+            0.85
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "plausibility::ccc_at_close",
+      "description": "CCC and below at close. Indentures cap this around 7.5%, and a deal prices with headroom beneath the cap rather than against it. Measured at the opening cut-off: migration is expected to push it up later, and that rise is the thing the CCC chart exists to show.",
+      "passed": true,
+      "violations": 0,
+      "sample": [
+        {
+          "statistic": "share",
+          "column": "rating_bucket",
+          "observed": 0.038,
+          "expected_between": [
+            0.0,
+            0.1
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "plausibility::country_spread",
+      "description": "Distinct obligor countries. A European CLO spans several jurisdictions by construction; one or two would not be a European deal.",
+      "passed": true,
+      "violations": 0,
+      "sample": [
+        {
+          "statistic": "distinct",
+          "column": "obligor_country",
+          "observed": 10.0,
+          "expected_between": [
+            5.0,
+            25.0
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "plausibility::industry_spread",
+      "description": "Distinct industries. Diversity requirements make a concentrated book impossible to place.",
+      "passed": true,
+      "violations": 0,
+      "sample": [
+        {
+          "statistic": "distinct",
+          "column": "industry",
+          "observed": 15.0,
+          "expected_between": [
+            8.0,
+            40.0
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "plausibility::seniority",
+      "description": "Senior secured share. Indentures generally require at least 90% senior secured, so a book much below that could not be issued.",
+      "passed": true,
+      "violations": 0,
+      "sample": [
+        {
+          "statistic": "share",
+          "column": "senior_secured_flag",
+          "observed": 0.92,
+          "expected_between": [
+            0.85,
+            1.0
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "plausibility::covenant_lite",
+      "description": "Covenant-lite share. European issuance has been overwhelmingly covenant-lite since around 2018.",
+      "passed": true,
+      "violations": 0,
+      "sample": [
+        {
+          "statistic": "share",
+          "column": "covenant_lite_flag",
+          "observed": 0.824,
+          "expected_between": [
+            0.55,
+            0.98
+          ]
+        }
+      ],
+      "error": null
+    },
+    {
+      "name": "static_columns_stable",
+      "description": "All 18 static column(s) hold steady across every cut-off.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "terminal_states_absorb",
+      "description": "An entity reaching ['Recovered', 'Prepaid', 'Sold', 'Matured'] is written once and never appears again.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "state_fields::Prepaid",
+      "description": "Rows in state 'Prepaid' carry the values the spec pins to it.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "state_fields::Matured",
+      "description": "Rows in state 'Matured' carry the values the spec pins to it.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "state_fields::Recovered",
+      "description": "Rows in state 'Recovered' carry the values the spec pins to it.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "counter_step::seasoning_months",
+      "description": "seasoning_months moves by exactly 1.0 each period.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "counter_step::months_in_portfolio",
+      "description": "months_in_portfolio moves by exactly 1.0 each period.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "domain::currency",
+      "description": "currency only takes the values ['EUR', 'GBP'].",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "domain::facility_type",
+      "description": "facility_type only takes the values ['Term Loan B', 'Term Loan A', 'Revolver', 'Second Lien Term Loan'].",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "domain::senior_secured_flag",
+      "description": "senior_secured_flag only takes the values ['Y', 'N'].",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "domain::covenant_lite_flag",
+      "description": "covenant_lite_flag only takes the values ['Y', 'N'].",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "domain::credit_state",
+      "description": "credit_state only takes the values ['Performing', 'Watchlist', 'Distressed', 'Defaulted', 'Recovered', 'Prepaid', 'Sold', 'Matured'].",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "domain::watchlist_flag",
+      "description": "watchlist_flag only takes the values ['Y', 'N'].",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "domain::distressed_flag",
+      "description": "distressed_flag only takes the values ['Y', 'N'].",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "domain::default_flag",
+      "description": "default_flag only takes the values ['Y', 'N'].",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "domain::ccc_flag",
+      "description": "ccc_flag only takes the values ['Y', 'N'].",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "domain::second_lien_flag",
+      "description": "second_lien_flag only takes the values ['Y', 'N'].",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "domain::defaulted_obligation_flag",
+      "description": "defaulted_obligation_flag only takes the values ['Y', 'N'].",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "domain::currency_eligible_flag",
+      "description": "currency_eligible_flag only takes the values ['Y', 'N'].",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "domain::maturity_eligible_flag",
+      "description": "maturity_eligible_flag only takes the values ['Y', 'N'].",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "domain::eligible_asset_flag",
+      "description": "eligible_asset_flag only takes the values ['Y', 'N'].",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "non_negative_columns",
+      "description": "These never go below zero: current_balance, current_par, market_value, recovery_amount, realised_loss, months_to_maturity.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "custom::credit_factor_matches_the_rating",
+      "description": "Every facility's credit factor is the one its grade maps to. The factor is what the average credit quality is computed from, so a factor that has drifted from the rating would corrupt the headline figure while every rating on the tape still looked right.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "custom::credit_factor_is_monotone_in_the_grade",
+      "description": "A worse grade never carries a lower factor. This is what makes the weighted average mean anything: if the ordering broke, a downgrade could improve the reported credit quality.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "custom::no_duplicate_facility_cutoff",
+      "description": "One row per facility per cut-off.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "custom::market_value_ties_to_par_and_price",
+      "description": "Market value is par times price over 100, to the cent.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "custom::maturity_after_origination",
+      "description": "A facility cannot mature before it was written.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "custom::remaining_maturity_never_rises",
+      "description": "Months to maturity counts down, never up.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "custom::default_not_before_acquisition",
+      "description": "A default cannot precede the day the portfolio bought it.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "custom::recovery_not_before_default",
+      "description": "A workout cannot resolve before the default that caused it.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "custom::sale_not_before_acquisition",
+      "description": "A facility cannot be sold before it was bought.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "custom::default_flag_matches_credit_state",
+      "description": "The flag and the state must agree.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "custom::ccc_flag_matches_rating",
+      "description": "The CCC flag and the rating bucket must agree.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "custom::terminal_states_are_the_last_row",
+      "description": "A facility that prepaid, matured, was sold or recovered stops reporting.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "custom::prepaid_and_matured_balances_are_zero",
+      "description": "Nothing is still owed once the facility has left.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "custom::no_acquisition_after_reinvestment_end",
+      "description": "The manager stops buying when the reinvestment period closes.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "custom::recovery_never_exceeds_defaulted_par",
+      "description": "A workout cannot return more than was owed when the facility defaulted. Measured against `par_at_default`, not `current_par` \u2014 a resolved facility carries no par, so the live figure is zero by then.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "custom::a_facility_keeps_its_obligor",
+      "description": "A facility cannot change which company borrowed it.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "custom::obligor_holds_more_than_one_facility",
+      "description": "The pool is genuinely grouped. If every obligor held exactly one facility the grouping would be doing nothing, and every concentration figure would silently be a per-facility figure.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "custom::shares_are_between_zero_and_one",
+      "description": "Every `share_where` and `max_group_share` metric is a fraction of par, so none can leave [0, 1]. A share above 1 means the numerator was drawn from a different population than the denominator, which is the failure a reported percentage hides best.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    },
+    {
+      "name": "custom::bullet_balance_does_not_amortise",
+      "description": "A bullet facility repays at maturity, so while it is performing the balance holds flat.",
+      "passed": true,
+      "violations": 0,
+      "sample": [],
+      "error": null
+    }
+  ]
+}
