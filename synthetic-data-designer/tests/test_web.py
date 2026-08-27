@@ -10,6 +10,7 @@ from __future__ import annotations
 
 import io
 import json
+import pathlib
 import time
 
 import pandas as pd
@@ -746,3 +747,60 @@ def test_an_upload_inside_the_ceiling_still_works(client, monkeypatch):
     monkeypatch.setattr(web, "MAX_UPLOAD_BYTES", 10 * 1024 * 1024)
     stored = _upload(client, "tape.csv", _tape_csv())
     assert "loan_id" in stored["columns"]
+
+
+# ---------------------------------------------------------------------------
+# uploading a spec
+# ---------------------------------------------------------------------------
+
+
+def test_a_yaml_spec_can_be_uploaded_and_run(client, tmp_path):
+    """The gap a user found: the CLI takes a spec, and the UI could not.
+
+    Everything in this product is one YAML document — the CLI runs one, the
+    download step emits one, the Advanced tab edits one — and there was no way
+    to bring one *in*. A user with a working spec had to fall back to the
+    command line.
+    """
+    spec_text = (pathlib.Path(api.packs_dir()) / "credit_benchmark_known_ceiling.yaml").read_text(
+        encoding="utf-8"
+    )
+
+    stored = _upload(client, "my_spec.yaml", spec_text.encode(), kind="schema")
+    assert stored["is_spec"], stored
+    assert stored["spec_name"] == "credit_benchmark_known_ceiling"
+
+    analysed = client.post("/api/analyse", json={"schema_file": stored["file"]}).json()
+    spec = analysed["spec"]
+
+    # Loaded, not rebuilt. Inferring a spec from its own column list would throw
+    # away everything that is not a column.
+    assert spec["meta"]["name"] == "credit_benchmark_known_ceiling"
+    assert spec["lifecycle"]["state_column"] == "arrears_state"
+    assert spec["secondary_chains"], "the rating chain was discarded"
+    assert spec["benchmark"]["latent"] == "risk_tier"
+    assert client.post("/api/check", json=spec).json()["valid"]
+
+
+def test_a_yaml_that_is_not_a_spec_is_still_treated_as_a_schema(client):
+    """`.yaml` alone does not mean "spec".
+
+    A column list that happens to be YAML should go down the schema path, not
+    be rejected because it failed to parse as a full configuration.
+    """
+    from sdd.web import app as web
+
+    assert not web._is_spec(pathlib.Path(__file__))
+
+
+def test_the_drop_zone_advertises_yaml():
+    """A capability nobody can see is not a capability.
+
+    The user who reported this was looking at a box listing four formats, none
+    of them the one they had.
+    """
+    markup = (pathlib.Path(web.__file__).parent / "static" / "index.html").read_text(
+        encoding="utf-8"
+    )
+    assert ".yaml" in markup, "the file picker still refuses YAML"
+    assert "YAML" in markup, "the drop zone does not say it takes YAML"

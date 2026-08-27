@@ -72,12 +72,13 @@
             <h2>Schema</h2>
             <span class="badge req" id="schema-req">Required</span>
           </div>
-          <p class="hint">The columns your output must have. A CSV or Excel header, a parquet
-             schema, a data dictionary, or an ESMA taxonomy JSON.</p>
+          <p class="hint">The columns your output must have — a CSV or Excel header, a parquet
+             schema, a data dictionary, or an ESMA taxonomy JSON. Or a <b>YAML spec</b>,
+             which already says everything and goes straight to configuring.</p>
           <div class="drop" id="drop-schema" tabindex="0" role="button">
-            <strong>Drop a schema, or click to choose</strong>
-            <span class="formats">CSV &middot; Parquet &middot; Excel &middot; JSON</span>
-            <input type="file" id="file-schema" accept=".csv,.tsv,.parquet,.pq,.xlsx,.xlsm,.xls,.json" hidden />
+            <strong>Drop a schema or a spec, or click to choose</strong>
+            <span class="formats">CSV &middot; Parquet &middot; Excel &middot; JSON &middot; <b>YAML</b></span>
+            <input type="file" id="file-schema" accept=".csv,.tsv,.parquet,.pq,.xlsx,.xlsm,.xls,.json,.yaml,.yml" hidden />
           </div>
           <div id="schema-status"></div>
         </div>

@@ -98,7 +98,22 @@ SHARED = bool(os.environ.get("SDD_SHARED"))
 
 # What the upload box accepts, split by what the file is for. A schema may be a
 # taxonomy or a data dictionary; a sample is always data.
-SCHEMA_SUFFIXES = (".csv", ".tsv", ".parquet", ".pq", ".xlsx", ".xlsm", ".xls", ".json")
+# A YAML spec is accepted here too. It is not a schema in the "list of columns"
+# sense — it is the whole configuration — but it answers the same question the
+# schema slot asks ("what should the output look like?") more completely, and a
+# second drop zone for it would be a worse interface than one that takes both.
+SPEC_SUFFIXES = (".yaml", ".yml")
+SCHEMA_SUFFIXES = (
+    ".csv",
+    ".tsv",
+    ".parquet",
+    ".pq",
+    ".xlsx",
+    ".xlsm",
+    ".xls",
+    ".json",
+    *SPEC_SUFFIXES,
+)
 SAMPLE_SUFFIXES = (".csv", ".tsv", ".parquet", ".pq", ".xlsx", ".xlsm", ".xls", ".json", ".jsonl")
 
 _jobs: dict[str, dict[str, Any]] = {}
@@ -270,8 +285,30 @@ def _store(file: UploadFile, target: Path) -> None:
             handle.write(chunk)
 
 
+def _is_spec(path: Path) -> bool:
+    """A YAML document that parses as a full spec, rather than a column list."""
+    if path.suffix.lower() not in SPEC_SUFFIXES:
+        return False
+    try:
+        api.load(path)
+    except Exception:
+        return False
+    return True
+
+
 def _describe(path: Path, kind: str) -> dict[str, Any]:
     """What the upload holds, according to what it is for."""
+    if kind == "schema" and _is_spec(path):
+        # Nothing to infer: the file already says what every column is.
+        spec = api.load(path)
+        return {
+            "columns": spec.output_columns(),
+            "fields": [],
+            "typed": len(spec.columns),
+            "is_spec": True,
+            "spec_name": spec.meta.name,
+        }
+
     if kind == "schema":
         from sdd.profile.template import load_template
 
@@ -324,6 +361,15 @@ def analyse(payload: dict[str, Any] = Body(...)) -> dict[str, Any]:
                 # large tape is exhausted.
                 max_rows=PROFILE_ROW_LIMIT,
             )
+        elif schema_path is not None and _is_spec(schema_path):
+            # An uploaded spec is already the answer. Profiling it, or rebuilding
+            # it from its own column list, would discard the lifecycle, the
+            # groups and every calibrated number in it.
+            loaded = api.load(schema_path)
+            result = {
+                "spec": loaded.model_dump(mode="json", exclude_none=True, by_alias=True),
+                "profile": None,
+            }
         else:
             result = _design_from_schema(schema_path, name)
     except Exception as exc:
