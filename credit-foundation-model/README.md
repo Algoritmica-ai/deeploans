@@ -89,7 +89,7 @@ Start with the data bible: [`notebooks/00_data_bible.ipynb`](notebooks/00_data_b
 
 ## What's in here
 
-![Deeploans OS components](../Deeploans%20OS%20components.svg)
+![Open-source components of the credit foundation model: code, data and documentation](docs/images/os-components.png)
 
 | Component | Location | Description |
 |-----------|----------|-------------|
