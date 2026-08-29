@@ -35,3 +35,27 @@ python src/data_center_etl.py --input sample_data/raw_facilities.csv --output ou
 python src/data_center_etl.py --input sample_data/raw_facilities.csv --output output --stage-name silver
 python src/data_center_etl.py --input sample_data/raw_facilities.csv --output output --stage-name gold
 ```
+
+## End-to-end sample (raw CSV -> API-ready JSON + validation report)
+
+Run one command to execute the full ETL and generate normalized JSON with a validation report:
+
+```bash
+cd etl-pipelines/exotic/data-centers
+python src/run_e2e_sample.py
+```
+
+Generated artifacts:
+
+- `output/bronze/facility_bronze.csv`
+- `output/silver/facility_silver.csv`
+- `output/gold/sponsor_rollup.csv`
+- `output/gold/portfolio_dashboard.csv`
+- `output/normalized/facility_normalized.json` (API-ready normalized payload)
+- `output/reports/validation_report.json` (schema/quality checks summary)
+
+Run tests for the sample:
+
+```bash
+pytest etl-pipelines/exotic/data-centers/tests/test_e2e_sample.py
+```
