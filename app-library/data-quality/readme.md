@@ -28,7 +28,7 @@ After deployment, the app will be available at:
 ## Run locally
 
 ```bash
-cd deeploans-app
+cd app-library/data-quality
 python -m http.server 4173
 ```
 
