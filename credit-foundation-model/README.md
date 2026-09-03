@@ -1,7 +1,7 @@
 # Credit Foundation Model Framework
 
 An **open-source framework (Apache 2.0) for training credit foundation models** on tabular
-credit panel data. Built to help banks and financial institutions can train their own credit foundation models on their own data without building the underlying infrastructure from scratch.
+credit panel data. Built to help banks and financial institutions train their own credit foundation models on their own data without building the underlying infrastructure from scratch.
 
 The thesis: a **sequence foundation model** — one that reads a borrower's full month-by-month
 history — beats point-in-time tabular models (XGBoost) on credit tasks. The framework ships
