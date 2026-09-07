@@ -86,17 +86,26 @@ is fit on train only; evaluation is calendar-out-of-time with loan-disjoint and 
 Start with the data bible: [`notebooks/00_data_bible.ipynb`](notebooks/00_data_bible.ipynb).
 
 ## What's in here
-
 ![Open-source components of the credit foundation model: code, data and documentation](docs/images/os-components.png)
 
-| Component | Location | Description |
+| Family | Component | Location |
 |-----------|----------|-------------|
-| Framework (`credit_fm`) | `src/credit_fm/` | KVT tokenizer, three-branch model, data layer, training, utils |
-| Pipeline scripts | `scripts/` | one config-driven script per stage (ingest → … → finetune) + artifact validators |
-| Recipes | `configs/mortgage_performance/`, `configs/dutch_mortgages/` | YAML per asset class; stage recipes + generated schemas |
-| Notebooks | `notebooks/` | `00_data_bible` … `05_new_dataset` (builder-generated) |
-| Reference implementations | `reference_implementations/` | per-asset adapters + runbooks |
-| Docs | `docs/` | **handbook/** (teach-from-zero reference) · architecture · configuration · extending · tokenization · training · evaluation · decision log · cards |
+| Code | Evaluation Code | https://github.com/Algoritmica-ai/deeploans/blob/main/credit-foundation-model/scripts/evaluate_downstream.py | 
+| Code | Preprocessing Code | https://github.com/Algoritmica-ai/deeploans/blob/main/credit-foundation-model/scripts/ingest.py | 
+| Code | Model Architecture | https://github.com/Algoritmica-ai/deeploans/tree/main/credit-foundation-model/src/credit_fm/models | 
+| Code | Libraries and Tools| https://github.com/Algoritmica-ai/deeploans/blob/main/credit-foundation-model/pyproject.toml | 
+| Code | Training Code | https://github.com/Algoritmica-ai/deeploans/tree/main/credit-foundation-model/src/credit_fm/training | 
+| Code | Inference Code | https://github.com/Algoritmica-ai/deeploans/tree/main/credit-foundation-model/src/credit_fm/inference | 
+| Data | Datasets | https://github.com/Algoritmica-ai/deeploans/blob/main/credit-foundation-model/docs/data/mortgage_performance.md | 
+| Data | Evaluation Data | https://github.com/Algoritmica-ai/deeploans/blob/main/credit-foundation-model/docs/evaluation.md | 
+| Data | Sample Model Outputs | https://github.com/Algoritmica-ai/deeploans/blob/main/credit-foundation-model/reports/mortgage_oot_2022_2023.md | 
+| Data | Model Weights & Parameters | NA | 
+| Data | Configuration File | https://github.com/Algoritmica-ai/deeploans/tree/main/credit-foundation-model/configs/mortgage_performance | 
+| Documentation | Data Card | https://github.com/Algoritmica-ai/deeploans/blob/main/credit-foundation-model/docs/data_cards/mortgage_performance.md | 
+| Documentation | Research Paper | https://github.com/Algoritmica-ai/deeploans/blob/main/credit-foundation-model/docs/handbook/00_README.md | 
+| Documentation | Evaluation Results | https://github.com/Algoritmica-ai/deeploans/blob/main/credit-foundation-model/docs/model_cards/mortgage_performance.md |
+| Documentation | Technical Report | https://github.com/Algoritmica-ai/deeploans/blob/main/credit-foundation-model/docs/technical_report.md |
+
 
 ## Differentiation
 
