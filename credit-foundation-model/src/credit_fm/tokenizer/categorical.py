@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Categorical value -> value token, fit on TRAIN only.
 
 Produces the *value* part of a KVT token (e.g. the ``R`` in ``channel=R``). The vocabulary is the

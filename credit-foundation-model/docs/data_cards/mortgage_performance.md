@@ -10,8 +10,9 @@ origination through termination or the data cut.
 
 ## Source and provenance
 
-- **Publisher:** Mortgage Performance — Single-Family Loan Performance Data (publicly released for credit-risk
-  transparency). Access via mortgage performance data's data portal under their terms of use.
+- **Publisher:** a US secondary-mortgage agency, which publicly releases this single-family
+  loan performance dataset for credit-risk transparency. Access it through the publisher's own
+  data portal, under their terms of use.
 - **Coverage used:** 2000Q1–2024Q4 (25 years).
 - **Ingestion:** `scripts/ingest_mortgage_performance.py` reads the published quarterly parquet snapshots,
   renames to a canonical schema, and derives the modelling columns. No raw data is committed to the
@@ -81,8 +82,8 @@ unseen/missing). Encoding is deterministic and reproducible via
 
 ## Licensing and access
 
-- The data is mortgage performance data's, provided under their terms of use; users must obtain it from Mortgage
-  Mae directly. This repository redistributes **no raw data** — only code, fitted tokenizer
+- The data belongs to its publisher and is provided under their terms of use; users must obtain
+  it from the publisher directly. This repository redistributes **no raw data** — only code, fitted tokenizer
   artifacts (aggregate statistics, no individual records), and evaluation reports.
 
 ## Limitations
@@ -96,5 +97,5 @@ unseen/missing). Encoding is deterministic and reproducible via
 ## Maintenance
 
 - Regenerate via `scripts/ingest.py -c configs/mortgage_performance/ingest_2000_2024.yaml` then
-  `prepare_data.py`. New The source releases extend the reporting range; re-fit the tokenizer on the
+  `prepare_data.py`. New source releases extend the reporting range; re-fit the tokenizer on the
   new train split (DL-008) if the vintage span changes materially.

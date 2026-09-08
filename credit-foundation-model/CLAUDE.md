@@ -5,7 +5,7 @@ Guidance for Claude Code (and humans) working in this repo. Read this first when
 ## What this is
 
 An **open-source (Apache 2.0) framework for training credit foundation models** (`credit_fm`
-package) plus reference implementations, by **finevals.ai**. Compute: 8× H100 box (8-GPU DDP
+package) plus reference implementations, by **Algoritmica GmbH**. Compute: 8× H100 box (8-GPU DDP
 since v1.1 G4b: `PYTHONPATH=src python -m torch.distributed.run --standalone --nproc_per_node 8 …`,
 never bare `torchrun`).
 
@@ -97,7 +97,7 @@ tests/ unit + artifact-validator tests
 ## Conventions
 - Python 3.10+. **`ruff`** clean + **`pytest`** green before every commit (ruff lints notebooks
   too — one statement per line in generated cells). Type hints on public APIs; Google-style
-  docstrings. Every file: SPDX header + `Copyright (c) 2026 finevals.ai`.
+  docstrings. Every file: SPDX header + `Copyright (c) 2026 Algoritmica GmbH`.
 - **Leakage rules** (critical for credit): split by `loan_id` (never row); temporal by
   origination; vocab/bins fit on `train` only (DL-008); evaluation is calendar-OOT with
   loan-disjoint + embargo guards. source leakage = current delinquency / zero-balance /

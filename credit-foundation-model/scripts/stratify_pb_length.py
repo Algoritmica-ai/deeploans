@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Length-stratified FM-vs-baseline comparison for the payment-behaviours late-payment task.
 
 The overall verdict (rolling-stats XGBoost beats the FM) hides *where* each model wins. The

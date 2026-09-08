@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Shared transformer building blocks for the three-branch encoder (modern LLM stack).
 
 A small, self-contained block library used by every branch (Profile / Event / History):

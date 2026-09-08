@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """MLMCollator tests — flat (B, L) padding, lockstep metadata, masking only on real field tokens.
 
 Builds real per-loan samples (via the tokenizer's encode_with_meta, as the dataset would yield) of

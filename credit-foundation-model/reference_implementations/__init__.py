@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Reference implementations — asset-specific adapters and ingest logic (v1.1 G1.4).
 
 Each subpackage owns everything specific to one asset (column derivations, glossaries,

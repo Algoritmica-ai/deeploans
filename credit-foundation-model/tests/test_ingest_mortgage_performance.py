@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Unit tests for the Mortgage ingest derivation logic (scripts/ingest_mortgage_performance.py).
 
 These prove the column derivations are correct on hand-crafted rows covering every case:

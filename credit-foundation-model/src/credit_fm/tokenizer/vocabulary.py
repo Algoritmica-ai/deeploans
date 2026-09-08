@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Unified vocabulary across keys, values, and special tokens.
 
 Built on TRAIN only and serialized to JSON so val/test/inference reuse the exact same ids.

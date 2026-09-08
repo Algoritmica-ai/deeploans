@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Loan-stratified temporal split for credit panel data.
 
 Splitting a credit panel by *row* leaks loans across train/test: cutoff 6 of a loan can

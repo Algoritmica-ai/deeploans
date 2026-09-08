@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Payment behaviours adapter — B2B invoice days-past-due sequences -> contract panel.
 
 The raw source is one CSV with a row per customer::

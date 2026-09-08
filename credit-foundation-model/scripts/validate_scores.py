@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Validate a scored-portfolio artifact against the scoring contract — read-only audit.
 
 Two layers, mirroring the pipeline convention:

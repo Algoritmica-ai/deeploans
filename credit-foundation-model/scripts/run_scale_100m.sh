@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 #
 # SCALING experiment, end-to-end and unattended: 10% data + 100M model.
 # The genuine "does scaling pay?" test (the 65M-on-4% probe was flat/data-bound). Re-ingests at 10%

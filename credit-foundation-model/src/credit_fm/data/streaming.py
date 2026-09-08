@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Streaming data path — split + encode without ever holding the panel in RAM (v1.1 G3.2).
 
 The v1.0 pipeline loads the whole panel (``storage.read_parquet``) before splitting/encoding —

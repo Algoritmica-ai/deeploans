@@ -13,7 +13,7 @@ tags:
 
 # Credit Foundation Model — 100M pretrained backbone
 
-*by [finevals.ai](https://finevals.ai) · Apache-2.0 · card v1, 12 Aug 2026*
+*by [Algoritmica](https://github.com/Algoritmica-ai) · Apache-2.0 · card v1, 12 Aug 2026*
 
 A **sequence foundation model for credit risk**: an encoder-only transformer pretrained with a
 masked-token objective over the full month-by-month repayment history of mortgage loans. It reads a
@@ -172,7 +172,7 @@ that turns a raw loan panel into model inputs.
 ```bibtex
 @software{credit_fm_2026,
   title  = {credit_fm: an open framework for training credit foundation models},
-  author = {finevals.ai},
+  author = {Algoritmica GmbH},
   year   = {2026},
   url    = {https://github.com/Algoritmica-ai/deeploans/tree/main/credit-foundation-model},
   license = {Apache-2.0}

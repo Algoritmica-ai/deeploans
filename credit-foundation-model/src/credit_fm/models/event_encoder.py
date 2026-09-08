@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Event Encoder — contextualises each month's field tokens, then pools to one vector per event.
 
 Operates on the flat ``(B, L, dim)`` embedded sequence plus ``event_index`` (the data-layer

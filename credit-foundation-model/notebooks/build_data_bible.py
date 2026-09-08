@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Generate ``notebooks/00_data_bible.ipynb`` — the mortgage performance dataset 'bible'.
 
 Kept as a builder (not a hand-written .ipynb) so the notebook is regenerated deterministically and
@@ -132,8 +132,8 @@ else:
     md(r"""
 ## 2. Column glossary
 
-Every field in the dataset, condensed from the official *Single-Family Loan Performance Dataset and
-Credit Risk Transfer — Glossary and File Layout* (© 2026 mortgage performance data). `position` is the 1-based
+Every field in the dataset, condensed from the publisher's official glossary and file layout
+for this dataset. `position` is the 1-based
 field position in the published layout; the last 6 rows (`position = derived`) are columns our
 ingest step adds so the rest of the pipeline stays asset-generic.
 """),

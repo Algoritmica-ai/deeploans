@@ -1,9 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Field-by-field glossary for the single-family mortgage performance dataset.
 
-Condensed from the official *Single-Family Loan Performance Dataset and Credit Risk Transfer —
-Glossary and File Layout* (© 2026 mortgage performance data, revised 5/26/2026). Keys are the snake_case column
+Condensed from the publisher's official glossary and file layout for this dataset
+(revised 5/26/2026). Keys are the snake_case column
 names used in this repo (see ``configs/mortgage_performance/raw_schema.yaml``); the ``position`` matches the
 1-based Field Position in the official layout.
 

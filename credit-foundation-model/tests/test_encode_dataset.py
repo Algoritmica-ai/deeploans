@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Encode-once shard tests — one row per loan, aligned columns, whole-loan shards, parquet survives.
 
 Covers the testable core of ``scripts/encode_dataset.py`` (``credit_fm.data.encode``) on a synthetic

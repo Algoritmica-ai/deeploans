@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """CreditFoundationModel — the hierarchical three-branch encoder, end to end.
 
 Consumes a batch from :class:`~credit_fm.data.collators.MLMCollator` (the frozen data-layer

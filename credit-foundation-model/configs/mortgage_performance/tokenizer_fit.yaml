@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 #
 # Fit the KVT tokenizer on TRAIN (M1) + write the token QA report.
 # The field schema comes from the shared `schema` key (configs/mortgage_performance/tokenizer.yaml).

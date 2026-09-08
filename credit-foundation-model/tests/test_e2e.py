@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """End-to-end M2 gate — tokenizer → collator → CreditFoundationModel.
 
 Builds a real batch (encode_with_meta + MLMCollator) and runs it through the full hierarchical

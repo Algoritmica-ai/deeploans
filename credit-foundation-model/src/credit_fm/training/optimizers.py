@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """AdamW with decoupled weight decay + linear-warmup / cosine-decay schedule.
 
 Weight decay is applied to 2-D weight matrices only; biases, norm gains, embeddings, and the

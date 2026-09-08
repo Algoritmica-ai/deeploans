@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Tests for the portfolio scorer (src/credit_fm/inference/scoring.py + scripts/score_portfolio.py).
 
 Two layers, matching the repo convention:

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Dataset-contract tests (v1.1 G1.1) — parsing, validation rules, and the drift guard.
 
 The drift guard pins ``baseline.yaml``'s legacy leakage/exclude lists to the canonical

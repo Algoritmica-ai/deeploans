@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Profile the whole mortgage performance dataset — per-column statistics + delinquency rate by year.
 
 Streams a parquet dataset (a single file, a directory, or the Hive-partitioned raw source) in

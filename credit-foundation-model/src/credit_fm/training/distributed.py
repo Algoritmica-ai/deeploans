@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Distributed-data-parallel (DDP) helpers — multi-GPU training (v1.1 G4b).
 
 Thin wrappers around ``torch.distributed`` so the training loop scales from one GPU to all eight

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 #
 # Customer-disjoint train/val/test split (DL-007/008 machinery, degenerate-temporal case).
 # origination_date is the same pseudo-date for every customer, so the positional partition

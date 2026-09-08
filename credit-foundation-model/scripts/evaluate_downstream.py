@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Downstream verdict — do the FM's ``[USR]`` embeddings beat features-XGBoost at predicting default?
 
 Given per-loan embeddings (from ``extract_embeddings.py``, observed at ``--cutoff``) and the full

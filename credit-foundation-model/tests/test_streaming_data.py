@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Streaming split + encode tests (v1.1 G3.2).
 
 The design gates, verbatim: (1) the STREAMED split equals the in-RAM split — same loan→split

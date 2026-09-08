@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 #
 # Shared base for all mortgage performance data pipeline recipes (include: common.yaml).
 # Paths are defined ONCE here and interpolated everywhere else; switch the whole

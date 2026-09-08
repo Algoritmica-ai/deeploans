@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 #
 # Fit the KVT tokenizer on TRAIN + write the token QA report.
 # After generating the schema (classify.yaml --out …), add the documented review layer the

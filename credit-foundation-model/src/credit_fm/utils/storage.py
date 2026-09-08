@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Pluggable storage I/O over fsspec.
 
 Every location is a URL, so the backend is swappable by changing the scheme — local paths,

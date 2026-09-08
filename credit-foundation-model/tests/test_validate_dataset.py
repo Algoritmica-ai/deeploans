@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Contract-auditor tests (v1.1 G1.5) — green on a conforming panel, and the negative controls:
 the validator MUST FAIL on int ids, a leakage column smuggled into the schema, duplicated
 entity-periods, and gated-in-AND-terminal rows."""

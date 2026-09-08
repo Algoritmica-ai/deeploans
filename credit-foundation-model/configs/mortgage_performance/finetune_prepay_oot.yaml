@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 #
 # ★ G2.2 — a SECOND prediction task with ZERO new code: prepayment within 12 months, calendar-OOT.
 # The entire task definition is `label: prepay_12m`, resolved from dataset.yaml's labels: block.

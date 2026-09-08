@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """CreditDataModule tests — loaders, manifest-derived vocab_size, shuffle/eval policy, determinism.
 
 Writes toy train/val shard dirs (with a manifest carrying ``vocab_size``, as encode_dataset.py does)

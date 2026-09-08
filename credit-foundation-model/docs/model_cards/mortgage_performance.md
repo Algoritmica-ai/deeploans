@@ -1,10 +1,10 @@
 # Model Card — Credit Foundation Model (mortgage-performance reference, M5)
 
-*finevals.ai · Apache-2.0 · card v2, 16 Jul 2026 (adds the 100M/10% headline model)*
+*Algoritmica GmbH · Apache-2.0 · card v2, 16 Jul 2026 (adds the 100M/10% headline model)*
 
 ## Model details
 
-- **Developed by:** finevals.ai.
+- **Developed by:** Algoritmica GmbH.
 - **Model type:** encoder-only transformer, masked-language-modelling (MLM) over tabular
   credit-event sequences. Produces a per-loan embedding, not text.
 - **Architecture:** three-branch encoder (Profile / Event / History) with key–value–time (KVT)

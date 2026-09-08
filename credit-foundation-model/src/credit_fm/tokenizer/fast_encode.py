@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Vectorized / GPU panel encoder — same output as ``encode_panel``, orders of magnitude faster.
 
 The per-loan Python encoder tokenizes row by row; at millions of loans that is hours of pure

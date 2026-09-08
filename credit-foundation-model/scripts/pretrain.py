@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Pretrain the credit foundation model (MLM) over encode-once shards.
 
 Loads a frozen ``tokenizer.json`` (for ``vocab_size`` + ``n_field_types``), builds a

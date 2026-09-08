@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Batch-score a portfolio with a fine-tuned Credit FM — deliverable #6 (inference).
 
 Given a fine-tuned checkpoint, the frozen tokenizer, a portfolio panel and an observation date,

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Generic XGBoost baseline for credit default — the Gate-G1 anchor the FM must beat.
 
 All asset-specific knobs (id/time/label columns, observation date + horizon, the

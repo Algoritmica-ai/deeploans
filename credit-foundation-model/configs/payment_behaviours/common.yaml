@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 #
 # Shared base for all payment-behaviours pipeline recipes (include: common.yaml).
 # The corpus is small (~25M invoice rows, ~600k customers) — everything lives on local disk;

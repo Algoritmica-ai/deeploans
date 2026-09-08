@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Main key-value-time (KVT) tokenizer.
 
 Composes the per-field tokenizers (numeric bucketing, categorical) into one loan-level encoder.

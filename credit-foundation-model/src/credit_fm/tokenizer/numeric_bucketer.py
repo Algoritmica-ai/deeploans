@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Quantile bucketing for one continuous field.
 
 Produces the *value* part of a KVT token (e.g. the ``4`` in ``original_ltv=4``). Bucket labels:

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Classify the panel's columns and generate a tokenizer config — reproducibly.
 
 Pipeline (all data-driven, so re-running regenerates the same file):

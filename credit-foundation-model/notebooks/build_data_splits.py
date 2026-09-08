@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Generate ``notebooks/01_data_splits.ipynb`` — the loan-stratified temporal split walkthrough.
 
 Kept as a builder (not a hand-written .ipynb) so the notebook is regenerated deterministically and

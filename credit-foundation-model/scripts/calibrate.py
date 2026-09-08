@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Fit a score → PD calibrator on a held-out calibration window (v1.1 G6.1).
 
 The fine-tuned scorer ranks loans well but its raw softmax is not a probability (it was trained

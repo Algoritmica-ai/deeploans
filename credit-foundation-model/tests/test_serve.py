@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Serving-example tests (v1.1 G6.2) — reference_implementations/mortgage_performance/serve.py.
 
 The HTTP path must be the batch path: same gate, same cutoff truncation, same calibrated PDs.

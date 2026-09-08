@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """MLM masking unit tests — selection rates, BERT 80/10/10, specials safety, determinism.
 
 A toy encoded loan: ``[BOS] [USR]`` then ``n_events`` event blocks, each

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """MLM training loop for the credit foundation model.
 
 ``train_mlm`` is the reusable core (single-GPU/CPU; bf16 autocast on CUDA) used by the M2 toy run
