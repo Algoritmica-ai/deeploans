@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Pluggable training-metrics loggers (v1.1 G4c) — resolves decision DL-009.
 
 The trainer keeps printing to stdout exactly as before (that stays the default, byte-identical);

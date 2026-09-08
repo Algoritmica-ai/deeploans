@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Ingest a dataset via its adapter — sharded, resumable, asset-blind (v1.1 G1.4 + G3.1).
 
 Reads the recipe's ``dataset:`` pointer, resolves the asset's

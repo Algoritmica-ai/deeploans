@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """FastAPI serving example — score loans over HTTP with a fine-tuned Credit FM (v1.1 G6.2).
 
 **Explicitly an example, not a production service**: no auth, no TLS, no horizontal scaling —

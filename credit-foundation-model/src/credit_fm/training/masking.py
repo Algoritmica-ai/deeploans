@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Three-source MLM masking for credit-event sequences.
 
 The pretraining objective hides part of each loan's token sequence and asks the model to

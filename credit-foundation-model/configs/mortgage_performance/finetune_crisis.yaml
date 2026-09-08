@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 #
 # CRISIS calendar-OOT fine-tune — the hardest regime-shift test. The head trains on Dec-2000..2006
 # observations and is scored on Dec-2008..2010 (defaults land in 2009-2011, the crisis peak).

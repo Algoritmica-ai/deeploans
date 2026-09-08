@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 #
 # CRISIS-OOT, end-to-end and unattended — the hardest regime-shift test.
 # Builds a CRISIS-BLIND backbone (pretrained on <=2007 ONLY, so it never saw the 2008 crisis) and

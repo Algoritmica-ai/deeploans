@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Adapter tests (v1.1 G1.2) — registry resolution + the generic zero-code onboarding path."""
 
 from __future__ import annotations

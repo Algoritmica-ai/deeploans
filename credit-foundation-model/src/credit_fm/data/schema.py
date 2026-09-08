@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Canonical credit panel schema: one row per (loan_id, observation_date). Required
 columns: loan_id, observation_date, is_origination, event_type; plus asset-class
 fields. Static fields repeat across observations; dynamic fields vary.

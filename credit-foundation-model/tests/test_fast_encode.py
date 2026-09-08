@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """encode_panel_fast (vector engine) must match encode_panel token-for-token.
 
 Covers the tricky semantics: NA values, exact zeros, unseen categories (UNK), loans longer than

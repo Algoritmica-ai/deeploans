@@ -147,7 +147,7 @@ It is also the controlled-conditions half of a larger picture:
         └────────────────────┬───────────────────┘
                              ▼
                    validation and evidence
-                    (finevals.ai)
+                    (Algoritmica GmbH)
 ```
 
 The distinction is the useful part. A synthetic benchmark cannot tell you a model

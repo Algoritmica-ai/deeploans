@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Validate a panel against its dataset contract (v1.1 G1.5) — step 0 for any new asset.
 
 Re-derives the contract invariants from the actual files (the artifact-validator layer; the

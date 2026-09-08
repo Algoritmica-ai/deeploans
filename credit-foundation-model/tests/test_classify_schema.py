@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """classify_schema contract-enforcement tests (v1.1 G1.3).
 
 Runs the real script end-to-end on a synthetic panel and proves the dataset contract's

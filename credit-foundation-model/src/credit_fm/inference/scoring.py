@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Load a fine-tuned Credit FM and score a portfolio panel.
 
 The shared inference path used by ``scripts/score_portfolio.py`` and ``scripts/finetune.py``

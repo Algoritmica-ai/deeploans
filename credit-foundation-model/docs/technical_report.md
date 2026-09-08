@@ -1,6 +1,6 @@
 # Credit Foundation Model — Technical Report
 
-**finevals.ai · Apache-2.0**
+**Algoritmica GmbH · Apache-2.0**
 Open-source framework for training credit foundation models (`credit_fm`), with a reference
 implementation on 25 years of real-world mortgage performance data (single-family mortgage).
 

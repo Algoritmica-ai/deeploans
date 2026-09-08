@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Mortgage-performance dataset adapter — column derivations + parallel source reading (v1.1 G1.4).
 
 Everything source-specific about ingest lives HERE (moved out of ``scripts/ingest_mortgage_performance.py``

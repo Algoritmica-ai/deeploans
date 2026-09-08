@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """PyTorch datasets over credit panels.
 
 ``CreditSequenceDataset`` is the M2 data layer: a random-access reader over the **encode-once**

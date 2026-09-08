@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """CreditSequenceDataset tests — reads encode-once shards, returns aligned unpadded tensors.
 
 Writes toy shards (via ``iter_shards`` + ``storage``) to a tmp dir, then reads them back through the

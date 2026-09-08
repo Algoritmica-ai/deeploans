@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 #
 # Fine-tune: will a currently-current (<=30 dpd) customer exceed 30 dpd within the next
 # 3 invoices? Cutoffs are PSEUDO-dates (base 2000-01 + invoice index), so "later cutoffs"

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Calibration tests (v1.1 G6.1) — the module, the stage script, and the validator's check I.
 
 Design gates, verbatim: a synthetic known distortion is recovered (Brier drops, level lands on

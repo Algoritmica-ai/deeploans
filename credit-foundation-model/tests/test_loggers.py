@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Metrics-logger tests (v1.1 G4c) — the factory, the jsonl backend, and trainer integration.
 
 The default (backend null) must be a strict no-op so pre-G4c behavior is byte-identical; the

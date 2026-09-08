@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 #
 # SCALING experiment: ~100M-param model (dim 768) on the 10% corpus (~3B tokens). This is the real
 # data+model scaling test (vs the 65M-on-4% probe, which was flat/data-bound). Chinchilla-sound:

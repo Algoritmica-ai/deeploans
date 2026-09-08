@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Validate a prepared train/val/test split against the split invariants — read-only audit.
 
 Proves the *produced split* is correct (not just the code): the three split outputs (single

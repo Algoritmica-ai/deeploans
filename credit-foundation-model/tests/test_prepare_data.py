@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Tests for the split stage (scripts/prepare_data.py) + its artifact validator.
 
 Two layers, matching the repo convention:

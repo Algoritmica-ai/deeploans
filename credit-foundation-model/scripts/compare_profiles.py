@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Compare the delinquency distribution of two dataset profiles — e.g. the 4% panel vs the 100% book.
 
 Confirms the deterministic 4% loan-hash sample is a faithful stand-in for the whole loan book: it

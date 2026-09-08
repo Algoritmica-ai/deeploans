@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Package a pretrained checkpoint into a self-contained, publishable model directory.
 
 Reads a ``.pt`` checkpoint (local or ``gs://``) and writes a release folder containing:

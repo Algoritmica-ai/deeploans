@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """DEPRECATED shim — the Mortgage ingest moved behind the dataset-adapter interface (v1.1 G1.4).
 
 The derivation logic now lives in ``reference_implementations/mortgage_performance/adapter.py`` and the

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Packaging contract tests (v1.1 G5.1).
 
 Locks the pip-installable surface: the version is single-sourced (``credit_fm.__version__`` ==

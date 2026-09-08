@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Tokenizer M1 unit tests — numeric bucketing, categorical UNK/NA, vocabulary, roundtrip.
 
 Leakage discipline: bins/categories are fit on TRAIN only; out-of-range or unseen values at

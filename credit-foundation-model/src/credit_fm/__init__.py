@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """credit_fm — an open-source framework for training credit foundation models.
 
 Encoder-only (PRAGMA-style) architecture with masked-language-modelling

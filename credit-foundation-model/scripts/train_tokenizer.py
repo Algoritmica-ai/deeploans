@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Fit the KVT tokenizer on a credit panel, save it, and write a token QA report (Milestone M1).
 
 Reads a per-loan **monthly** panel (loan_id × reporting_date rows), fits the per-field

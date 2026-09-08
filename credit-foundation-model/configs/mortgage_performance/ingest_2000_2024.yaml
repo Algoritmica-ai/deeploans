@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 #
 # Full-history ingest: 2000Q1-2024Q4, 4% loan sample -> one panel for the calendar-OOT program.
 # The pretrain corpus is derived from this panel by prepare_data with reporting_max=2022-12-31

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Encode-once: turn a per-loan monthly panel into token-id **shards** for the data loader.
 
 The model trains over each loan many times; re-tokenizing on every epoch would starve the GPUs.

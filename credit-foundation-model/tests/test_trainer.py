@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """train_mlm tests — the loop drives loss down on real shards through the CreditDataModule.
 
 Writes tiny synthetic train/val shard dirs, builds the datamodule + a tiny model, and runs a short

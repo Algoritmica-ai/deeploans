@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Label-layer tests (v1.1 G2.1) — golden equivalence with the legacy logic + the spec paths.
 
 The legacy ``forward_default_loans`` (verbatim copy below, from pre-G2 ``finetune.py``) is the

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """encode_panel_parallel — the spawn-pool path must be byte-identical to the serial encode."""
 
 from __future__ import annotations

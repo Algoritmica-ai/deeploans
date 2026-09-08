@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Sharded, resumable ingest tests (v1.1 G3.1) — the driver in scripts/ingest.py.
 
 The contract under test: one ``part-<tag>.parquet`` per source with a ``_meta-<tag>.json``

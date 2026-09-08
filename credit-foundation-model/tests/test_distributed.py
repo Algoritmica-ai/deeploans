@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Distributed-training tests (v1.1 G4b).
 
 Two layers: (1) the no-op single-process contract (the DDP helpers must be inert when no process

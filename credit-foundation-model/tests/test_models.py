@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Model building-block tests — RMSNorm/RoPE attention/encoder/embeddings + Event encoder.
 
 Shape + finiteness checks, plus the two behavioural guarantees that matter for the hierarchy:

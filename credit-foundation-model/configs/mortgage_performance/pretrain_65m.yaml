@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 #
 # Scale-up probe: ~65M-param model (dim 624) on the SAME data + tokenizer as the 25.7M M5 model.
 # Chinchilla-matched to the ~1.2B-token 2000-2022 corpus (65M x ~20 tokens/param). Only the model

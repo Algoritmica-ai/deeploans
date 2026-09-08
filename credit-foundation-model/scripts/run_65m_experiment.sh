@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 #
 # 65M scale-up probe, end-to-end and unattended. Trains a ~66.8M-param model on the SAME data +
 # tokenizer as the 25.7M M5 model, then runs the calendar-OOT fine-tune and prints the comparison.

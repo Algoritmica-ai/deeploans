@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Declarative task labels — build targets from the dataset contract (v1.1 G2.1).
 
 A prediction task is **configuration, not code**: the ``labels:`` block of ``dataset.yaml``

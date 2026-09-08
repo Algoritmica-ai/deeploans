@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """★ Asset-blindness enforcement (v1.1 G1.4) — the framework/reference boundary as a TEST.
 
 The ``credit_fm`` package must import cleanly with ZERO asset-specific modules: no Mortgage, no

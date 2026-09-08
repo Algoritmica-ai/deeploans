@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 #
 # MLM pretraining recipe — payment-behaviours corpus (~25M invoices, ~75-100M tokens).
 # The corpus is ~1% of the mortgage 10% sample, so the model is sized down accordingly

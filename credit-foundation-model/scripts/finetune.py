@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Fine-tune the pretrained FM on the forward-default task — the fair test of the FM's value.
 
 The frozen-embedding probe (``evaluate_downstream.py``) is the *handicap* match. This adapts the

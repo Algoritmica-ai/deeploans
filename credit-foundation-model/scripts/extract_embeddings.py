@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Extract per-loan ``[USR]`` embeddings from a pretrained checkpoint.
 
 Runs a processed monthly panel (tokenizer schema) through the frozen model and writes one row per

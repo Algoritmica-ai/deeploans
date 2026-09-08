@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Dataset adapters — the code half of the dataset contract (v1.1 G1.2).
 
 A :class:`DatasetAdapter` turns an asset's raw source into a **contract-conforming panel**

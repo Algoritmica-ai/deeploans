@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Dataset contract — parse and validate ``configs/<asset>/dataset.yaml`` (v1.1 G1.1).
 
 ``dataset.yaml`` is the single onboarding artifact for an asset: the column contract

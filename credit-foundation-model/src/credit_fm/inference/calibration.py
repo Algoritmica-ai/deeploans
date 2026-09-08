@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Score calibration — turn rank scores into usable probabilities of default (v1.1 G6.1).
 
 A fine-tuned scorer is trained on a **rebalanced** sample (negatives downsampled, positives

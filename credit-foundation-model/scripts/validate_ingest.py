@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: Apache-2.0
-# Copyright (c) 2026 finevals.ai and contributors.
+# Copyright (c) 2026 Algoritmica GmbH and contributors.
 """Validate an ingested Mortgage panel against the ingest invariants — read-only audit.
 
 Proves the *produced artifact* is correct (not just the code): the derived label columns
