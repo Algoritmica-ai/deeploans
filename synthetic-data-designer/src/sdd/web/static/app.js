@@ -234,7 +234,7 @@ async function adoptSpec(spec, { origin = null } = {}) {
 
 async function validate() {
   try {
-    const result = await call("/api/check", {
+    const result = await call("api/check", {
       method: "POST",
       body: JSON.stringify(state.spec),
     });
@@ -309,7 +309,7 @@ async function upload(file, kind) {
     const form = new FormData();
     form.append("file", file);
     form.append("kind", kind);
-    const stored = await call("/api/upload", { method: "POST", body: form });
+    const stored = await call("api/upload", { method: "POST", body: form });
     state.uploads[kind] = stored;
 
     const detail = kind === "schema"
@@ -336,7 +336,7 @@ async function analyse() {
   $("#upload-error").replaceChildren();
 
   try {
-    const result = await call("/api/analyse", {
+    const result = await call("api/analyse", {
       method: "POST",
       body: JSON.stringify({
         schema_file: state.uploads.schema?.file || null,
@@ -408,7 +408,7 @@ function describeInstance(meta) {
 }
 
 async function loadPacks() {
-  const meta = await call("/api/meta");
+  const meta = await call("api/meta");
   state.meta = meta;
   $("#version").textContent = `v${meta.version}`;
   describeInstance(meta);
@@ -436,7 +436,7 @@ async function loadPacks() {
       ]));
       continue;
     }
-    const info = await call(`/api/packs/${name}`);
+    const info = await call(`api/packs/${name}`);
     const summary = info.summary;
     list.append(el("button", {
       class: summary.featured ? "pack featured" : "pack",
@@ -492,7 +492,7 @@ async function choosePack(name, info) {
   seedSettings(info.spec, info.capabilities);
   await adoptSpec(structuredClone(info.spec), { origin: info.summary.title });
 
-  state.schema = await call("/api/schema", {
+  state.schema = await call("api/schema", {
     method: "POST",
     body: JSON.stringify({ spec: state.spec }),
   });
@@ -653,7 +653,7 @@ function stageEdit(original, patch) {
 async function applyEditsThenConfigure() {
   if (state.edits.size) {
     try {
-      const result = await call("/api/schema/edit", {
+      const result = await call("api/schema/edit", {
         method: "POST",
         body: JSON.stringify({
           spec: state.spec,
@@ -668,7 +668,7 @@ async function applyEditsThenConfigure() {
         status(`Applied: ${result.applied.slice(0, 3).join("; ")}` +
           (result.applied.length > 3 ? ` (+${result.applied.length - 3} more)` : ""), "good");
       }
-      state.schema = await call("/api/schema", {
+      state.schema = await call("api/schema", {
         method: "POST",
         body: JSON.stringify({ spec: state.spec, source: state.source }),
       });
@@ -1259,7 +1259,7 @@ async function pushConfigure(extra) {
   };
 
   try {
-    const result = await call("/api/configure", { method: "POST", body: JSON.stringify(body) });
+    const result = await call("api/configure", { method: "POST", body: JSON.stringify(body) });
     state.spec = result.spec;
     state.valid = result.valid;
     state.problems = result.problems;
@@ -1306,7 +1306,7 @@ function renderNotes(notes) {
 
 async function refreshYaml() {
   try {
-    const { yaml } = await call("/api/spec/yaml", {
+    const { yaml } = await call("api/spec/yaml", {
       method: "POST", body: JSON.stringify(state.spec),
     });
     $("#cfg-yaml").value = yaml;
@@ -1317,7 +1317,7 @@ function wireYaml() {
   $("#btn-yaml-apply").onclick = async () => {
     const target = $("#yaml-status");
     try {
-      const result = await call("/api/spec/parse", {
+      const result = await call("api/spec/parse", {
         method: "POST", body: JSON.stringify({ yaml: $("#cfg-yaml").value }),
       });
       if (!result.valid) {
@@ -1355,7 +1355,7 @@ async function startRun() {
   state.settings.seed = parseInt($("#cfg-seed").value, 10) || 42;
 
   try {
-    const started = await call("/api/run", {
+    const started = await call("api/run", {
       method: "POST",
       body: JSON.stringify({
         spec: state.spec,
@@ -1394,7 +1394,7 @@ async function poll() {
   if (!state.job) return;
   let job;
   try {
-    job = await call(`/api/run/${state.job}`);
+    job = await call(`api/run/${state.job}`);
   } catch (error) {
     $("#run-error").replaceChildren(note(error.message, "bad"));
     return;
@@ -1502,7 +1502,7 @@ async function loadCharts(column = null) {
   ])));
 
   try {
-    const charts = await call(`/api/charts/${state.job}${column ? `?columns=${encodeURIComponent(column)}` : ""}`);
+    const charts = await call(`api/charts/${state.job}${column ? `?columns=${encodeURIComponent(column)}` : ""}`);
     state.charts = charts;
 
     const picker = $("#chart-column");
@@ -1538,7 +1538,7 @@ async function loadTable() {
   if (t.sort) params.set("sort", t.sort);
 
   try {
-    const page = await call(`/api/table/${state.job}?${params}`);
+    const page = await call(`api/table/${state.job}?${params}`);
     renderTable(page);
   } catch (error) {
     $("#data-table").replaceChildren(el("tbody", {}, el("tr", {},
@@ -1602,7 +1602,7 @@ function renderDownloads(result) {
   grid.replaceChildren(...DOWNLOADS.map(([format, label, ext, description]) =>
     el("a", {
       class: "dl",
-      href: `/api/export/${state.job}?format=${format}`,
+      href: `api/export/${state.job}?format=${format}`,
       download: "",
       onclick: (e) => { e.currentTarget.classList.add("busy");
         setTimeout(() => e.currentTarget.classList.remove("busy"), 2500); },
@@ -1628,7 +1628,7 @@ function renderDownloads(result) {
         el("td", {}, el("code", { text: file.path.split("/").pop() })),
         el("td", { text: file.label }),
         el("td", {}, el("a", {
-          href: `/api/download?path=${encodeURIComponent(file.path)}`, text: "Download",
+          href: `api/download?path=${encodeURIComponent(file.path)}`, text: "Download",
         })),
       ])))
   );
